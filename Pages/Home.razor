@@ -1,0 +1,20 @@
+@page "/"
+@attribute [Authorize]
+@inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthState
+
+<PageTitle>HCP HR Portal</PageTitle>
+
+<p class="text-muted-sm" style="padding:2rem;">Loading your dashboard…</p>
+
+@code {
+    // Landing route: send each signed-in user to the dashboard for their role.
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState.GetAuthenticationStateAsync();
+        var user = state.User;
+
+        var role = Roles.All.FirstOrDefault(user.IsInRole) ?? Roles.Employee;
+        Nav.NavigateTo(Roles.DashboardFor(role), replace: true);
+    }
+}

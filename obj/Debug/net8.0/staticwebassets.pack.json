@@ -1,0 +1,125 @@
+{
+  "Files": [
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\HCP.HRPortal.bundle.scp.css",
+      "PackagePath": "staticwebassets\\HCP.HRPortal.b0c5ex19ho.bundle.scp.css"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\announcement.png",
+      "PackagePath": "staticwebassets\\images\\announcement.png"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\hcp-logo.png",
+      "PackagePath": "staticwebassets\\images\\hcp-logo.png"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\aisha-khan.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\aisha-khan.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\daniel-okafor.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\daniel-okafor.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\diego-alvarez.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\diego-alvarez.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\elena-rossi.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\elena-rossi.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\fatima-noor.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\fatima-noor.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\grace-chen.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\grace-chen.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\hannah-weiss.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\hannah-weiss.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\kenji-tanaka.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\kenji-tanaka.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\leila-haddad.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\leila-haddad.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\marcus-lindqvist.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\marcus-lindqvist.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\omar-haddad.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\omar-haddad.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\priya-nair.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\priya-nair.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\sara-al-mansouri.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\sara-al-mansouri.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\tom-becker.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\tom-becker.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\yusuf-demir.jpg",
+      "PackagePath": "staticwebassets\\images\\people\\yusuf-demir.jpg"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\sidebar-bg.png",
+      "PackagePath": "staticwebassets\\images\\sidebar-bg.png"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\training.png",
+      "PackagePath": "staticwebassets\\images\\training.png"
+    },
+    {
+      "Id": "E:\\Work_Data\\BlazorApp1\\wwwroot\\uploads\\avatars\\emp-6-639153292469649374.png",
+      "PackagePath": "staticwebassets\\uploads\\avatars\\emp-6-639153292469649374.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.HCP.HRPortal.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.HCP.HRPortal.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.HCP.HRPortal.props",
+      "PackagePath": "build\\HCP.HRPortal.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.HCP.HRPortal.props",
+      "PackagePath": "buildMultiTargeting\\HCP.HRPortal.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.HCP.HRPortal.props",
+      "PackagePath": "buildTransitive\\HCP.HRPortal.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

@@ -1,0 +1,71 @@
+@page "/company-directory"
+@attribute [Authorize]
+@inject IEmployeeService Employees
+
+<PageTitle>Company Directory · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Company Directory" Subtitle="Find people across the organisation" Icon="bi-people-fill" />
+
+<div class="filters-bar">
+    <input class="filter-input" placeholder="Search employees…" value="@search" @oninput="OnSearch" />
+    <select class="filter-select" @onchange="OnDept">
+        <option value="">All departments</option>
+        @foreach (var d in Employees.Departments())
+        {
+            <option value="@d" selected="@(d == dept)">@d</option>
+        }
+    </select>
+</div>
+
+<p class="text-muted-sm mb-grid">@Filtered.Count people</p>
+
+<div class="card-grid">
+    @foreach (var e in Filtered)
+    {
+        <div class="card-surface" style="display:flex;flex-direction:column;gap:0.6rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+                <Avatar Name="@e.FullName" Size="lg" PhotoUrl="@e.PhotoUrl" />
+                <div>
+                    <div style="font-weight:700;">@e.FullName</div>
+                    <div class="cell-sub">@e.JobTitle</div>
+                    <div class="cell-sub">@e.Department</div>
+                </div>
+            </div>
+            <div class="text-muted-sm"><span class="bi bi-envelope" style="margin-right:0.4rem;"></span><a href="mailto:@e.Email">@e.Email</a></div>
+            <div class="text-muted-sm"><span class="bi bi-telephone" style="margin-right:0.4rem;"></span>@e.Phone</div>
+            <div class="text-muted-sm"><span class="bi bi-geo-alt" style="margin-right:0.4rem;"></span>@e.Location</div>
+        </div>
+    }
+    @if (Filtered.Count == 0)
+    {
+        <p class="text-muted-sm">No employees match your search.</p>
+    }
+</div>
+
+@code {
+    private List<Employee> all = new();
+    private string search = "";
+    private string dept = "";
+
+    protected override void OnInitialized() => all = Employees.GetAll().ToList();
+
+    private List<Employee> Filtered
+    {
+        get
+        {
+            IEnumerable<Employee> q = all;
+            if (!string.IsNullOrEmpty(dept)) q = q.Where(e => e.Department == dept);
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var s = search.Trim();
+                q = q.Where(e => e.FullName.Contains(s, StringComparison.OrdinalIgnoreCase)
+                              || e.JobTitle.Contains(s, StringComparison.OrdinalIgnoreCase)
+                              || e.Department.Contains(s, StringComparison.OrdinalIgnoreCase));
+            }
+            return q.OrderBy(e => e.FullName).ToList();
+        }
+    }
+
+    private void OnSearch(ChangeEventArgs e) => search = e.Value?.ToString() ?? "";
+    private void OnDept(ChangeEventArgs e) => dept = e.Value?.ToString() ?? "";
+}

@@ -1,0 +1,120 @@
+@implements IDisposable
+@inject CurrentUserService CurrentUser
+@inject AuthenticationStateProvider AuthState
+@inject IWebHostEnvironment Env
+@inject NavigationManager Nav
+@inject INotificationService Notifications
+
+<div class="topbar">
+    <div class="topbar-search">
+        <span class="bi bi-search"></span>
+        <input type="text" placeholder="Search people, documents, and more…" />
+    </div>
+
+    <div class="topbar-right">
+
+        @* ---- Demo role switcher (Development only) ---- *@
+        @if (Env.IsDevelopment())
+        {
+            <div class="topbar-dd">
+                <button class="topbar-switch" @onclick="ToggleSwitcher" title="Demo only: view the portal as another role">
+                    <span class="bi bi-people"></span>
+                    <span class="topbar-switch-text">View as: <strong>@(roleLabel == "" ? "—" : roleLabel)</strong></span>
+                    <span class="bi bi-chevron-down"></span>
+                </button>
+                @if (switcherOpen)
+                {
+                    <div class="topbar-menu">
+                        <div class="topbar-menu-head">Switch demo role</div>
+                        @foreach (var r in Roles.All)
+                        {
+                            <button class="topbar-menu-item @(r == roleLabel ? "active" : "")"
+                                    @onclick="() => SwitchRole(r)">
+                                <span class="bi bi-person-badge"></span> @r
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        <a class="topbar-icon" href="notifications" title="Notifications">
+            <span class="bi bi-bell"></span>
+            @if (unread > 0)
+            {
+                <span class="topbar-badge">@(unread > 9 ? "9+" : unread.ToString())</span>
+            }
+        </a>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="topbar-dd">
+                    <button class="topbar-user" @onclick="ToggleProfile">
+                        @if (!string.IsNullOrEmpty(me?.PhotoUrl))
+                        {
+                            <img class="topbar-avatar" src="@me.PhotoUrl" alt="@me.FullName" />
+                        }
+                        else
+                        {
+                            <div class="topbar-avatar">@(me?.Initials ?? "?")</div>
+                        }
+                        <div class="topbar-user-meta">
+                            <span class="topbar-name">@(me?.FullName ?? context.User.Identity?.Name)</span>
+                            <span class="topbar-role">@roleLabel</span>
+                        </div>
+                        <span class="bi bi-chevron-down"></span>
+                    </button>
+                    @if (profileOpen)
+                    {
+                        <div class="topbar-menu topbar-menu-right">
+                            <a class="topbar-menu-item" href="profile"><span class="bi bi-person"></span> My Profile</a>
+                            <a class="topbar-menu-item" href="settings"><span class="bi bi-gear"></span> Settings</a>
+                            <div class="topbar-menu-sep"></div>
+                            <button class="topbar-menu-item danger" @onclick="Logout"><span class="bi bi-box-arrow-right"></span> Sign out</button>
+                        </div>
+                    }
+                </div>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    private Employee? me;
+    private string roleLabel = "";
+    private string? email;
+    private string[] roles = Array.Empty<string>();
+    private int unread;
+    private bool switcherOpen;
+    private bool profileOpen;
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        email = me?.Email;
+
+        var state = await AuthState.GetAuthenticationStateAsync();
+        roles = Roles.All.Where(state.User.IsInRole).ToArray();
+        roleLabel = roles.FirstOrDefault() ?? "";
+
+        if (email is not null)
+            unread = Notifications.UnreadCount(email, roles);
+
+        Notifications.Changed += OnNotificationsChanged;
+    }
+
+    private void OnNotificationsChanged(string recipient)
+    {
+        if (email is null || recipient != email) return;
+        unread = Notifications.UnreadCount(email, roles);
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() => Notifications.Changed -= OnNotificationsChanged;
+
+    private void ToggleSwitcher() { switcherOpen = !switcherOpen; profileOpen = false; }
+    private void ToggleProfile() { profileOpen = !profileOpen; switcherOpen = false; }
+
+    private void Logout() => Nav.NavigateTo("/Account/Logout", forceLoad: true);
+    private void SwitchRole(string role) => Nav.NavigateTo($"/Account/DemoLogin?role={role}", forceLoad: true);
+}

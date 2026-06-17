@@ -1,0 +1,193 @@
+.topbar[b-ra0xk559ny] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+}
+
+.topbar-search[b-ra0xk559ny] {
+    position: relative;
+    flex: 1;
+    max-width: 460px;
+    display: flex;
+    align-items: center;
+}
+
+.topbar-search .bi[b-ra0xk559ny] {
+    position: absolute;
+    left: 0.85rem;
+    color: #9ca3af;
+    font-size: 0.95rem;
+}
+
+.topbar-search input[b-ra0xk559ny] {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    border-radius: 9px;
+    padding: 0.55rem 0.85rem 0.55rem 2.4rem;
+    font-size: 0.88rem;
+    outline: none;
+}
+
+.topbar-search input:focus[b-ra0xk559ny] {
+    border-color: #2563eb;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.topbar-right[b-ra0xk559ny] {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.topbar-icon[b-ra0xk559ny] {
+    position: relative;
+    color: #6b7280;
+    font-size: 1.15rem;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.topbar-icon:hover[b-ra0xk559ny] { color: #2563eb; }
+
+.topbar-badge[b-ra0xk559ny] {
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-shadow: 0 0 0 2px #fff;
+}
+
+.topbar-dd[b-ra0xk559ny] { position: relative; }
+
+.topbar-switch[b-ra0xk559ny] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.topbar-switch:hover[b-ra0xk559ny] { background: #dbeafe; }
+
+.topbar-menu[b-ra0xk559ny] {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 0;
+    min-width: 190px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.14);
+    padding: 0.35rem;
+    z-index: 50;
+}
+
+.topbar-menu-right[b-ra0xk559ny] { left: auto; right: 0; }
+
+.topbar-menu-head[b-ra0xk559ny] {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
+    padding: 0.4rem 0.6rem 0.25rem;
+}
+
+.topbar-menu-item[b-ra0xk559ny] {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: 7px;
+    color: #374151;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+button.topbar-menu-item[b-ra0xk559ny] {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+}
+
+.topbar-menu-item:hover[b-ra0xk559ny] { background: #f3f4f6; }
+.topbar-menu-item.active[b-ra0xk559ny] { background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+.topbar-menu-item.danger:hover[b-ra0xk559ny] { background: #fef2f2; color: #b91c1c; }
+
+.topbar-menu-sep[b-ra0xk559ny] { height: 1px; background: #e5e7eb; margin: 0.3rem 0.2rem; }
+
+.topbar-user[b-ra0xk559ny] {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-left: 0.5rem;
+    border-left: 1px solid #e5e7eb;
+    background: none;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 0;
+    cursor: pointer;
+}
+
+.topbar-avatar[b-ra0xk559ny] {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    object-fit: cover;
+}
+
+.topbar-user-meta[b-ra0xk559ny] {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.topbar-name[b-ra0xk559ny] { font-size: 0.85rem; font-weight: 600; color: #111827; }
+.topbar-role[b-ra0xk559ny] { font-size: 0.72rem; color: #6b7280; }
+
+.topbar-logout[b-ra0xk559ny] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 0.82rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.topbar-logout:hover[b-ra0xk559ny] { color: #b91c1c; border-color: #fecaca; background: #fef2f2; }
+
+@media (max-width: 640px) {
+    .topbar-logout-text[b-ra0xk559ny], .topbar-user-meta[b-ra0xk559ny] { display: none; }
+}

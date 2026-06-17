@@ -1,0 +1,231 @@
+@page "/calendar"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject AuthenticationStateProvider AuthState
+@inject ICalendarService CalendarSvc
+@inject IEmployeeService Employees
+
+<PageTitle>Calendar · HCP HR Portal</PageTitle>
+
+<PageHeader Title="HR Compliance Calendar"
+            Subtitle="Role-based views of leave, key dates, and company events"
+            Icon="bi-calendar-event-fill" />
+
+@if (loading)
+{
+    <p class="text-muted-sm">Loading calendar…</p>
+}
+else
+{
+    <div class="cal-tabs">
+        @foreach (var v in allowedViews)
+        {
+            <button class="cal-tab @(v == current ? "active" : "")" @onclick="() => Select(v)">
+                <span class="bi @TabIcon(v)"></span> @Label(v)
+            </button>
+        }
+    </div>
+
+    <div class="two-col" style="align-items:stretch;">
+        <div class="card-surface">
+            <div class="cal-toolbar">
+                <h2 class="section-title" style="margin:0;">@month.ToString("MMMM yyyy")</h2>
+                <div class="cal-nav">
+                    <button class="cal-nav-btn" @onclick="Today">Today</button>
+                    <button class="cal-nav-btn" @onclick="Prev"><span class="bi bi-chevron-left"></span></button>
+                    <button class="cal-nav-btn" @onclick="Next"><span class="bi bi-chevron-right"></span></button>
+                </div>
+            </div>
+
+            <div class="cal-grid">
+                <div class="cal-grid-head">
+                    @foreach (var d in new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" })
+                    {
+                        <div>@d</div>
+                    }
+                </div>
+                @foreach (var week in Weeks())
+                {
+                    <div class="cal-grid-week">
+                        @foreach (var day in week)
+                        {
+                            var dayItems = ItemsOn(day);
+                            <div class="cal-cell @(day.Month != month.Month ? "muted" : "") @(day == today ? "today" : "")">
+                                <span class="cal-daynum">@day.Day</span>
+                                @foreach (var ev in dayItems.Take(3))
+                                {
+                                    <div class="cal-ev" title="@ev.Title" style="background:@(ev.Color)1a;">
+                                        <span class="cal-ev-dot" style="background:@ev.Color"></span>@ev.Title
+                                    </div>
+                                }
+                                @if (dayItems.Count > 3)
+                                {
+                                    <div class="cal-more">+@(dayItems.Count - 3) more</div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="cal-legend">
+                <span><span class="dot" style="background:#f59e0b"></span>Leave</span>
+                <span><span class="dot" style="background:#ef4444"></span>Visa / Passport / Permit</span>
+                <span><span class="dot" style="background:#f97316"></span>Contract / Deadline</span>
+                <span><span class="dot" style="background:#8b5cf6"></span>Training</span>
+                <span><span class="dot" style="background:#6366f1"></span>Finance</span>
+                <span><span class="dot" style="background:#22c55e"></span>Holiday</span>
+                <span><span class="dot" style="background:#3b82f6"></span>Meeting</span>
+                <span><span class="dot" style="background:#ec4899"></span>Birthday / Anniversary</span>
+            </div>
+        </div>
+
+        <div class="cal-side">
+            <div class="card-surface">
+                <h2 class="section-title">Upcoming</h2>
+                @if (upcoming.Count == 0)
+                {
+                    <p class="text-muted-sm">Nothing coming up.</p>
+                }
+                else
+                {
+                    @foreach (var ev in upcoming)
+                    {
+                        <div class="reminder-row">
+                            <div class="reminder-ic" style="background:@(ev.Color)1a;color:@ev.Color;"><span class="bi bi-calendar-event"></span></div>
+                            <div style="flex:1">
+                                <div style="font-weight:600">@ev.Title</div>
+                                <div class="cell-sub">@ev.Category</div>
+                            </div>
+                            <span class="cell-sub">@ev.Date.ToString("dd MMM")</span>
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="card-surface">
+                <h2 class="section-title">This month</h2>
+                <div class="glance-row"><span><span class="bi bi-calendar3"></span>Total events</span><span class="glance-val">@MonthTotal</span></div>
+                <div class="glance-row"><span><span class="bi bi-airplane"></span>Leave</span><span class="glance-val">@MonthCount(i => i.Category.Contains("Leave"))</span></div>
+                <div class="glance-row"><span><span class="bi bi-mortarboard"></span>Training</span><span class="glance-val">@MonthCount(i => i.Category.Contains("Training"))</span></div>
+                <div class="glance-row"><span><span class="bi bi-flag"></span>Deadlines &amp; expiries</span><span class="glance-val">@MonthCount(i => i.Category.Contains("Deadline") || i.Category.Contains("Expiry") || i.Category.Contains("Renewal"))</span></div>
+                <div class="glance-row"><span><span class="bi bi-building"></span>Company &amp; holidays</span><span class="glance-val">@MonthCount(i => i.Category is "Meeting" or "Holiday" or "Birthday / Anniversary")</span></div>
+            </div>
+
+            <div class="card-surface cal-fill">
+                <h2 class="section-title">Urgent alerts</h2>
+                @if (alerts.Count == 0)
+                {
+                    <p class="text-muted-sm">No urgent items in the next 7 days.</p>
+                }
+                else
+                {
+                    @foreach (var ev in alerts)
+                    {
+                        <div class="reminder-row">
+                            <div class="reminder-ic tone-danger"><span class="bi bi-exclamation-triangle-fill"></span></div>
+                            <div style="flex:1">
+                                <div style="font-weight:600">@ev.Title</div>
+                                <div class="cell-sub">@ev.Category · @ev.Date.ToString("dd MMM")</div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool loading = true;
+    private Employee? me;
+    private CalendarView current;
+    private List<CalendarView> allowedViews = new();
+    private List<CalendarItem> items = new();
+    private List<string> teamNames = new();
+
+    private readonly DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+    private DateOnly month;
+
+    private List<CalendarItem> upcoming = new();
+    private List<CalendarItem> alerts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        month = new DateOnly(today.Year, today.Month, 1);
+        me = await CurrentUser.GetEmployeeAsync();
+
+        var state = await AuthState.GetAuthenticationStateAsync();
+        var user = state.User;
+
+        allowedViews = new List<CalendarView> { CalendarView.My };
+        if (user.IsInRole(Roles.Manager)) allowedViews.Add(CalendarView.Team);
+        if (user.IsInRole(Roles.HR)) allowedViews.Add(CalendarView.HRMaster);
+        if (user.IsInRole(Roles.Finance)) allowedViews.Add(CalendarView.FinanceDueDates);
+        allowedViews.Add(CalendarView.Company);
+
+        if (me is not null)
+            teamNames = Employees.GetDirectReports(me.FullName).Select(r => r.FullName).ToList();
+
+        current = allowedViews.First();
+        Load();
+        loading = false;
+    }
+
+    private void Select(CalendarView v) { current = v; Load(); }
+    private void Prev() => month = month.AddMonths(-1);
+    private void Next() => month = month.AddMonths(1);
+    private void Today() => month = new DateOnly(today.Year, today.Month, 1);
+
+    private void Load()
+    {
+        items = CalendarSvc.GetItems(current, me, teamNames).ToList();
+        upcoming = items.Where(i => i.Date >= today).OrderBy(i => i.Date).Take(6).ToList();
+        alerts = items.Where(i => i.Date >= today && i.Date <= today.AddDays(7)
+                                  && (i.Category.Contains("Expiry") || i.Category.Contains("Deadline") || i.Category.Contains("Renewal")))
+                      .OrderBy(i => i.Date).ToList();
+    }
+
+    private int MonthTotal => items.Count(i => i.Date.Year == month.Year && i.Date.Month == month.Month);
+
+    private int MonthCount(Func<CalendarItem, bool> predicate) =>
+        items.Count(i => i.Date.Year == month.Year && i.Date.Month == month.Month && predicate(i));
+
+    private List<CalendarItem> ItemsOn(DateOnly day) =>
+        items.Where(i => i.Date == day).ToList();
+
+    private List<List<DateOnly>> Weeks()
+    {
+        var first = new DateOnly(month.Year, month.Month, 1);
+        var start = first.AddDays(-(int)first.DayOfWeek); // back to Sunday
+        var weeks = new List<List<DateOnly>>();
+        for (var w = 0; w < 6; w++)
+        {
+            var week = new List<DateOnly>();
+            for (var d = 0; d < 7; d++)
+                week.Add(start.AddDays(w * 7 + d));
+            weeks.Add(week);
+        }
+        return weeks;
+    }
+
+    private static string Label(CalendarView v) => v switch
+    {
+        CalendarView.My => "My Calendar",
+        CalendarView.Team => "Team Calendar",
+        CalendarView.HRMaster => "HR Master Calendar",
+        CalendarView.FinanceDueDates => "Finance Due Dates",
+        CalendarView.Company => "Company Calendar",
+        _ => v.ToString()
+    };
+
+    private static string TabIcon(CalendarView v) => v switch
+    {
+        CalendarView.My => "bi-person",
+        CalendarView.Team => "bi-people",
+        CalendarView.HRMaster => "bi-shield-check",
+        CalendarView.FinanceDueDates => "bi-cash-coin",
+        CalendarView.Company => "bi-building",
+        _ => "bi-calendar"
+    };
+}

@@ -1,0 +1,121 @@
+@page "/notifications"
+@attribute [Authorize]
+@implements IDisposable
+@inject CurrentUserService CurrentUser
+@inject INotificationService Notifier
+@inject AuthenticationStateProvider AuthState
+@inject NavigationManager Nav
+@inject IWebHostEnvironment Env
+
+<PageTitle>Notifications · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Notifications" Subtitle="@($"{unreadCount} unread")" Icon="bi-bell-fill">
+    <Actions>
+        @if (Env.IsDevelopment())
+        {
+            <button class="btn btn-outline-secondary btn-sm" @onclick="SendTest"><span class="bi bi-plus-lg me-1"></span>Test notification</button>
+        }
+        <button class="btn btn-primary btn-sm" @onclick="MarkAllRead">Mark all read</button>
+    </Actions>
+</PageHeader>
+
+@if (email is null)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else if (items.Count == 0)
+{
+    <div class="card-surface"><p class="text-muted-sm" style="text-align:center;">You're all caught up. 🎉</p></div>
+}
+else
+{
+    <div class="card-surface">
+        @foreach (var n in items)
+        {
+            <div class="reminder-row" style="cursor:pointer;@(n.IsRead ? "" : "background:#f6faff;border-radius:10px;")" @onclick="() => Open(n)">
+                <div class="reminder-ic tone-@n.Tone"><span class="bi @n.Icon"></span></div>
+                <div style="flex:1">
+                    <div style="font-weight:600">
+                        @n.Title
+                        @if (!n.IsRead)
+                        {
+                            <span style="display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:#2563eb;margin-left:0.4rem;vertical-align:middle;"></span>
+                        }
+                    </div>
+                    <div class="cell-sub">@n.Message</div>
+                </div>
+                <span class="cell-sub">@Ago(n.CreatedAt)</span>
+                <span class="bi bi-chevron-right" style="color:#cbd5e1;margin-left:0.5rem;"></span>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private Employee? me;
+    private string? email;
+    private string[] roles = Array.Empty<string>();
+    private List<NotificationItem> items = new();
+    private int unreadCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        email = me?.Email;
+
+        var state = await AuthState.GetAuthenticationStateAsync();
+        roles = Roles.All.Where(state.User.IsInRole).ToArray();
+
+        Reload();
+        Notifier.Changed += OnChanged;
+    }
+
+    private void Reload()
+    {
+        if (email is null) return;
+        items = Notifier.GetFor(email, roles).ToList();
+        unreadCount = items.Count(i => !i.IsRead);
+    }
+
+    private void Open(NotificationItem n)
+    {
+        Notifier.MarkRead(n.Id);
+        Nav.NavigateTo(n.Link);
+    }
+
+    private void OnChanged(string recipient)
+    {
+        if (recipient != email) return;
+        Reload();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void MarkAllRead()
+    {
+        if (email is not null) Notifier.MarkAllRead(email);
+    }
+
+    private void SendTest()
+    {
+        if (email is null) return;
+        Notifier.Add(new NotificationItem
+        {
+            Recipient = email,
+            Title = "New event",
+            Message = $"A new event just arrived at {DateTime.Now:HH:mm:ss}.",
+            Icon = "bi-stars",
+            Tone = "info"
+        });
+    }
+
+    private static string Ago(DateTime t)
+    {
+        var s = DateTime.Now - t;
+        if (s.TotalMinutes < 1) return "just now";
+        if (s.TotalHours < 1) return $"{(int)s.TotalMinutes}m ago";
+        if (s.TotalDays < 1) return $"{(int)s.TotalHours}h ago";
+        return $"{(int)s.TotalDays}d ago";
+    }
+
+    public void Dispose() => Notifier.Changed -= OnChanged;
+}

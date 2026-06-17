@@ -1,0 +1,26 @@
+<div class="page-header">
+    <div class="page-header-text">
+        @if (!string.IsNullOrEmpty(Icon))
+        {
+            <span class="page-header-icon bi @Icon"></span>
+        }
+        <div>
+            <h1>@Title</h1>
+            @if (!string.IsNullOrEmpty(Subtitle))
+            {
+                <p class="page-subtitle">@Subtitle</p>
+            }
+        </div>
+    </div>
+    @if (Actions is not null)
+    {
+        <div class="page-header-actions">@Actions</div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+}

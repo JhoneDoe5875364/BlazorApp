@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(E:/Work_Data/BlazorApp1/publish/HCP.HRPortal.exe --urls http://localhost:5099)",
+      "Bash(curl -s -o /dev/null -w \"GET / -> %{http_code}\\\\n\" http://localhost:5099/)",
+      "Bash(curl -s -o /dev/null -w \"GET /Account/Login -> %{http_code}\\\\n\" http://localhost:5099/Account/Login)"
+    ]
+  }
+}

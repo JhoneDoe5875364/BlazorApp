@@ -1,0 +1,119 @@
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand hcp-brand" href="">
+            <img src="images/hcp-logo.png" alt="HCP Logo" class="hcp-logo" />
+        </a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+
+        @* ---------------- ROLE WORKSPACE ---------------- *@
+        <AuthorizeView Roles="Employee">
+            <button class="nav-section-title nav-toggle" @onclick='() => Toggle("role")' @onclick:stopPropagation>
+                <span>Employee Portal</span><span class="bi bi-chevron-down nav-chevron @(IsOpen("role") ? "" : "collapsed")"></span>
+            </button>
+            @if (IsOpen("role"))
+            {
+                <div class="nav-item px-3"><NavLink class="nav-link" href="employee-dashboard"><span class="bi bi-house-door-fill nav-icon"></span><span>Dashboard</span></NavLink></div>
+            }
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Manager">
+            <button class="nav-section-title nav-toggle" @onclick='() => Toggle("role")' @onclick:stopPropagation>
+                <span>Manager</span><span class="bi bi-chevron-down nav-chevron @(IsOpen("role") ? "" : "collapsed")"></span>
+            </button>
+            @if (IsOpen("role"))
+            {
+                <div class="nav-item px-3"><NavLink class="nav-link" href="management-dashboard"><span class="bi bi-diagram-3-fill nav-icon"></span><span>Dashboard</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="approvals"><span class="bi bi-check2-square nav-icon"></span><span>Approvals</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="reports"><span class="bi bi-bar-chart-fill nav-icon"></span><span>Reports</span></NavLink></div>
+            }
+        </AuthorizeView>
+
+        <AuthorizeView Roles="HR">
+            <button class="nav-section-title nav-toggle" @onclick='() => Toggle("role")' @onclick:stopPropagation>
+                <span>Human Resources</span><span class="bi bi-chevron-down nav-chevron @(IsOpen("role") ? "" : "collapsed")"></span>
+            </button>
+            @if (IsOpen("role"))
+            {
+                <div class="nav-item px-3"><NavLink class="nav-link" href="hr-dashboard"><span class="bi bi-people-fill nav-icon"></span><span>Dashboard</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="employee-records"><span class="bi bi-person-lines-fill nav-icon"></span><span>Employee Records</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="approvals"><span class="bi bi-check2-square nav-icon"></span><span>Approvals</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="document-expiry"><span class="bi bi-exclamation-triangle-fill nav-icon"></span><span>Document Expiry</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="contracts"><span class="bi bi-file-earmark-text nav-icon"></span><span>Contracts</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="reports"><span class="bi bi-bar-chart-fill nav-icon"></span><span>Reports</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="announcements"><span class="bi bi-megaphone-fill nav-icon"></span><span>Announcements</span></NavLink></div>
+            }
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Finance">
+            <button class="nav-section-title nav-toggle" @onclick='() => Toggle("role")' @onclick:stopPropagation>
+                <span>Finance</span><span class="bi bi-chevron-down nav-chevron @(IsOpen("role") ? "" : "collapsed")"></span>
+            </button>
+            @if (IsOpen("role"))
+            {
+                <div class="nav-item px-3"><NavLink class="nav-link" href="finance-dashboard"><span class="bi bi-cash-coin nav-icon"></span><span>Dashboard</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="invoices"><span class="bi bi-file-earmark-ruled-fill nav-icon"></span><span>Invoices</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="reports"><span class="bi bi-bar-chart-fill nav-icon"></span><span>Reports</span></NavLink></div>
+            }
+        </AuthorizeView>
+
+        @* ---------------- MY SELF-SERVICE (everyone) ---------------- *@
+        <AuthorizeView>
+            <Authorized>
+                <button class="nav-section-title nav-toggle" @onclick='() => Toggle("self")' @onclick:stopPropagation>
+                    <span>My Self-Service</span><span class="bi bi-chevron-down nav-chevron @(IsOpen("self") ? "" : "collapsed")"></span>
+                </button>
+                @if (IsOpen("self"))
+                {
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="profile"><span class="bi bi-person-fill nav-icon"></span><span>My Profile</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="calendar"><span class="bi bi-calendar-event-fill nav-icon"></span><span>Calendar</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="time-off"><span class="bi bi-airplane-fill nav-icon"></span><span>Time Off</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="timesheets"><span class="bi bi-clock-fill nav-icon"></span><span>Timesheets</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="expenses"><span class="bi bi-receipt-cutoff nav-icon"></span><span>Expenses</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="documents"><span class="bi bi-folder-fill nav-icon"></span><span>Documents</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="training"><span class="bi bi-mortarboard-fill nav-icon"></span><span>Training</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="performance"><span class="bi bi-graph-up-arrow nav-icon"></span><span>Performance</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="benefits"><span class="bi bi-heart-fill nav-icon"></span><span>Benefits</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="salary-certificates"><span class="bi bi-cash-stack nav-icon"></span><span>Payslips</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="travel"><span class="bi bi-airplane-engines-fill nav-icon"></span><span>Travel</span></NavLink></div>
+                }
+
+                <button class="nav-section-title nav-toggle" @onclick='() => Toggle("general")' @onclick:stopPropagation>
+                    <span>General</span><span class="bi bi-chevron-down nav-chevron @(IsOpen("general") ? "" : "collapsed")"></span>
+                </button>
+                @if (IsOpen("general"))
+                {
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="company-directory"><span class="bi bi-people nav-icon"></span><span>Company Directory</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="notifications"><span class="bi bi-bell-fill nav-icon"></span><span>Notifications</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="policies"><span class="bi bi-file-earmark-text-fill nav-icon"></span><span>Company Policies</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="settings"><span class="bi bi-gear-fill nav-icon"></span><span>Settings</span></NavLink></div>
+                }
+            </Authorized>
+        </AuthorizeView>
+
+        <div class="nav-footer">
+            <div class="support-box">
+                <span class="bi bi-question-circle-fill"></span>
+                <div>
+                    <strong>Need help?</strong>
+                    <small>Contact HR Support</small>
+                </div>
+            </div>
+        </div>
+
+    </nav>
+</div>
+
+@code {
+    // Collapsible sidebar sections (accordion). Default: expanded.
+    private readonly Dictionary<string, bool> _open = new();
+
+    private bool IsOpen(string key) => !_open.TryGetValue(key, out var v) || v;
+
+    private void Toggle(string key) => _open[key] = !IsOpen(key);
+}

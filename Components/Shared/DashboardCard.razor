@@ -1,0 +1,22 @@
+<div class="dash-card">
+    <div class="dash-card-icon @($"tone-{Tone}")">
+        <span class="bi @Icon"></span>
+    </div>
+    <div class="dash-card-body">
+        <div class="dash-card-value">@Value</div>
+        <div class="dash-card-title">@Title</div>
+        @if (!string.IsNullOrEmpty(Trend))
+        {
+            <div class="dash-card-trend">@Trend</div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter, EditorRequired] public string Value { get; set; } = "";
+    [Parameter] public string Icon { get; set; } = "bi-bar-chart";
+    /// <summary>Color tone: primary, success, warning, danger, info, purple.</summary>
+    [Parameter] public string Tone { get; set; } = "primary";
+    [Parameter] public string? Trend { get; set; }
+}

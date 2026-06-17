@@ -1,0 +1,47 @@
+@page "/Account/DemoLogin"
+@layout HCP.HRPortal.Components.Account.Shared.AccountLayout
+@using HCP.HRPortal.Data
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+@inject IWebHostEnvironment Env
+
+<PageTitle>Switching role…</PageTitle>
+
+<p class="text-muted-sm" style="text-align:center;">Switching demo role…</p>
+
+@code {
+    // Prototype "role switcher": signs the visitor in as the seeded demo account for the
+    // chosen role, then lands on that role's dashboard. Disabled outside Development so the
+    // shipped app always requires a real login.
+    [SupplyParameterFromQuery]
+    public string? Role { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Env.IsDevelopment())
+        {
+            NavigationManager.NavigateTo("/Account/Login", forceLoad: true);
+            return;
+        }
+
+        var role = Roles.All.FirstOrDefault(r => string.Equals(r, Role, StringComparison.OrdinalIgnoreCase));
+        if (role is null || !Roles.DemoAccount.TryGetValue(role, out var email))
+        {
+            NavigationManager.NavigateTo("/Account/Login", forceLoad: true);
+            return;
+        }
+
+        var user = await UserManager.FindByEmailAsync(email);
+        if (user is null)
+        {
+            NavigationManager.NavigateTo("/Account/Login", forceLoad: true);
+            return;
+        }
+
+        await SignInManager.SignOutAsync();
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+}

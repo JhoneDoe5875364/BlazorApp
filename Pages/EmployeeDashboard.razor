@@ -1,0 +1,228 @@
+@page "/employee-dashboard"
+@attribute [Authorize(Roles = Roles.Employee)]
+@inject CurrentUserService CurrentUser
+@inject ITimeOffService TimeOff
+@inject IExpenseService Expenses
+@inject ICalendarService Calendar
+@inject ITrainingService Training
+@inject IDocumentService Documents
+
+<PageTitle>Dashboard · HCP HR Portal</PageTitle>
+
+@if (me is null)
+{
+    <p class="text-muted-sm">Loading your dashboard…</p>
+}
+else
+{
+    <div class="page-header">
+        <div class="page-header-text">
+            <div>
+                <h1>Welcome back, @(me.FullName.Split(' ')[0])! 👋</h1>
+                <p class="page-subtitle">Here's what's happening with you and your team today.</p>
+            </div>
+        </div>
+        <div class="page-header-actions">
+            <button class="btn btn-outline-secondary btn-sm"><span class="bi bi-sliders me-1"></span>Edit Dashboard</button>
+        </div>
+    </div>
+
+    <div class="dash-grid">
+        <div class="stat-card">
+            <div class="stat-card-head"><span class="bi bi-airplane-fill"></span> Time Off Balance</div>
+            <div class="stat-card-sub">As of @DateTime.Today.ToString("MMM d, yyyy")</div>
+            <div class="stat-card-value">@me.AnnualLeaveRemaining <small>days</small></div>
+            <div class="stat-card-break">
+                <div><span class="k">Annual remaining</span><span>@me.AnnualLeaveRemaining days</span></div>
+                <div><span class="k">Used</span><span>@me.AnnualLeaveUsed / @me.AnnualLeaveTotal days</span></div>
+            </div>
+            <div class="stat-card-foot"><a href="time-off">Request Time Off →</a></div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-head"><span class="bi bi-check2-square"></span> Pending Approvals</div>
+            <div class="stat-card-value">@pendingMine</div>
+            <div class="stat-mini-row">
+                <div class="stat-mini"><strong>@timeOffPending</strong><span>Time Off</span></div>
+                <div class="stat-mini"><strong>@expensePending</strong><span>Expenses</span></div>
+                <div class="stat-mini"><strong>0</strong><span>Timesheet</span></div>
+            </div>
+            <div class="stat-card-foot"><a href="time-off">View my requests →</a></div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-head"><span class="bi bi-mortarboard-fill"></span> Training Due</div>
+            <div class="stat-card-value">@Training.MandatoryOutstanding</div>
+            <div class="stat-card-unit">Courses</div>
+            @if (overdueTraining > 0)
+            {
+                <div style="margin-top:0.5rem;"><span class="stat-badge">Overdue: @overdueTraining</span></div>
+            }
+            <div class="stat-card-foot"><a href="training">View My Training →</a></div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-head"><span class="bi bi-folder-fill"></span> Documents Expiring</div>
+            <div class="stat-card-value">@docExpiring</div>
+            <div class="stat-card-unit">Documents</div>
+            @if (nextDoc is not null)
+            {
+                <div class="stat-card-break">
+                    <div><span class="k">Next</span><span>@nextDoc.Name</span></div>
+                    <div><span class="k">Expires</span><span style="color:#b91c1c;font-weight:600;">@nextDoc.ExpiryDate.ToString("MMM d, yyyy")</span></div>
+                </div>
+            }
+            <div class="stat-card-foot"><a href="documents">View Documents →</a></div>
+        </div>
+    </div>
+
+    <div class="three-col mb-grid">
+        <div class="card-surface">
+            <div class="section-head"><h2 class="section-title"><span class="bi bi-calendar3" style="color:var(--hcp-primary);margin-right:0.45rem;"></span>My Upcoming Events</h2><a class="section-link" href="calendar">View Calendar →</a></div>
+            @foreach (var ev in Calendar.GetUpcoming(5))
+            {
+                <div class="ev-item">
+                    <div class="ev-date"><div class="m">@ev.Date.ToString("MMM").ToUpper()</div><div class="d">@ev.Date.Day</div></div>
+                    <div class="ev-body"><div class="ev-title">@ev.Title</div><div class="cell-sub">@ev.Type</div></div>
+                    <span class="bi @EvIcon(ev.Type) ev-ic"></span>
+                </div>
+            }
+        </div>
+
+        <div class="card-surface">
+            <div class="section-head"><h2 class="section-title"><span class="bi bi-bell" style="color:var(--hcp-primary);margin-right:0.45rem;"></span>Important Reminders</h2></div>
+            <div class="reminder-row">
+                <div class="reminder-ic tone-danger"><span class="bi bi-airplane"></span></div>
+                <div><div style="font-weight:600">Submit time off for upcoming absences</div><div class="cell-sub">Plan ahead for the holidays.</div></div>
+                <span class="bi bi-chevron-right chev"></span>
+            </div>
+            <div class="reminder-row">
+                <div class="reminder-ic tone-warning"><span class="bi bi-clock"></span></div>
+                <div><div style="font-weight:600">Timesheet due</div><div class="cell-sub">Submit by Friday.</div></div>
+                <span class="bi bi-chevron-right chev"></span>
+            </div>
+            <div class="reminder-row">
+                <div class="reminder-ic tone-purple"><span class="bi bi-mortarboard"></span></div>
+                <div><div style="font-weight:600">Complete mandatory training</div><div class="cell-sub">@Training.MandatoryOutstanding course(s) outstanding.</div></div>
+                <span class="bi bi-chevron-right chev"></span>
+            </div>
+            <div class="reminder-row">
+                <div class="reminder-ic tone-info"><span class="bi bi-check2-square"></span></div>
+                <div><div style="font-weight:600">Acknowledge updated policy</div><div class="cell-sub">Updated Travel Policy pending.</div></div>
+                <span class="bi bi-chevron-right chev"></span>
+            </div>
+            <div class="reminder-foot"><a class="section-link" href="notifications">View All Reminders →</a></div>
+        </div>
+
+        <div class="card-surface">
+            <div class="section-head"><h2 class="section-title"><span class="bi bi-lightning-charge-fill" style="color:var(--hcp-primary);margin-right:0.45rem;"></span>Quick Actions</h2></div>
+            <a class="qa-row" href="time-off"><span class="bi bi-calendar-check qa-ic"></span><span class="qa-label">Request Time Off</span><span class="bi bi-chevron-right qa-arr"></span></a>
+            <a class="qa-row" href="timesheets"><span class="bi bi-clock qa-ic"></span><span class="qa-label">Submit Timesheet</span><span class="bi bi-chevron-right qa-arr"></span></a>
+            <a class="qa-row" href="expenses"><span class="bi bi-receipt qa-ic"></span><span class="qa-label">Submit Expense</span><span class="bi bi-chevron-right qa-arr"></span></a>
+            <a class="qa-row" href="profile"><span class="bi bi-person qa-ic"></span><span class="qa-label">Update My Profile</span><span class="bi bi-chevron-right qa-arr"></span></a>
+            <a class="qa-row" href="documents"><span class="bi bi-upload qa-ic"></span><span class="qa-label">Upload a Document</span><span class="bi bi-chevron-right qa-arr"></span></a>
+            <a class="qa-row" href="training"><span class="bi bi-mortarboard qa-ic"></span><span class="qa-label">Browse Training Catalog</span><span class="bi bi-chevron-right qa-arr"></span></a>
+        </div>
+    </div>
+
+    <div class="two-col" style="align-items:stretch;grid-template-columns:1fr 2fr;">
+        <div class="card-surface">
+            <div class="section-head"><h2 class="section-title">Company announcements</h2><a class="section-link" href="announcements">View all →</a></div>
+            <div class="announce mb-grid">
+                <div class="announce-img"></div>
+                <div class="announce-body">
+                    <div class="announce-title">@_announcements[0].Title</div>
+                    <div class="cell-sub">@_announcements[0].Date</div>
+                    <p style="margin:0.4rem 0 0;font-size:0.9rem;">@_announcements[0].Summary</p>
+                </div>
+            </div>
+            @foreach (var a in _announcements.Skip(1))
+            {
+                <div class="event-row">
+                    <span class="bi bi-megaphone-fill" style="color:#2563eb;"></span>
+                    <div style="flex:1"><div style="font-weight:600">@a.Title</div><div class="cell-sub">@a.Summary</div></div>
+                    <span class="cell-sub">@a.Date</span>
+                </div>
+            }
+        </div>
+
+        <div class="card-surface">
+            <div class="section-head"><h2 class="section-title">Training progress</h2><a class="section-link" href="training">View My Training →</a></div>
+            <div class="tp-layout">
+                <DonutChart Segments="trainingSegments" CenterValue="@($"{trainingPercent}%")" CenterLabel="Complete" ShowLegend="false" />
+                <div class="tp-breakdown">
+                    <div style="font-weight:700;margin-bottom:0.1rem;">Overall Progress</div>
+                    <div class="text-muted-sm" style="margin-bottom:0.4rem;">@trainingDone of @trainingTotal courses completed</div>
+                    <div class="progress-track" style="width:100%;margin-bottom:0.85rem;">
+                        <div class="progress-fill" style="width:@(trainingPercent)%;"></div>
+                    </div>
+                    <div class="tp-row"><span><span class="tp-dot" style="background:#16a34a"></span>Completed</span><strong>@trainingDone</strong></div>
+                    <div class="tp-row"><span><span class="tp-dot" style="background:#1f6fe5"></span>In progress</span><strong>@inProgress</strong></div>
+                    <div class="tp-row"><span><span class="tp-dot" style="background:#e6eaf0"></span>Not started</span><strong>@notStarted</strong></div>
+                    <div class="tp-row"><span><span class="tp-dot" style="background:#dc2626"></span>Overdue</span><strong style="color:#b91c1c;">@overdueTraining</strong></div>
+                </div>
+                <div class="tp-image"></div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private Employee? me;
+    private int pendingMine, timeOffPending, expensePending;
+    private int docExpiring, overdueTraining;
+    private int trainingDone, trainingTotal, trainingPercent, inProgress, notStarted;
+    private DocumentRecord? nextDoc;
+    private List<DonutChart.Segment> trainingSegments = new();
+
+    private record Announcement(string Title, string Date, string Summary);
+    private readonly Announcement[] _announcements =
+    {
+        new("HCP Sustainable Aviation Fuel milestone", "16 May 2026", "Over 2 million gallons of SAF delivered this quarter."),
+        new("Updated Travel Policy", "12 May 2026", "Please review the new travel policy effective 1 June."),
+        new("Q2 Town Hall", "28 May 2026", "Company-wide town hall at 10:00."),
+    };
+
+    private static string EvIcon(CalendarEventType t) => t switch
+    {
+        CalendarEventType.Meeting => "bi-people",
+        CalendarEventType.Holiday => "bi-calendar-event",
+        CalendarEventType.Training => "bi-mortarboard",
+        CalendarEventType.Leave => "bi-airplane",
+        CalendarEventType.Deadline => "bi-flag",
+        CalendarEventType.Birthday => "bi-gift",
+        _ => "bi-calendar"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        if (me is null) return;
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
+        timeOffPending = TimeOff.GetForEmployee(me.Id).Count(r => r.Status == TimeOffStatus.Pending);
+        expensePending = Expenses.GetForUser(me.FullName).Count(c => c.Status == ExpenseStatus.Submitted);
+        pendingMine = timeOffPending + expensePending;
+
+        var myDocs = Documents.GetForOwner(me.FullName).ToList();
+        var expiring = myDocs.Where(d => d.Status != DocumentStatus.Valid).OrderBy(d => d.ExpiryDate).ToList();
+        docExpiring = expiring.Count;
+        nextDoc = expiring.FirstOrDefault();
+
+        var courses = Training.GetForEmployee(me.FullName).ToList();
+        trainingTotal = courses.Count;
+        trainingDone = courses.Count(c => c.Status == TrainingStatus.Completed);
+        inProgress = courses.Count(c => c.Status == TrainingStatus.InProgress);
+        notStarted = courses.Count(c => c.Status == TrainingStatus.NotStarted);
+        overdueTraining = courses.Count(c => c.Status != TrainingStatus.Completed && c.DueDate < today);
+        trainingPercent = trainingTotal == 0 ? 100 : (int)Math.Round(100.0 * trainingDone / trainingTotal);
+
+        trainingSegments = new()
+        {
+            new("Completed", trainingDone, "#16a34a"),
+            new("In progress", inProgress, "#1f6fe5"),
+            new("Not started", Math.Max(notStarted, trainingTotal == 0 ? 1 : 0), "#e6eaf0"),
+        };
+    }
+}

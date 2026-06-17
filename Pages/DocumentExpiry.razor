@@ -1,0 +1,53 @@
+@page "/document-expiry"
+@attribute [Authorize(Roles = Roles.HR)]
+@inject IDocumentService Documents
+
+<PageTitle>Document Expiry · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Document Expiry"
+            Subtitle="Company-wide documents needing attention"
+            Icon="bi-exclamation-triangle-fill" />
+
+<div class="dash-grid">
+    <DashboardCard Title="Expiring Soon"
+                   Value="@Documents.ExpiringSoonCount.ToString()"
+                   Icon="bi-clock-history"
+                   Tone="warning"
+                   Trend="Within the next 60 days" />
+    <DashboardCard Title="Expired"
+                   Value="@Documents.ExpiredCount.ToString()"
+                   Icon="bi-x-circle-fill"
+                   Tone="danger"
+                   Trend="Require immediate action" />
+</div>
+
+<div class="card-surface">
+    <h2 class="section-title">Documents Needing Attention</h2>
+    <DataTable Items="@Documents.GetExpiring()" EmptyMessage="No expiring or expired documents found.">
+        <HeaderTemplate>
+            <th>Owner</th>
+            <th>Document</th>
+            <th>Type</th>
+            <th>Expires</th>
+            <th>Days Left</th>
+            <th>Status</th>
+        </HeaderTemplate>
+        <RowTemplate Context="d">
+            <td>@d.Owner</td>
+            <td style="font-weight:600">@d.Name</td>
+            <td>@d.Type</td>
+            <td>@d.ExpiryDate.ToString("dd MMM yyyy")</td>
+            <td>
+                @if (d.DaysUntilExpiry < 0)
+                {
+                    <span class="text-muted-sm">Expired</span>
+                }
+                else
+                {
+                    <span>@d.DaysUntilExpiry days</span>
+                }
+            </td>
+            <td><StatusBadge Status="@d.Status.ToString()" /></td>
+        </RowTemplate>
+    </DataTable>
+</div>

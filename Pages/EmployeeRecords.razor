@@ -1,0 +1,226 @@
+@page "/employee-records"
+@attribute [Authorize(Roles = Roles.HR)]
+@inject IEmployeeService Employees
+@inject IDocumentService Documents
+
+<PageTitle>Employee Records · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Employee Records" Subtitle="View and manage employee information, documents, and compliance." Icon="bi-person-lines-fill">
+    <Actions>
+        <button class="btn btn-primary btn-sm" @onclick="StartAdd"><span class="bi bi-person-plus-fill me-1"></span>Add Employee</button>
+    </Actions>
+</PageHeader>
+
+@if (showForm)
+{
+    <div class="form-card mb-grid">
+        <h2 class="section-title">@(_edit.Id == 0 ? "Add employee" : $"Edit — {_edit.FullName}")</h2>
+        <div class="two-col" style="align-items:start;">
+            <div>
+                <div class="form-row"><label>Full name</label><input class="form-control" @bind="_edit.FullName" /></div>
+                <div class="form-row"><label>Job title</label><input class="form-control" @bind="_edit.JobTitle" /></div>
+                <div class="form-row"><label>Department</label><input class="form-control" @bind="_edit.Department" /></div>
+                <div class="form-row"><label>Email</label><input class="form-control" @bind="_edit.Email" /></div>
+            </div>
+            <div>
+                <div class="form-row"><label>Phone</label><input class="form-control" @bind="_edit.Phone" /></div>
+                <div class="form-row"><label>Location</label><input class="form-control" @bind="_edit.Location" /></div>
+                <div class="form-row"><label>Manager</label><input class="form-control" @bind="_edit.ManagerName" /></div>
+                <div class="form-row"><label>Status</label><select class="form-select" @bind="_edit.Status"><option>Active</option><option>On Leave</option><option>Inactive</option></select></div>
+                <div class="form-row"><label>Hire date</label><input type="date" class="form-control" @bind="_edit.HireDate" /></div>
+            </div>
+        </div>
+        <button class="btn btn-primary me-1" @onclick="SaveEmployee">Save</button>
+        <button class="btn btn-outline-secondary" @onclick="() => showForm = false">Cancel</button>
+    </div>
+}
+
+<div class="dash-grid">
+    <DashboardCard Title="Total headcount" Value="@all.Count.ToString()" Icon="bi-people-fill" Tone="primary" Trend="Active employees" />
+    <DashboardCard Title="On leave" Value="@all.Count(e => e.Status == "On Leave").ToString()" Icon="bi-airplane-fill" Tone="warning" Trend="Currently away" />
+    <DashboardCard Title="Departments" Value="@Employees.Departments().Count().ToString()" Icon="bi-diagram-3-fill" Tone="info" Trend="Across the org" />
+</div>
+
+<div class="records-layout">
+    <div class="card-surface">
+        <div class="filters-bar">
+            <input class="filter-input" placeholder="Search by name, title, or email…" value="@search" @oninput="OnSearch" />
+            <select class="filter-select" @onchange="OnDept">
+                <option value="">All departments</option>
+                @foreach (var d in Employees.Departments())
+                {
+                    <option value="@d" selected="@(d == dept)">@d</option>
+                }
+            </select>
+        </div>
+        <div class="filter-chips" style="margin-bottom:1rem;">
+            @foreach (var s in new[] { "All", "Active", "On Leave" })
+            {
+                <button class="filter-chip @(status == s ? "active" : "")" @onclick="() => SetStatus(s)">@s (@CountFor(s))</button>
+            }
+        </div>
+
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Manager</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Paged.Count == 0)
+                    {
+                        <tr><td colspan="4" class="data-table-empty">No employees match your filters.</td></tr>
+                    }
+                    @foreach (var e in Paged)
+                    {
+                        <tr class="row-selectable @(selected?.Id == e.Id ? "selected" : "")" @onclick="() => selected = e">
+                            <td>
+                                <div class="cell-person">
+                                    <Avatar Name="@e.FullName" Size="sm" PhotoUrl="@e.PhotoUrl" />
+                                    <div><div style="font-weight:600">@e.FullName</div><div class="cell-sub">@e.JobTitle</div></div>
+                                </div>
+                            </td>
+                            <td>@e.Department</td>
+                            <td>@e.ManagerName</td>
+                            <td><StatusBadge Status="@e.Status" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pager">
+            <span>Showing @(Filtered.Count == 0 ? 0 : (page * pageSize + 1))–@(Math.Min((page + 1) * pageSize, Filtered.Count)) of @Filtered.Count</span>
+            <div class="pager-btns">
+                <button class="pager-btn" disabled="@(page == 0)" @onclick="() => page--"><span class="bi bi-chevron-left"></span></button>
+                @for (var p = 0; p < PageCount; p++)
+                {
+                    var idx = p;
+                    <button class="pager-btn @(idx == page ? "active" : "")" @onclick="() => page = idx">@(idx + 1)</button>
+                }
+                <button class="pager-btn" disabled="@(page >= PageCount - 1)" @onclick="() => page++"><span class="bi bi-chevron-right"></span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-panel">
+        @if (selected is null)
+        {
+            <p class="text-muted-sm" style="text-align:center;">Select an employee to see details.</p>
+        }
+        else
+        {
+            <div class="detail-head">
+                <Avatar Name="@selected.FullName" Size="lg" PhotoUrl="@selected.PhotoUrl" />
+                <div>
+                    <div class="detail-name">@selected.FullName</div>
+                    <div class="cell-sub">@selected.JobTitle · @selected.Department</div>
+                </div>
+                <StatusBadge Status="@selected.Status" />
+                <button class="btn btn-outline-secondary btn-sm" style="width:100%;margin-top:0.5rem;" @onclick="() => StartEdit(selected)"><span class="bi bi-pencil me-1"></span>Edit</button>
+            </div>
+
+            <h2 class="section-title" style="margin:1.25rem 0 0.5rem;font-size:0.9rem;">Contact</h2>
+            <div class="detail-kv"><span class="k">Email</span><span>@selected.Email</span></div>
+            <div class="detail-kv"><span class="k">Phone</span><span>@selected.Phone</span></div>
+            <div class="detail-kv"><span class="k">Location</span><span>@selected.Location</span></div>
+            <div class="detail-kv"><span class="k">Manager</span><span>@selected.ManagerName</span></div>
+            <div class="detail-kv"><span class="k">Joined</span><span>@selected.HireDate.ToString("dd MMM yyyy")</span></div>
+            <div class="detail-kv"><span class="k">Years of service</span><span>@selected.YearsOfService</span></div>
+
+            <h2 class="section-title" style="margin:1.25rem 0 0.5rem;font-size:0.9rem;">Key document dates</h2>
+            @if (SelectedDocs.Count == 0)
+            {
+                <p class="text-muted-sm">No documents on file.</p>
+            }
+            else
+            {
+                @foreach (var d in SelectedDocs)
+                {
+                    <div class="detail-kv">
+                        <span class="k">@d.Name</span>
+                        <span><StatusBadge Status="@d.Status.ToString()" /> @d.ExpiryDate.ToString("dd MMM yyyy")</span>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+
+@code {
+    private List<Employee> all = new();
+    private string search = "";
+    private string dept = "";
+    private string status = "All";
+    private int page;
+    private const int pageSize = 8;
+    private Employee? selected;
+    private Employee _edit = new();
+    private bool showForm;
+
+    protected override void OnInitialized() => all = Employees.GetAll().ToList();
+
+    private void StartAdd()
+    {
+        _edit = new Employee { Status = "Active", HireDate = DateOnly.FromDateTime(DateTime.Today) };
+        showForm = true;
+    }
+
+    private void StartEdit(Employee e)
+    {
+        _edit = Clone(e);
+        showForm = true;
+    }
+
+    private void SaveEmployee()
+    {
+        if (string.IsNullOrWhiteSpace(_edit.FullName) || string.IsNullOrWhiteSpace(_edit.Email)) return;
+        if (_edit.Id == 0) Employees.Add(_edit);
+        else Employees.Update(_edit);
+        all = Employees.GetAll().ToList();
+        selected = all.FirstOrDefault(x => x.Email == _edit.Email);
+        showForm = false;
+    }
+
+    private static Employee Clone(Employee e) => new()
+    {
+        Id = e.Id, FullName = e.FullName, JobTitle = e.JobTitle, Department = e.Department,
+        Email = e.Email, Phone = e.Phone, Location = e.Location, ManagerName = e.ManagerName,
+        Status = e.Status, HireDate = e.HireDate, PhotoUrl = e.PhotoUrl,
+        AnnualSalary = e.AnnualSalary, AnnualLeaveTotal = e.AnnualLeaveTotal, AnnualLeaveUsed = e.AnnualLeaveUsed
+    };
+
+    private List<Employee> Filtered
+    {
+        get
+        {
+            IEnumerable<Employee> q = all;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var s = search.Trim();
+                q = q.Where(e => e.FullName.Contains(s, StringComparison.OrdinalIgnoreCase)
+                              || e.JobTitle.Contains(s, StringComparison.OrdinalIgnoreCase)
+                              || e.Email.Contains(s, StringComparison.OrdinalIgnoreCase));
+            }
+            if (!string.IsNullOrEmpty(dept)) q = q.Where(e => e.Department == dept);
+            if (status != "All") q = q.Where(e => e.Status == status);
+            return q.ToList();
+        }
+    }
+
+    private int PageCount => Math.Max(1, (int)Math.Ceiling(Filtered.Count / (double)pageSize));
+    private List<Employee> Paged => Filtered.Skip(page * pageSize).Take(pageSize).ToList();
+
+    private List<DocumentRecord> SelectedDocs =>
+        selected is null ? new() : Documents.GetForOwner(selected.FullName).ToList();
+
+    private int CountFor(string s) => s == "All" ? all.Count : all.Count(e => e.Status == s);
+
+    private void OnSearch(ChangeEventArgs e) { search = e.Value?.ToString() ?? ""; page = 0; }
+    private void OnDept(ChangeEventArgs e) { dept = e.Value?.ToString() ?? ""; page = 0; }
+    private void SetStatus(string s) { status = s; page = 0; }
+}

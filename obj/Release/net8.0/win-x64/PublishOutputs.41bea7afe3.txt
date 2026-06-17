@@ -1,0 +1,5 @@
+C:\Users\Tiger\Downloads\BlazorApp1\publish-selfcontained\appsettings.Development.json
+C:\Users\Tiger\Downloads\BlazorApp1\publish-selfcontained\appsettings.json
+C:\Users\Tiger\Downloads\BlazorApp1\publish-selfcontained\HCP.HRPortal.pdb
+C:\Users\Tiger\Downloads\BlazorApp1\publish-selfcontained\aspnetcorev2_inprocess.dll
+C:\Users\Tiger\Downloads\BlazorApp1\publish-selfcontained\HCP.HRPortal.exe

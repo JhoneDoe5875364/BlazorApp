@@ -1,0 +1,73 @@
+@page "/invoices"
+@attribute [Authorize(Roles = Roles.Finance)]
+@inject IInvoiceService InvoiceSvc
+
+<PageTitle>Invoices · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Invoices" Subtitle="Vendor &amp; supplier invoices" Icon="bi-file-earmark-ruled-fill" />
+
+<div class="dash-grid">
+    <DashboardCard Title="Total outstanding" Value="@($"${Outstanding:N0}")" Icon="bi-hourglass-split" Tone="warning" Trend="Unpaid + overdue" />
+    <DashboardCard Title="Paid" Value="@($"${Paid:N0}")" Icon="bi-check-circle-fill" Tone="success" Trend="Settled invoices" />
+    <DashboardCard Title="Overdue" Value="@OverdueCount.ToString()" Icon="bi-exclamation-triangle-fill" Tone="danger" Trend="Past due date" />
+</div>
+
+<div class="card-surface">
+    <h2 class="section-title">Invoice list</h2>
+    <DataTable Items="invoices" EmptyMessage="No invoices found.">
+        <HeaderTemplate>
+            <th>Invoice #</th>
+            <th>Vendor</th>
+            <th>Amount</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </HeaderTemplate>
+        <RowTemplate Context="inv">
+            <td style="font-weight:600">@inv.Number</td>
+            <td>@inv.Vendor</td>
+            <td class="amount">@inv.Currency @inv.Amount.ToString("N2")</td>
+            <td>@inv.DueDate.ToString("dd MMM yyyy")</td>
+            <td><StatusBadge Status="@inv.Status.ToString()" Variant="@StatusVariant(inv.Status)" Text="@inv.Status.ToString()" /></td>
+            <td>
+                @if (inv.Status != InvoiceStatus.Paid)
+                {
+                    <button class="btn btn-success btn-sm me-1" @onclick="() => SetStatus(inv, InvoiceStatus.Paid)">Mark Paid</button>
+                    @if (inv.Status == InvoiceStatus.Unpaid)
+                    {
+                        <button class="btn btn-outline-danger btn-sm" @onclick="() => SetStatus(inv, InvoiceStatus.Overdue)">Mark Overdue</button>
+                    }
+                }
+                else
+                {
+                    <button class="btn btn-outline-secondary btn-sm" @onclick="() => SetStatus(inv, InvoiceStatus.Unpaid)">Reopen</button>
+                }
+            </td>
+        </RowTemplate>
+    </DataTable>
+</div>
+
+@code {
+    private List<Invoice> invoices = new();
+
+    private decimal Outstanding => invoices.Where(i => i.Status != InvoiceStatus.Paid).Sum(i => i.Amount);
+    private decimal Paid => invoices.Where(i => i.Status == InvoiceStatus.Paid).Sum(i => i.Amount);
+    private int OverdueCount => invoices.Count(i => i.Status == InvoiceStatus.Overdue);
+
+    protected override void OnInitialized() => Reload();
+
+    private void Reload() => invoices = InvoiceSvc.GetAll().ToList();
+
+    private void SetStatus(Invoice inv, InvoiceStatus status)
+    {
+        InvoiceSvc.SetStatus(inv.Id, status);
+        Reload();
+    }
+
+    private static string StatusVariant(InvoiceStatus s) => s switch
+    {
+        InvoiceStatus.Paid => "success",
+        InvoiceStatus.Overdue => "danger",
+        _ => "warning"
+    };
+}

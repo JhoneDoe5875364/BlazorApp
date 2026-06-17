@@ -1,0 +1,2700 @@
+{
+  "Version": 1,
+  "Hash": "kDXaz4cfY9ECcuRaIAy6zUoUm6Qh5rs469i1ph02A8I=",
+  "Source": "HCP.HRPortal",
+  "BasePath": "_content/HCP.HRPortal",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "HCP.HRPortal\\wwwroot",
+      "Source": "HCP.HRPortal",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\bundle\\HCP.HRPortal.styles.css",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Computed",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\bundle\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "HCP.HRPortal#[.{fingerprint}]?.styles.css",
+      "AssetKind": "All",
+      "AssetMode": "CurrentProject",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ApplicationBundle",
+      "Fingerprint": "b0c5ex19ho",
+      "Integrity": "Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\bundle\\HCP.HRPortal.styles.css"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\projectbundle\\HCP.HRPortal.bundle.scp.css",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Computed",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\projectbundle\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "HCP.HRPortal#[.{fingerprint}]!.bundle.scp.css",
+      "AssetKind": "All",
+      "AssetMode": "Reference",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ProjectBundle",
+      "Fingerprint": "b0c5ex19ho",
+      "Integrity": "Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\projectbundle\\HCP.HRPortal.bundle.scp.css"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "bootstrap/bootstrap.min#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "bpk8xqwxhs",
+      "Integrity": "z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "bootstrap/bootstrap.min.css#[.{fingerprint}]?.map",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "8inm30yfxf",
+      "Integrity": "gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\css\\app.css",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "css/app#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "44gqkao7ev",
+      "Integrity": "FBAl9B5RtwdhpNznJ9a4vUify7Ih/QelgZOZt7fz+3A=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\app.css"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\favicon.png",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "favicon#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ifv42okdf2",
+      "Integrity": "4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\favicon.png"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\announcement.png",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/announcement#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "g4sd0frqt9",
+      "Integrity": "oJszms7lXS8Z6YfynfQlotFDdDxqVsgPVHUNimm5LzY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\announcement.png"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\hcp-logo.png",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/hcp-logo#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "944cd56ule",
+      "Integrity": "2eB9dAHNDncF/LxBC7rXY3U0DtBlBlaJjKvAuag/2VU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\hcp-logo.png"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\aisha-khan.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/aisha-khan#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "fmvvbuaq09",
+      "Integrity": "KQvj08NRIkuP39ZptsOCQ6tH904AVfILl4k2ROBAatU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\aisha-khan.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\daniel-okafor.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/daniel-okafor#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "qvjclg1fqq",
+      "Integrity": "pjTU8C/lt3gElDwddLjXDjX/4mRU4OmvlxdDKixyv94=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\daniel-okafor.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\diego-alvarez.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/diego-alvarez#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "a5uc61y07u",
+      "Integrity": "YlKjtnkMu0iRnLjqdWpOHOgp8ycaFBcxImhxs8PfnW0=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\diego-alvarez.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\elena-rossi.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/elena-rossi#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ggp4b4va2c",
+      "Integrity": "ILuEWOC7A0Wq5atql1ZQ0SEP38VyFym0Vvc0L8WbMRM=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\elena-rossi.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\fatima-noor.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/fatima-noor#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "nu5cd9uozr",
+      "Integrity": "n3l+Ss7hpN5Pm0w6ocxOidfJ79Xb/xxGPYg3TtYB1xk=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\fatima-noor.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\grace-chen.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/grace-chen#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "lzxtwxfcew",
+      "Integrity": "UYXjyYwkxIkHnFcjkJmS3ouZ+BZVVmdZP3+MQ3DXmDk=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\grace-chen.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\hannah-weiss.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/hannah-weiss#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "k5qffdruta",
+      "Integrity": "2Nqymlc21cKwCE1yDT2wLHhVYAcWCb5QFUGSKSj9+DE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\hannah-weiss.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\kenji-tanaka.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/kenji-tanaka#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "16l5gm77xp",
+      "Integrity": "l60V6oECjlizJx8W1fSNrtevMdNhLyhGrz6JrBEXbuI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\kenji-tanaka.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\leila-haddad.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/leila-haddad#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "gdf10t1zel",
+      "Integrity": "FGhpBFG4G+dP35DuEdGQux0iZWD1Ms9KiDtQ/F3668w=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\leila-haddad.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\marcus-lindqvist.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/marcus-lindqvist#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "5cgb7kkzv7",
+      "Integrity": "i6FkG5vbv7zZboHRRPQLAEy83eQCUPaiSO7UmHrEqY8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\marcus-lindqvist.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\omar-haddad.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/omar-haddad#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "moy1rg9vmr",
+      "Integrity": "Kg+d+fhCsbSuqFShzXe+GZARpqcdIo3wMzW1J7LJH2Y=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\omar-haddad.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\priya-nair.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/priya-nair#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "08fcsovjsa",
+      "Integrity": "8HuE8S7xJcu4N6e9ZNpAGZL19ivVX+4Q0BzT3MirroA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\priya-nair.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\sara-al-mansouri.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/sara-al-mansouri#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "meewt3k0zj",
+      "Integrity": "7nlK0rEBb4IKjf+/5WAtDvYS2hlwlnFcGyAKrDhcABc=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\sara-al-mansouri.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\tom-becker.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/tom-becker#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "q3mu41yhi4",
+      "Integrity": "mqxU1i5ydWH2lYITuKNkkjCju6Ybpd32PGnTxuSuywo=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\tom-becker.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\yusuf-demir.jpg",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/people/yusuf-demir#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ohwwtl7qgo",
+      "Integrity": "fA0qqZcVsVwhg4X1Z5NHeChDwC+TnY7ub5yxyta6btA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\people\\yusuf-demir.jpg"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\sidebar-bg.png",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/sidebar-bg#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "zld2n067ha",
+      "Integrity": "mbdZBCrhL03TV1VTLw1bojfv4s0RbxRzDP1ky6+pHGU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\sidebar-bg.png"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\training.png",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "images/training#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "u1mqpinj0s",
+      "Integrity": "3pwD0SSs1nLhqngSZ3S5nWF2yI/OSa+TZTugQYmfG4o=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\training.png"
+    },
+    {
+      "Identity": "E:\\Work_Data\\BlazorApp1\\wwwroot\\uploads\\avatars\\emp-6-639153292469649374.png",
+      "SourceId": "HCP.HRPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Work_Data\\BlazorApp1\\wwwroot\\",
+      "BasePath": "_content/HCP.HRPortal",
+      "RelativePath": "uploads/avatars/emp-6-639153292469649374#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "sjbqd2s5pq",
+      "Integrity": "+DGj9xasWRd6+VURpU1Irfa6DuYwrAPO7vkhMuV0i2o=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\avatars\\emp-6-639153292469649374.png"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "bootstrap/bootstrap.min.bpk8xqwxhs.css",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "162720"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 19 May 2026 07:12:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "bpk8xqwxhs"
+        },
+        {
+          "Name": "label",
+          "Value": "bootstrap/bootstrap.min.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg="
+        }
+      ]
+    },
+    {
+      "Route": "bootstrap/bootstrap.min.css",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "162720"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 19 May 2026 07:12:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg="
+        }
+      ]
+    },
+    {
+      "Route": "bootstrap/bootstrap.min.css.8inm30yfxf.map",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "449111"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/plain"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 19 May 2026 07:12:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "8inm30yfxf"
+        },
+        {
+          "Name": "label",
+          "Value": "bootstrap/bootstrap.min.css.map"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ="
+        }
+      ]
+    },
+    {
+      "Route": "bootstrap/bootstrap.min.css.map",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "449111"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/plain"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 19 May 2026 07:12:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-gBwg2tmA0Ci2u54gMF1jNCVku6vznarkLS6D76htNNQ="
+        }
+      ]
+    },
+    {
+      "Route": "css/app.44gqkao7ev.css",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\css\\app.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "25726"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"FBAl9B5RtwdhpNznJ9a4vUify7Ih/QelgZOZt7fz+3A=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 07:10:31 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "44gqkao7ev"
+        },
+        {
+          "Name": "label",
+          "Value": "css/app.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-FBAl9B5RtwdhpNznJ9a4vUify7Ih/QelgZOZt7fz+3A="
+        }
+      ]
+    },
+    {
+      "Route": "css/app.css",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\css\\app.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "25726"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"FBAl9B5RtwdhpNznJ9a4vUify7Ih/QelgZOZt7fz+3A=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 07:10:31 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-FBAl9B5RtwdhpNznJ9a4vUify7Ih/QelgZOZt7fz+3A="
+        }
+      ]
+    },
+    {
+      "Route": "favicon.ifv42okdf2.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\favicon.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1148"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 19 May 2026 07:12:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ifv42okdf2"
+        },
+        {
+          "Name": "label",
+          "Value": "favicon.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg="
+        }
+      ]
+    },
+    {
+      "Route": "favicon.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\favicon.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1148"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 19 May 2026 07:12:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg="
+        }
+      ]
+    },
+    {
+      "Route": "HCP.HRPortal.b0c5ex19ho.bundle.scp.css",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\projectbundle\\HCP.HRPortal.bundle.scp.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12035"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 07:44:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b0c5ex19ho"
+        },
+        {
+          "Name": "label",
+          "Value": "HCP.HRPortal.bundle.scp.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8="
+        }
+      ]
+    },
+    {
+      "Route": "HCP.HRPortal.b0c5ex19ho.styles.css",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\bundle\\HCP.HRPortal.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12035"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 07:44:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b0c5ex19ho"
+        },
+        {
+          "Name": "label",
+          "Value": "HCP.HRPortal.styles.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8="
+        }
+      ]
+    },
+    {
+      "Route": "HCP.HRPortal.bundle.scp.css",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\projectbundle\\HCP.HRPortal.bundle.scp.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12035"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 07:44:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8="
+        }
+      ]
+    },
+    {
+      "Route": "HCP.HRPortal.styles.css",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\obj\\Release\\net8.0\\win-x64\\scopedcss\\bundle\\HCP.HRPortal.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12035"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 07:44:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Cw6aX4zBHMBy5ohrs3pGYmFc5eZEsau/1KDfLVINcZ8="
+        }
+      ]
+    },
+    {
+      "Route": "images/announcement.g4sd0frqt9.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\announcement.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "41539"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oJszms7lXS8Z6YfynfQlotFDdDxqVsgPVHUNimm5LzY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 01:50:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "g4sd0frqt9"
+        },
+        {
+          "Name": "label",
+          "Value": "images/announcement.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-oJszms7lXS8Z6YfynfQlotFDdDxqVsgPVHUNimm5LzY="
+        }
+      ]
+    },
+    {
+      "Route": "images/announcement.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\announcement.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "41539"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oJszms7lXS8Z6YfynfQlotFDdDxqVsgPVHUNimm5LzY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 01:50:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-oJszms7lXS8Z6YfynfQlotFDdDxqVsgPVHUNimm5LzY="
+        }
+      ]
+    },
+    {
+      "Route": "images/hcp-logo.944cd56ule.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\hcp-logo.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12338"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2eB9dAHNDncF/LxBC7rXY3U0DtBlBlaJjKvAuag/2VU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 19 May 2026 14:08:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "944cd56ule"
+        },
+        {
+          "Name": "label",
+          "Value": "images/hcp-logo.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-2eB9dAHNDncF/LxBC7rXY3U0DtBlBlaJjKvAuag/2VU="
+        }
+      ]
+    },
+    {
+      "Route": "images/hcp-logo.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\hcp-logo.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12338"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2eB9dAHNDncF/LxBC7rXY3U0DtBlBlaJjKvAuag/2VU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 19 May 2026 14:08:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-2eB9dAHNDncF/LxBC7rXY3U0DtBlBlaJjKvAuag/2VU="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/aisha-khan.fmvvbuaq09.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\aisha-khan.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4035"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"KQvj08NRIkuP39ZptsOCQ6tH904AVfILl4k2ROBAatU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "fmvvbuaq09"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/aisha-khan.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-KQvj08NRIkuP39ZptsOCQ6tH904AVfILl4k2ROBAatU="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/aisha-khan.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\aisha-khan.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4035"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"KQvj08NRIkuP39ZptsOCQ6tH904AVfILl4k2ROBAatU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-KQvj08NRIkuP39ZptsOCQ6tH904AVfILl4k2ROBAatU="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/daniel-okafor.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\daniel-okafor.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5242"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"pjTU8C/lt3gElDwddLjXDjX/4mRU4OmvlxdDKixyv94=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:21:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-pjTU8C/lt3gElDwddLjXDjX/4mRU4OmvlxdDKixyv94="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/daniel-okafor.qvjclg1fqq.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\daniel-okafor.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5242"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"pjTU8C/lt3gElDwddLjXDjX/4mRU4OmvlxdDKixyv94=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:21:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "qvjclg1fqq"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/daniel-okafor.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-pjTU8C/lt3gElDwddLjXDjX/4mRU4OmvlxdDKixyv94="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/diego-alvarez.a5uc61y07u.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\diego-alvarez.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2438"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YlKjtnkMu0iRnLjqdWpOHOgp8ycaFBcxImhxs8PfnW0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "a5uc61y07u"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/diego-alvarez.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-YlKjtnkMu0iRnLjqdWpOHOgp8ycaFBcxImhxs8PfnW0="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/diego-alvarez.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\diego-alvarez.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2438"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YlKjtnkMu0iRnLjqdWpOHOgp8ycaFBcxImhxs8PfnW0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-YlKjtnkMu0iRnLjqdWpOHOgp8ycaFBcxImhxs8PfnW0="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/elena-rossi.ggp4b4va2c.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\elena-rossi.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4067"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ILuEWOC7A0Wq5atql1ZQ0SEP38VyFym0Vvc0L8WbMRM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:22 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ggp4b4va2c"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/elena-rossi.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ILuEWOC7A0Wq5atql1ZQ0SEP38VyFym0Vvc0L8WbMRM="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/elena-rossi.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\elena-rossi.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4067"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ILuEWOC7A0Wq5atql1ZQ0SEP38VyFym0Vvc0L8WbMRM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:22 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ILuEWOC7A0Wq5atql1ZQ0SEP38VyFym0Vvc0L8WbMRM="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/fatima-noor.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\fatima-noor.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5874"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"n3l+Ss7hpN5Pm0w6ocxOidfJ79Xb/xxGPYg3TtYB1xk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:29 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-n3l+Ss7hpN5Pm0w6ocxOidfJ79Xb/xxGPYg3TtYB1xk="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/fatima-noor.nu5cd9uozr.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\fatima-noor.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5874"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"n3l+Ss7hpN5Pm0w6ocxOidfJ79Xb/xxGPYg3TtYB1xk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:29 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "nu5cd9uozr"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/fatima-noor.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-n3l+Ss7hpN5Pm0w6ocxOidfJ79Xb/xxGPYg3TtYB1xk="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/grace-chen.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\grace-chen.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5270"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UYXjyYwkxIkHnFcjkJmS3ouZ+BZVVmdZP3+MQ3DXmDk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:22 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-UYXjyYwkxIkHnFcjkJmS3ouZ+BZVVmdZP3+MQ3DXmDk="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/grace-chen.lzxtwxfcew.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\grace-chen.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5270"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UYXjyYwkxIkHnFcjkJmS3ouZ+BZVVmdZP3+MQ3DXmDk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:22 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "lzxtwxfcew"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/grace-chen.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-UYXjyYwkxIkHnFcjkJmS3ouZ+BZVVmdZP3+MQ3DXmDk="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/hannah-weiss.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\hannah-weiss.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3539"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2Nqymlc21cKwCE1yDT2wLHhVYAcWCb5QFUGSKSj9+DE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-2Nqymlc21cKwCE1yDT2wLHhVYAcWCb5QFUGSKSj9+DE="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/hannah-weiss.k5qffdruta.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\hannah-weiss.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3539"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2Nqymlc21cKwCE1yDT2wLHhVYAcWCb5QFUGSKSj9+DE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "k5qffdruta"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/hannah-weiss.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-2Nqymlc21cKwCE1yDT2wLHhVYAcWCb5QFUGSKSj9+DE="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/kenji-tanaka.16l5gm77xp.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\kenji-tanaka.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3835"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"l60V6oECjlizJx8W1fSNrtevMdNhLyhGrz6JrBEXbuI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:27 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "16l5gm77xp"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/kenji-tanaka.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-l60V6oECjlizJx8W1fSNrtevMdNhLyhGrz6JrBEXbuI="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/kenji-tanaka.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\kenji-tanaka.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3835"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"l60V6oECjlizJx8W1fSNrtevMdNhLyhGrz6JrBEXbuI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:27 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-l60V6oECjlizJx8W1fSNrtevMdNhLyhGrz6JrBEXbuI="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/leila-haddad.gdf10t1zel.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\leila-haddad.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5160"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"FGhpBFG4G+dP35DuEdGQux0iZWD1Ms9KiDtQ/F3668w=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "gdf10t1zel"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/leila-haddad.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-FGhpBFG4G+dP35DuEdGQux0iZWD1Ms9KiDtQ/F3668w="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/leila-haddad.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\leila-haddad.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5160"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"FGhpBFG4G+dP35DuEdGQux0iZWD1Ms9KiDtQ/F3668w=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-FGhpBFG4G+dP35DuEdGQux0iZWD1Ms9KiDtQ/F3668w="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/marcus-lindqvist.5cgb7kkzv7.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\marcus-lindqvist.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4597"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"i6FkG5vbv7zZboHRRPQLAEy83eQCUPaiSO7UmHrEqY8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:10 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "5cgb7kkzv7"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/marcus-lindqvist.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-i6FkG5vbv7zZboHRRPQLAEy83eQCUPaiSO7UmHrEqY8="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/marcus-lindqvist.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\marcus-lindqvist.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4597"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"i6FkG5vbv7zZboHRRPQLAEy83eQCUPaiSO7UmHrEqY8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:10 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-i6FkG5vbv7zZboHRRPQLAEy83eQCUPaiSO7UmHrEqY8="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/omar-haddad.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\omar-haddad.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6292"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Kg+d+fhCsbSuqFShzXe+GZARpqcdIo3wMzW1J7LJH2Y=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Kg+d+fhCsbSuqFShzXe+GZARpqcdIo3wMzW1J7LJH2Y="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/omar-haddad.moy1rg9vmr.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\omar-haddad.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6292"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Kg+d+fhCsbSuqFShzXe+GZARpqcdIo3wMzW1J7LJH2Y=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "moy1rg9vmr"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/omar-haddad.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Kg+d+fhCsbSuqFShzXe+GZARpqcdIo3wMzW1J7LJH2Y="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/priya-nair.08fcsovjsa.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\priya-nair.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6948"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8HuE8S7xJcu4N6e9ZNpAGZL19ivVX+4Q0BzT3MirroA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:02 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "08fcsovjsa"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/priya-nair.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-8HuE8S7xJcu4N6e9ZNpAGZL19ivVX+4Q0BzT3MirroA="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/priya-nair.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\priya-nair.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6948"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8HuE8S7xJcu4N6e9ZNpAGZL19ivVX+4Q0BzT3MirroA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:02 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-8HuE8S7xJcu4N6e9ZNpAGZL19ivVX+4Q0BzT3MirroA="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/sara-al-mansouri.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\sara-al-mansouri.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5972"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"7nlK0rEBb4IKjf+/5WAtDvYS2hlwlnFcGyAKrDhcABc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:21:56 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-7nlK0rEBb4IKjf+/5WAtDvYS2hlwlnFcGyAKrDhcABc="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/sara-al-mansouri.meewt3k0zj.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\sara-al-mansouri.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5972"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"7nlK0rEBb4IKjf+/5WAtDvYS2hlwlnFcGyAKrDhcABc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:21:56 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "meewt3k0zj"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/sara-al-mansouri.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-7nlK0rEBb4IKjf+/5WAtDvYS2hlwlnFcGyAKrDhcABc="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/tom-becker.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\tom-becker.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4752"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"mqxU1i5ydWH2lYITuKNkkjCju6Ybpd32PGnTxuSuywo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:25 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-mqxU1i5ydWH2lYITuKNkkjCju6Ybpd32PGnTxuSuywo="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/tom-becker.q3mu41yhi4.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\tom-becker.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4752"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"mqxU1i5ydWH2lYITuKNkkjCju6Ybpd32PGnTxuSuywo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:25 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "q3mu41yhi4"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/tom-becker.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-mqxU1i5ydWH2lYITuKNkkjCju6Ybpd32PGnTxuSuywo="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/yusuf-demir.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\yusuf-demir.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5375"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"fA0qqZcVsVwhg4X1Z5NHeChDwC+TnY7ub5yxyta6btA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-fA0qqZcVsVwhg4X1Z5NHeChDwC+TnY7ub5yxyta6btA="
+        }
+      ]
+    },
+    {
+      "Route": "images/people/yusuf-demir.ohwwtl7qgo.jpg",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\people\\yusuf-demir.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5375"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"fA0qqZcVsVwhg4X1Z5NHeChDwC+TnY7ub5yxyta6btA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:22:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ohwwtl7qgo"
+        },
+        {
+          "Name": "label",
+          "Value": "images/people/yusuf-demir.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-fA0qqZcVsVwhg4X1Z5NHeChDwC+TnY7ub5yxyta6btA="
+        }
+      ]
+    },
+    {
+      "Route": "images/sidebar-bg.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\sidebar-bg.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "226329"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"mbdZBCrhL03TV1VTLw1bojfv4s0RbxRzDP1ky6+pHGU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:23:08 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-mbdZBCrhL03TV1VTLw1bojfv4s0RbxRzDP1ky6+pHGU="
+        }
+      ]
+    },
+    {
+      "Route": "images/sidebar-bg.zld2n067ha.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\sidebar-bg.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "226329"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"mbdZBCrhL03TV1VTLw1bojfv4s0RbxRzDP1ky6+pHGU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 00:23:08 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "zld2n067ha"
+        },
+        {
+          "Name": "label",
+          "Value": "images/sidebar-bg.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-mbdZBCrhL03TV1VTLw1bojfv4s0RbxRzDP1ky6+pHGU="
+        }
+      ]
+    },
+    {
+      "Route": "images/training.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\training.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "18958"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3pwD0SSs1nLhqngSZ3S5nWF2yI/OSa+TZTugQYmfG4o=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 01:50:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-3pwD0SSs1nLhqngSZ3S5nWF2yI/OSa+TZTugQYmfG4o="
+        }
+      ]
+    },
+    {
+      "Route": "images/training.u1mqpinj0s.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\images\\training.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "18958"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3pwD0SSs1nLhqngSZ3S5nWF2yI/OSa+TZTugQYmfG4o=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 26 May 2026 01:50:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "u1mqpinj0s"
+        },
+        {
+          "Name": "label",
+          "Value": "images/training.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-3pwD0SSs1nLhqngSZ3S5nWF2yI/OSa+TZTugQYmfG4o="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/emp-6-639153292469649374.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\uploads\\avatars\\emp-6-639153292469649374.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1392971"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+DGj9xasWRd6+VURpU1Irfa6DuYwrAPO7vkhMuV0i2o=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 25 May 2026 18:07:27 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-+DGj9xasWRd6+VURpU1Irfa6DuYwrAPO7vkhMuV0i2o="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/emp-6-639153292469649374.sjbqd2s5pq.png",
+      "AssetFile": "E:\\Work_Data\\BlazorApp1\\wwwroot\\uploads\\avatars\\emp-6-639153292469649374.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1392971"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+DGj9xasWRd6+VURpU1Irfa6DuYwrAPO7vkhMuV0i2o=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 25 May 2026 18:07:27 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "sjbqd2s5pq"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/avatars/emp-6-639153292469649374.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-+DGj9xasWRd6+VURpU1Irfa6DuYwrAPO7vkhMuV0i2o="
+        }
+      ]
+    }
+  ]
+}

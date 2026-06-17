@@ -1,0 +1,94 @@
+@page "/travel"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject ITravelService TravelSvc
+
+<PageTitle>Travel · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Travel"
+            Subtitle="Business travel requests"
+            Icon="bi-airplane-engines-fill" />
+
+@if (me is null)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else
+{
+    <div class="dash-grid">
+        <DashboardCard Title="Upcoming trips"
+                       Value="@upcomingTrips.ToString()"
+                       Icon="bi-airplane-fill"
+                       Tone="primary"
+                       Trend="Approved &amp; scheduled" />
+        <DashboardCard Title="Pending approval"
+                       Value="@pendingApproval.ToString()"
+                       Icon="bi-hourglass-split"
+                       Tone="warning"
+                       Trend="Awaiting manager sign-off" />
+        <DashboardCard Title="Total spend YTD"
+                       Value="@($"${totalSpend:N0}")"
+                       Icon="bi-wallet2"
+                       Tone="info"
+                       Trend="Estimated across all trips" />
+    </div>
+
+    <div class="card-surface">
+        <h2 class="section-title">My Travel Requests</h2>
+        <DataTable Items="trips" EmptyMessage="No travel requests found.">
+            <HeaderTemplate>
+                <th>Destination</th>
+                <th>Purpose</th>
+                <th>Dates</th>
+                <th>Est. Cost</th>
+                <th>Status</th>
+            </HeaderTemplate>
+            <RowTemplate Context="t">
+                <td>@t.Destination</td>
+                <td>@t.Purpose</td>
+                <td>@t.DepartDate.ToString("dd MMM") – @t.ReturnDate.ToString("dd MMM yyyy")</td>
+                <td class="amount">@t.EstimatedCost.ToString("N2")</td>
+                <td>
+                    <StatusBadge Status="@t.Status.ToString()"
+                                 Variant="@StatusVariant(t.Status)"
+                                 Text="@t.Status.ToString()" />
+                </td>
+            </RowTemplate>
+        </DataTable>
+
+        <div class="placeholder-note" style="margin-top: 1rem;">
+            Online booking integration is coming soon. Once live, approved trips will automatically
+            generate booking links for flights and hotels directly within this portal.
+        </div>
+    </div>
+}
+
+@code {
+    private Employee? me;
+    private List<BusinessTrip> trips = new();
+
+    private int upcomingTrips;
+    private int pendingApproval;
+    private decimal totalSpend;
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        if (me is null) return;
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        trips = TravelSvc.GetForEmployee(me.Id).ToList();
+
+        upcomingTrips = trips.Count(t => t.Status == TripStatus.Approved && t.DepartDate >= today);
+        pendingApproval = trips.Count(t => t.Status == TripStatus.Pending);
+        totalSpend = trips.Where(t => t.Status != TripStatus.Rejected).Sum(t => t.EstimatedCost);
+    }
+
+    private static string StatusVariant(TripStatus s) => s switch
+    {
+        TripStatus.Approved => "success",
+        TripStatus.Completed => "success",
+        TripStatus.Rejected => "danger",
+        _ => "warning"
+    };
+}

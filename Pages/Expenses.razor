@@ -1,0 +1,132 @@
+@page "/expenses"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject IExpenseService ExpenseService
+@inject INotificationService Notifier
+
+<PageTitle>Expenses · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Expenses" Subtitle="Submit and track your expense claims" Icon="bi-receipt-cutoff">
+    <Actions>
+        <button class="btn btn-primary btn-sm" @onclick="() => showForm = !showForm">
+            <span class="bi bi-plus-lg me-1"></span>New Expense
+        </button>
+    </Actions>
+</PageHeader>
+
+<div class="dash-grid">
+    <DashboardCard Title="Pending Approval" Value="@($"${submittedAmt.ToString("N0")}")" Icon="bi-hourglass-split" Tone="warning" Trend="@($"{myClaims.Count(c => c.Status == ExpenseStatus.Submitted)} claim(s) awaiting")" />
+    <DashboardCard Title="Approved" Value="@($"${approvedAmt.ToString("N0")}")" Icon="bi-check-circle-fill" Tone="success" Trend="Ready for payout" />
+    <DashboardCard Title="Reimbursed" Value="@($"${reimbursedAmt.ToString("N0")}")" Icon="bi-cash-stack" Tone="primary" Trend="Paid out" />
+</div>
+
+@if (me is null)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else
+{
+    @if (showForm)
+    {
+        <div class="form-card mb-grid">
+            <h2 class="section-title">New expense claim</h2>
+            <EditForm Model="_form" OnValidSubmit="Submit">
+                <div class="form-row"><label>Title</label><InputText class="form-control" @bind-Value="_form.Title" placeholder="e.g. Client dinner" /></div>
+                <div class="form-row">
+                    <label>Category</label>
+                    <InputSelect class="form-select" @bind-Value="_form.Category">
+                        <option value="Travel">Travel</option><option value="Meals">Meals</option><option value="Accommodation">Accommodation</option>
+                        <option value="Software">Software</option><option value="Training">Training</option><option value="Other">Other</option>
+                    </InputSelect>
+                </div>
+                <div class="form-row"><label>Amount</label><InputNumber class="form-control" @bind-Value="_form.Amount" /></div>
+                <div class="form-row"><label>Date</label><InputDate class="form-control" @bind-Value="_form.Date" /></div>
+                <div class="form-row"><label>Notes</label><InputTextArea class="form-control" @bind-Value="_form.Notes" rows="2" /></div>
+                <button class="btn btn-primary" type="submit">Submit claim</button>
+            </EditForm>
+        </div>
+    }
+
+    <div class="card-surface">
+        <div class="cal-tabs">
+            @foreach (var t in tabs)
+            {
+                <button class="cal-tab @(t == tab ? "active" : "")" @onclick="() => tab = t">@t</button>
+            }
+        </div>
+
+        <DataTable Items="Filtered" EmptyMessage="No expense claims in this view.">
+            <HeaderTemplate>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                @if (tab == "All Expenses")
+                {
+                    <th>Submitted By</th>
+                }
+                <th>Amount</th>
+                <th>Status</th>
+            </HeaderTemplate>
+            <RowTemplate Context="c">
+                <td>@c.Date.ToString("dd MMM yyyy")</td>
+                <td style="font-weight:600">@c.Title</td>
+                <td>@c.Category</td>
+                @if (tab == "All Expenses")
+                {
+                    <td>@c.SubmittedBy</td>
+                }
+                <td><span class="amount">@c.Currency @c.Amount.ToString("N2")</span></td>
+                <td><StatusBadge Status="@c.Status.ToString()" /></td>
+            </RowTemplate>
+        </DataTable>
+    </div>
+}
+
+@code {
+    private Employee? me;
+    private List<ExpenseClaim> myClaims = new();
+    private string tab = "My Expenses";
+    private readonly string[] tabs = { "My Expenses", "Pending Approval", "Approved", "All Expenses" };
+    private bool showForm;
+    private decimal submittedAmt, approvedAmt, reimbursedAmt;
+    private ExpenseClaim _form = NewForm();
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        Reload();
+    }
+
+    private void Reload()
+    {
+        myClaims = me is null ? new() : ExpenseService.GetForUser(me.FullName).ToList();
+        submittedAmt = myClaims.Where(c => c.Status == ExpenseStatus.Submitted).Sum(c => c.Amount);
+        approvedAmt = myClaims.Where(c => c.Status == ExpenseStatus.Approved).Sum(c => c.Amount);
+        reimbursedAmt = myClaims.Where(c => c.Status == ExpenseStatus.Reimbursed).Sum(c => c.Amount);
+    }
+
+    private IEnumerable<ExpenseClaim> Filtered => tab switch
+    {
+        "Pending Approval" => myClaims.Where(c => c.Status == ExpenseStatus.Submitted),
+        "Approved" => myClaims.Where(c => c.Status == ExpenseStatus.Approved),
+        "All Expenses" => ExpenseService.GetAll(),
+        _ => myClaims
+    };
+
+    private void Submit()
+    {
+        if (me is null) return;
+        _form.SubmittedBy = me.FullName;
+        ExpenseService.Add(_form);
+        Notifier.NotifyExpenseSubmitted(me, _form); // notify Finance, not self
+        _form = NewForm();
+        showForm = false;
+        Reload();
+    }
+
+    private static ExpenseClaim NewForm() => new()
+    {
+        Date = DateOnly.FromDateTime(DateTime.Today),
+        Category = "Travel"
+    };
+}

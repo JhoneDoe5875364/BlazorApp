@@ -1,0 +1,195 @@
+@page "/time-off"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject ITimeOffService TimeOff
+@inject INotificationService Notifier
+@inject IWebHostEnvironment Env
+
+<PageTitle>Time Off · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Time Off" Subtitle="Request and track your leave" Icon="bi-airplane-fill" />
+
+@if (me is null)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else
+{
+<div class="two-col">
+    <div class="card-surface">
+        <h2 class="section-title">My requests</h2>
+        <p class="text-muted-sm">Annual leave remaining: <strong>@me.AnnualLeaveRemaining days</strong> of @me.AnnualLeaveTotal total</p>
+        <DataTable Items="TimeOff.GetForEmployee(me.Id)" EmptyMessage="No time-off requests yet.">
+            <HeaderTemplate>
+                <th>Type</th>
+                <th>Dates</th>
+                <th>Days</th>
+                <th>Attachment</th>
+                <th>Status</th>
+            </HeaderTemplate>
+            <RowTemplate Context="r">
+                <td>@r.Type</td>
+                <td>@r.StartDate.ToString("dd MMM yyyy") – @r.EndDate.ToString("dd MMM yyyy")</td>
+                <td>@r.Days</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(r.AttachmentUrl))
+                    {
+                        <a href="@r.AttachmentUrl" target="_blank" rel="noopener" title="@r.AttachmentName">
+                            <span class="bi bi-paperclip"></span> @r.AttachmentName
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted-sm">—</span>
+                    }
+                </td>
+                <td><StatusBadge Status="@r.Status.ToString()" /></td>
+            </RowTemplate>
+        </DataTable>
+    </div>
+
+    <div class="form-card">
+        <h2 class="section-title">New request</h2>
+        <EditForm Model="_form" OnValidSubmit="Submit">
+            <div class="form-row">
+                <label>Type</label>
+                <InputSelect class="form-select" @bind-Value="_form.Type">
+                    @foreach (var t in Enum.GetValues<TimeOffType>())
+                    {
+                        <option value="@t">@t</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-row">
+                <label>Start date</label>
+                <InputDate class="form-control" @bind-Value="_form.StartDate" />
+            </div>
+            <div class="form-row">
+                <label>End date</label>
+                <InputDate class="form-control" @bind-Value="_form.EndDate" />
+            </div>
+            <div class="form-row">
+                <label>Reason</label>
+                <InputTextArea class="form-control" @bind-Value="_form.Reason" rows="3" />
+            </div>
+            <div class="form-row">
+                <label>Attachment <span class="text-muted-sm">(optional)</span></label>
+                <InputFile class="form-control" OnChange="OnFileSelected"
+                           accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+                @if (_picked is not null)
+                {
+                    <div class="text-muted-sm" style="margin-top:0.3rem;">
+                        <span class="bi bi-paperclip"></span> @_picked.Name (@FormatBytes(_picked.Size))
+                        <button type="button" class="btn btn-link btn-sm" style="padding:0;margin-left:0.4rem;" @onclick="ClearFile">remove</button>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(_fileError))
+                {
+                    <div class="text-muted-sm" style="color:#b91c1c;margin-top:0.3rem;">@_fileError</div>
+                }
+                <div class="text-muted-sm" style="margin-top:0.3rem;">
+                    Accepted: PDF / JPG / PNG / DOC / DOCX · max @(MaxFileSize / (1024*1024)) MB
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit" disabled="@_busy">
+                @(_busy ? "Submitting…" : "Submit request")
+            </button>
+        </EditForm>
+    </div>
+</div>
+}
+
+@code {
+    private const long MaxFileSize = 5 * 1024 * 1024;        // 5 MB
+    private static readonly string[] AllowedExt =
+        { ".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx" };
+
+    private Employee? me;
+    private Models.TimeOffRequest _form = NewForm();
+    private IBrowserFile? _picked;
+    private string? _fileError;
+    private bool _busy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        _fileError = null;
+        var f = e.File;
+        if (f.Size > MaxFileSize)
+        {
+            _fileError = $"File is too large ({FormatBytes(f.Size)}). Max {MaxFileSize / (1024*1024)} MB.";
+            _picked = null;
+            return;
+        }
+        var ext = Path.GetExtension(f.Name).ToLowerInvariant();
+        if (!AllowedExt.Contains(ext))
+        {
+            _fileError = $"File type '{ext}' is not allowed.";
+            _picked = null;
+            return;
+        }
+        _picked = f;
+    }
+
+    private void ClearFile()
+    {
+        _picked = null;
+        _fileError = null;
+    }
+
+    private async Task Submit()
+    {
+        if (me is null) return;
+        _busy = true;
+        try
+        {
+            if (_picked is not null)
+            {
+                var (url, name) = await SaveAttachmentAsync(_picked);
+                _form.AttachmentUrl = url;
+                _form.AttachmentName = name;
+            }
+            _form.EmployeeId = me.Id;
+            _form.EmployeeName = me.FullName;
+            _form.RequestedOn = DateOnly.FromDateTime(DateTime.Today);
+            TimeOff.Add(_form);
+            Notifier.NotifyTimeOffSubmitted(me, _form); // notify approvers (manager/HR), not self
+            _form = NewForm();
+            ClearFile();
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task<(string Url, string Name)> SaveAttachmentAsync(IBrowserFile file)
+    {
+        var dir = Path.Combine(Env.WebRootPath, "uploads", "timeoff");
+        Directory.CreateDirectory(dir);
+        var safeName = Path.GetFileName(file.Name);
+        var stored = $"{Guid.NewGuid():N}_{safeName}";
+        var path = Path.Combine(dir, stored);
+        await using (var fs = File.Create(path))
+        await using (var src = file.OpenReadStream(MaxFileSize))
+            await src.CopyToAsync(fs);
+        return ($"uploads/timeoff/{stored}", safeName);
+    }
+
+    private static string FormatBytes(long bytes) => bytes switch
+    {
+        >= 1024 * 1024 => $"{bytes / 1024.0 / 1024.0:0.#} MB",
+        >= 1024        => $"{bytes / 1024.0:0.#} KB",
+        _              => $"{bytes} B",
+    };
+
+    private static Models.TimeOffRequest NewForm() => new()
+    {
+        StartDate = DateOnly.FromDateTime(DateTime.Today),
+        EndDate = DateOnly.FromDateTime(DateTime.Today)
+    };
+}

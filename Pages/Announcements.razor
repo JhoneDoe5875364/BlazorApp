@@ -1,0 +1,72 @@
+@page "/announcements"
+@attribute [Authorize]
+
+<PageTitle>Announcements · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Announcements"
+            Subtitle="Company news &amp; updates"
+            Icon="bi-megaphone-fill" />
+
+<div style="margin-top:1rem;">
+    @foreach (var a in _announcements)
+    {
+        <div class="card-surface mb-grid">
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+                <StatusBadge Variant="@a.CategoryVariant" Text="@a.Category" Status="@a.Category" />
+                <span class="text-muted-sm">@a.Date.ToString("dd MMM yyyy")</span>
+            </div>
+            <h3 style="margin:0 0 0.5rem;font-size:1.1rem;font-weight:700;">@a.Title</h3>
+            <p style="margin:0 0 0.75rem;line-height:1.6;">@a.Body</p>
+            <div class="text-muted-sm">
+                <span class="bi bi-person-fill" style="margin-right:0.3rem;"></span>@a.Author
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private record Announcement(string Title, string Body, string Author, DateOnly Date, string Category, string CategoryVariant);
+
+    private readonly Announcement[] _announcements =
+    {
+        new(
+            "Q2 2026 Company All-Hands — Save the Date",
+            "Our next company-wide all-hands meeting will be held on Thursday 12 June 2026 at 10:00 AM GST (Dubai HQ) with remote participation available via the usual video link. Priya Nair and the executive team will present Q1 results, celebrate top performers, and share the strategic roadmap for H2 2026. Meeting link and agenda will be distributed one week in advance.",
+            "Omar Haddad, Chief People Officer",
+            new DateOnly(2026, 5, 20),
+            "Event", "info"
+        ),
+
+        new(
+            "Updated Remote Work Policy — Effective 1 June 2026",
+            "Following feedback from the engagement survey, we have revised the Remote Work Policy to allow up to 3 remote days per week for all eligible roles (previously 2). The updated policy document is available in the Policies section. Please review the changes and reach out to your HR Business Partner with any questions.",
+            "Grace Chen, HR Business Partner",
+            new DateOnly(2026, 5, 14),
+            "Policy Update", "warning"
+        ),
+
+        new(
+            "Annual Leave System Maintenance — 27 May 2026",
+            "The HCP HR Portal leave-management module will be unavailable from 22:00 to 02:00 GST on the night of 27/28 May 2026 for scheduled infrastructure maintenance. Any leave requests submitted during this window will need to be re-submitted once the system is back online. We apologise for the inconvenience.",
+            "IT Operations Team",
+            new DateOnly(2026, 5, 10),
+            "IT Notice", "secondary"
+        ),
+
+        new(
+            "HCP Wins 'Best Employer — Tech Sector' Award 2026",
+            "We are delighted to announce that HCP has been recognised as 'Best Employer in the Tech Sector' by the Gulf Business Awards for the second consecutive year. This award reflects the commitment and dedication of every team member. A celebratory gathering will be held in the Dubai HQ atrium on Friday 30 May at 4:00 PM. All employees are welcome.",
+            "Priya Nair, VP of Engineering",
+            new DateOnly(2026, 5, 6),
+            "Award", "success"
+        ),
+
+        new(
+            "Open Enrollment Reminder — Wellness & Learning Benefits",
+            "Reminder: the mid-year benefit top-up window for the Wellness Allowance and Learning Budget closes on 31 May 2026. If you have not yet submitted your reimbursement claims for Q1, please do so before the deadline to avoid forfeiting unused funds. See the Benefits page for eligibility details and the Expense section to submit a claim.",
+            "Elena Rossi, Finance Director",
+            new DateOnly(2026, 4, 28),
+            "Benefits", "primary"
+        ),
+    };
+}

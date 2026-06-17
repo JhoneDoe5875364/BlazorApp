@@ -1,0 +1,177 @@
+@page "/management-dashboard"
+@attribute [Authorize(Roles = Roles.Manager)]
+@inject CurrentUserService CurrentUser
+@inject IEmployeeService Employees
+@inject ITimeOffService TimeOff
+@inject ITrainingService Training
+@inject ICalendarService CalendarSvc
+@inject IPerformanceService Performance
+@inject ITravelService Travel
+@inject INotificationService Notifier
+
+<PageTitle>Management Dashboard · HCP HR Portal</PageTitle>
+
+<PageHeader Title="@(me is null ? "Management Dashboard" : $"Welcome back, {me.FullName.Split(' ')[0]} 👋")"
+            Subtitle="@(me is null ? "Your team at a glance" : $"Overview of your team — {reports.Count} direct reports")"
+            Icon="bi-diagram-3-fill" />
+
+@if (me is null)
+{
+    <p class="text-muted-sm">Loading your team…</p>
+}
+else
+{
+    <div class="dash-grid">
+        <DashboardCard Title="Direct Reports" Value="@reports.Count.ToString()" Icon="bi-people-fill" Tone="primary" Trend="Your team" />
+        <DashboardCard Title="Team On Leave" Value="@onLeave.ToString()" Icon="bi-airplane-fill" Tone="warning" Trend="This month" />
+        <DashboardCard Title="Pending Approvals" Value="@pendingTeam.Count.ToString()" Icon="bi-hourglass-split" Tone="info" Trend="To review" />
+        <DashboardCard Title="Training Compliance" Value="@($"{trainingCompliance}%")" Icon="bi-mortarboard-fill" Tone="purple" Trend="Team average" />
+        <DashboardCard Title="Reviews Due" Value="@reviewsDue.ToString()" Icon="bi-star-fill" Tone="info" Trend="This quarter" />
+        <DashboardCard Title="Upcoming Time Off" Value="@upcomingLeave.ToString()" Icon="bi-calendar-event-fill" Tone="success" Trend="Booked ahead" />
+        <DashboardCard Title="Upcoming Travel" Value="@upcomingTravel.ToString()" Icon="bi-airplane-engines-fill" Tone="info" Trend="Trips this month" />
+    </div>
+
+    <div class="three-col mb-grid">
+        <div class="card-surface">
+            <div class="section-head"><h2 class="section-title"><span class="bi bi-calendar3" style="color:var(--hcp-primary);margin-right:0.45rem;"></span>Team calendar</h2><a class="section-link" href="calendar">View Calendar →</a></div>
+            @if (teamEvents.Count == 0)
+            {
+                <p class="text-muted-sm">No upcoming team events.</p>
+            }
+            else
+            {
+                @foreach (var ev in teamEvents)
+                {
+                    <div class="ev-item">
+                        <div class="ev-date"><div class="m">@ev.Date.ToString("MMM").ToUpper()</div><div class="d">@ev.Date.Day</div></div>
+                        <div class="ev-body"><div class="ev-title">@ev.Title</div><div class="cell-sub">@ev.Category</div></div>
+                        <span class="bi bi-calendar-event ev-ic"></span>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="card-surface">
+            <div class="section-head"><h2 class="section-title">Quick approvals</h2><a class="section-link" href="approvals">View all (@pendingTeam.Count) →</a></div>
+            @if (pendingTeam.Count == 0)
+            {
+                <p class="text-muted-sm">Nothing awaiting your approval. 🎉</p>
+            }
+            else
+            {
+                @foreach (var r in pendingTeam)
+                {
+                    <div class="approval-row">
+                        <Avatar Name="@r.EmployeeName" Size="sm" />
+                        <div class="approval-meta">
+                            <div class="approval-name">@r.EmployeeName</div>
+                            <div class="approval-sub">@r.Type leave · @r.StartDate.ToString("dd MMM") – @r.EndDate.ToString("dd MMM")</div>
+                        </div>
+                        <div class="approval-actions">
+                            <button class="approve-btn" title="Approve" @onclick="() => Decide(r, TimeOffStatus.Approved)"><span class="bi bi-check-lg"></span></button>
+                            <button class="reject-btn" title="Reject" @onclick="() => Decide(r, TimeOffStatus.Rejected)"><span class="bi bi-x-lg"></span></button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="card-surface">
+            <h2 class="section-title">Team performance snapshot</h2>
+            <DonutChart Segments="perfSegments" CenterValue="@avgRating.ToString("0.0")" CenterLabel="Avg rating" />
+        </div>
+    </div>
+
+    <div class="two-col">
+        <div class="card-surface">
+            <div class="section-head"><h2 class="section-title">My team</h2><a class="section-link" href="company-directory">Directory →</a></div>
+            <DataTable Items="reports" EmptyMessage="You have no direct reports.">
+                <HeaderTemplate>
+                    <th>Employee</th>
+                    <th>Role</th>
+                    <th>Leave used</th>
+                    <th>Status</th>
+                </HeaderTemplate>
+                <RowTemplate Context="e">
+                    <td><div class="cell-person"><Avatar Name="@e.FullName" Size="sm" /><span style="font-weight:600">@e.FullName</span></div></td>
+                    <td>@e.JobTitle</td>
+                    <td>@e.AnnualLeaveUsed / @e.AnnualLeaveTotal</td>
+                    <td><StatusBadge Status="@e.Status" /></td>
+                </RowTemplate>
+            </DataTable>
+        </div>
+
+        <div class="card-surface">
+            <h2 class="section-title">Team at a glance</h2>
+            <div class="glance-row"><span><span class="bi bi-people"></span>Headcount</span><span class="glance-val">@reports.Count</span></div>
+            <div class="glance-row"><span><span class="bi bi-airplane"></span>On leave</span><span class="glance-val">@onLeave</span></div>
+            <div class="glance-row"><span><span class="bi bi-hourglass-split"></span>Pending approvals</span><span class="glance-val">@pendingTeam.Count</span></div>
+            <div class="glance-row"><span><span class="bi bi-mortarboard"></span>Training compliance</span><span class="glance-val">@trainingCompliance%</span></div>
+            <div class="glance-row"><span><span class="bi bi-star"></span>Reviews due</span><span class="glance-val">@reports.Count</span></div>
+        </div>
+    </div>
+}
+
+@code {
+    private Employee? me;
+    private List<Employee> reports = new();
+    private List<Models.TimeOffRequest> pendingTeam = new();
+    private List<CalendarItem> teamEvents = new();
+    private List<DonutChart.Segment> perfSegments = new();
+    private int onLeave;
+    private int trainingCompliance;
+    private int upcomingLeave;
+    private int upcomingTravel;
+    private int reviewsDue;
+    private double avgRating;
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        if (me is null) return;
+        Load();
+    }
+
+    private void Load()
+    {
+        reports = Employees.GetDirectReports(me!.FullName).ToList();
+        var reportIds = reports.Select(r => r.Id).ToHashSet();
+        var reportNames = reports.Select(r => r.FullName).ToList();
+
+        onLeave = reports.Count(r => r.Status == "On Leave");
+
+        var teamRequests = TimeOff.GetForEmployees(reportIds).ToList();
+        pendingTeam = teamRequests.Where(r => r.Status == TimeOffStatus.Pending).ToList();
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        upcomingLeave = teamRequests.Count(r => r.Status == TimeOffStatus.Approved && r.StartDate >= today);
+
+        var teamTrips = Travel.GetForEmployees(reportIds).ToList();
+        upcomingTravel = teamTrips.Count(t => t.DepartDate >= today
+            && (t.Status == TripStatus.Approved || t.Status == TripStatus.Pending));
+
+        var teamTraining = reportNames.SelectMany(n => Training.GetForEmployee(n)).Where(t => t.IsMandatory).ToList();
+        trainingCompliance = teamTraining.Count == 0 ? 100
+            : (int)Math.Round(100.0 * teamTraining.Count(t => t.Status == TrainingStatus.Completed) / teamTraining.Count);
+
+        teamEvents = CalendarSvc.GetItems(CalendarView.Team, me, reportNames).Take(5).ToList();
+
+        // Performance reviews for the team (real data — seeded per employee for the cycle).
+        var teamReviews = Performance.GetForEmployees(reportIds).ToList();
+        reviewsDue = teamReviews.Count(r => !r.Completed);
+        avgRating = teamReviews.Count == 0 ? 0 : teamReviews.Average(r => r.Rating);
+        perfSegments = new()
+        {
+            new("Above expectations", teamReviews.Count(r => r.Band == PerformanceBand.AboveExpectations), "#16a34a"),
+            new("Meets expectations", teamReviews.Count(r => r.Band == PerformanceBand.MeetsExpectations), "#1f6fe5"),
+            new("Below expectations", teamReviews.Count(r => r.Band == PerformanceBand.BelowExpectations), "#d98e04"),
+        };
+    }
+
+    private void Decide(Models.TimeOffRequest r, TimeOffStatus status)
+    {
+        TimeOff.SetStatus(r.Id, status);
+        Notifier.NotifyLeaveDecision(r, me?.Email ?? "", status == TimeOffStatus.Approved); // notify requester, not self
+        Load();
+    }
+}

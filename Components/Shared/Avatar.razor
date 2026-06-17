@@ -1,0 +1,45 @@
+@{
+    var sizeClass = Size == "lg" ? "avatar-lg" : Size == "sm" ? "avatar-sm" : "";
+}
+@if (!string.IsNullOrEmpty(PhotoUrl))
+{
+    @* If the photo file is missing/broken, fall back to the initials avatar (no broken-image icon). *@
+    <img class="avatar @sizeClass" src="@PhotoUrl" alt="@Name" title="@Name"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" />
+    <span class="avatar @sizeClass" style="background:@Background;display:none;" title="@Name">@InitialsOf(Name)</span>
+}
+else
+{
+    <span class="avatar @sizeClass" style="background:@Background" title="@Name">@InitialsOf(Name)</span>
+}
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    /// <summary>"sm", "md" (default), or "lg".</summary>
+    [Parameter] public string Size { get; set; } = "md";
+    /// <summary>Optional profile photo URL. When set, shown instead of initials.</summary>
+    [Parameter] public string? PhotoUrl { get; set; }
+
+    private static readonly string[] Palette =
+    {
+        "#2563eb", "#7c3aed", "#0d94b8", "#16a34a",
+        "#d98e04", "#dc2626", "#db2777", "#0891b2", "#4f46e5"
+    };
+
+    private string Background
+    {
+        get
+        {
+            var sum = Name.Where(char.IsLetterOrDigit).Sum(c => (int)c);
+            return Palette[sum % Palette.Length];
+        }
+    }
+
+    private static string InitialsOf(string name)
+    {
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0) return "?";
+        if (parts.Length == 1) return parts[0][..1].ToUpper();
+        return $"{parts[0][0]}{parts[^1][0]}".ToUpper();
+    }
+}

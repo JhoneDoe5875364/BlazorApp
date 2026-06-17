@@ -1,0 +1,153 @@
+@page "/reports"
+@attribute [Authorize(Roles = Roles.Manager + "," + Roles.HR + "," + Roles.Finance)]
+@inject IEmployeeService Employees
+@inject ITimeOffService TimeOff
+@inject ITrainingService Training
+@inject IDocumentService Documents
+@inject IJSRuntime JS
+
+<PageTitle>Reports · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Reports" Subtitle="HR, finance, training, and compliance reporting" Icon="bi-bar-chart-fill" />
+
+<div class="cal-tabs">
+    @foreach (var t in tabs)
+    {
+        <button class="cal-tab @(t == tab ? "active" : "")" @onclick="() => tab = t">@t</button>
+    }
+</div>
+
+<div class="card-surface">
+    <div class="filters-bar">
+        <select class="filter-select" @onchange="OnDept">
+            <option value="">All departments</option>
+            @foreach (var d in Employees.Departments())
+            {
+                <option value="@d" selected="@(d == dept)">@d</option>
+            }
+        </select>
+        @if (tab == "Document Expiry")
+        {
+            <select class="filter-select" @onchange="OnWithin">
+                <option value="3650">Expiry within: Any</option>
+                <option value="30">Within 30 days</option>
+                <option value="60">Within 60 days</option>
+                <option value="90" selected>Within 90 days</option>
+            </select>
+        }
+        <button class="btn btn-primary btn-sm" style="margin-left:auto;" @onclick="Export"><span class="bi bi-download me-1"></span>Generate Report (CSV)</button>
+    </div>
+
+    @if (tab == "Employee Overview")
+    {
+        <DataTable Items="EmployeeRows" EmptyMessage="No employees.">
+            <HeaderTemplate><th>Employee</th><th>Department</th><th>Manager</th><th>Status</th><th>Years</th></HeaderTemplate>
+            <RowTemplate Context="e">
+                <td><div class="cell-person"><Avatar Name="@e.FullName" Size="sm" PhotoUrl="@e.PhotoUrl" /><span style="font-weight:600">@e.FullName</span></div></td>
+                <td>@e.Department</td>
+                <td>@e.ManagerName</td>
+                <td><StatusBadge Status="@e.Status" /></td>
+                <td>@e.YearsOfService</td>
+            </RowTemplate>
+        </DataTable>
+    }
+    else if (tab == "Leave Report")
+    {
+        <DataTable Items="TimeOff.GetAll()" EmptyMessage="No leave requests.">
+            <HeaderTemplate><th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th>Status</th></HeaderTemplate>
+            <RowTemplate Context="r">
+                <td>@r.EmployeeName</td>
+                <td>@r.Type</td>
+                <td>@r.StartDate.ToString("dd MMM") – @r.EndDate.ToString("dd MMM yyyy")</td>
+                <td>@r.Days</td>
+                <td><StatusBadge Status="@r.Status.ToString()" /></td>
+            </RowTemplate>
+        </DataTable>
+    }
+    else if (tab == "Training Report")
+    {
+        <DataTable Items="Training.GetAll()" EmptyMessage="No training records.">
+            <HeaderTemplate><th>Employee</th><th>Course</th><th>Status</th><th>Due Date</th><th>Progress</th></HeaderTemplate>
+            <RowTemplate Context="t">
+                <td>@t.EmployeeName</td>
+                <td style="font-weight:600">@t.CourseName</td>
+                <td><StatusBadge Status="@t.Status.ToString()" /></td>
+                <td>@t.DueDate.ToString("dd MMM yyyy")</td>
+                <td>@t.ProgressPercent%</td>
+            </RowTemplate>
+        </DataTable>
+    }
+    else
+    {
+        <DataTable Items="DocRows" EmptyMessage="No documents match the filter.">
+            <HeaderTemplate><th>Employee</th><th>Document</th><th>Type</th><th>Expiry Date</th><th>Days Remaining</th></HeaderTemplate>
+            <RowTemplate Context="d">
+                <td>@d.Owner</td>
+                <td style="font-weight:600">@d.Name</td>
+                <td>@d.Type</td>
+                <td>@d.ExpiryDate.ToString("dd MMM yyyy")</td>
+                <td style="@(d.DaysUntilExpiry < 0 ? "color:#b91c1c;font-weight:600;" : "")">
+                    @(d.DaysUntilExpiry < 0 ? "Expired" : $"{d.DaysUntilExpiry} days")
+                </td>
+            </RowTemplate>
+        </DataTable>
+    }
+</div>
+
+@code {
+    private string tab = "Employee Overview";
+    private readonly string[] tabs = { "Employee Overview", "Leave Report", "Training Report", "Document Expiry" };
+    private string dept = "";
+    private int within = 90;
+
+    private void OnDept(ChangeEventArgs e) => dept = e.Value?.ToString() ?? "";
+    private void OnWithin(ChangeEventArgs e) => within = int.TryParse(e.Value?.ToString(), out var v) ? v : 3650;
+
+    private IEnumerable<Employee> EmployeeRows =>
+        string.IsNullOrEmpty(dept) ? Employees.GetAll() : Employees.GetAll().Where(e => e.Department == dept);
+
+    private IEnumerable<DocumentRecord> DocRows =>
+        Documents.GetAll().Where(d => d.DaysUntilExpiry <= within).OrderBy(d => d.ExpiryDate);
+
+    private async Task Export()
+    {
+        string[] header;
+        IEnumerable<string[]> data;
+        string file;
+
+        switch (tab)
+        {
+            case "Leave Report":
+                header = new[] { "Employee", "Type", "Start", "End", "Days", "Status" };
+                data = TimeOff.GetAll().Select(r => new[] { r.EmployeeName, r.Type.ToString(), r.StartDate.ToString("yyyy-MM-dd"), r.EndDate.ToString("yyyy-MM-dd"), r.Days.ToString(), r.Status.ToString() });
+                file = "leave-report.csv";
+                break;
+            case "Training Report":
+                header = new[] { "Employee", "Course", "Status", "Due", "Progress" };
+                data = Training.GetAll().Select(t => new[] { t.EmployeeName, t.CourseName, t.Status.ToString(), t.DueDate.ToString("yyyy-MM-dd"), $"{t.ProgressPercent}%" });
+                file = "training-report.csv";
+                break;
+            case "Document Expiry":
+                header = new[] { "Employee", "Document", "Type", "Expiry", "DaysRemaining" };
+                data = DocRows.Select(d => new[] { d.Owner, d.Name, d.Type, d.ExpiryDate.ToString("yyyy-MM-dd"), d.DaysUntilExpiry.ToString() });
+                file = "document-expiry.csv";
+                break;
+            default:
+                header = new[] { "Employee", "Department", "Manager", "Status", "Years" };
+                data = EmployeeRows.Select(e => new[] { e.FullName, e.Department, e.ManagerName, e.Status, e.YearsOfService.ToString() });
+                file = "employee-overview.csv";
+                break;
+        }
+
+        var rows = new List<string[]> { header };
+        rows.AddRange(data);
+        var csv = string.Join("\n", rows.Select(r => string.Join(",", r.Select(Field))));
+        await JS.InvokeVoidAsync("hcpDownload", file, csv);
+    }
+
+    private static string Field(string s)
+    {
+        var v = (s ?? string.Empty).Replace("\"", "\"\"");
+        return string.Concat("\"", v, "\"");
+    }
+}

@@ -1,0 +1,55 @@
+<div class="donut-wrap">
+    <div class="donut" style="background:conic-gradient(@Gradient);">
+        <div class="donut-hole">
+            <span class="donut-value">@CenterValue</span>
+            @if (!string.IsNullOrEmpty(CenterLabel))
+            {
+                <span class="donut-label">@CenterLabel</span>
+            }
+        </div>
+    </div>
+    @if (ShowLegend)
+    {
+        <div class="donut-legend">
+            @foreach (var s in Segments)
+            {
+                <div class="donut-legend-row">
+                    <span class="donut-dot" style="background:@s.Color"></span>
+                    <span class="donut-legend-label">@s.Label</span>
+                    <span class="donut-legend-value">@s.Value.ToString("N0")</span>
+                    <span class="donut-legend-pct">@Percent(s.Value)%</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    public record Segment(string Label, double Value, string Color);
+
+    [Parameter, EditorRequired] public List<Segment> Segments { get; set; } = new();
+    [Parameter] public string CenterValue { get; set; } = "";
+    [Parameter] public string? CenterLabel { get; set; }
+    [Parameter] public bool ShowLegend { get; set; } = true;
+
+    private double Total => Math.Max(1, Segments.Sum(s => s.Value));
+
+    private int Percent(double v) => (int)Math.Round(100 * v / Total);
+
+    private string Gradient
+    {
+        get
+        {
+            var parts = new List<string>();
+            double cursor = 0;
+            foreach (var s in Segments)
+            {
+                var start = cursor / Total * 100;
+                cursor += s.Value;
+                var end = cursor / Total * 100;
+                parts.Add($"{s.Color} {start:0.##}% {end:0.##}%");
+            }
+            return string.Join(", ", parts);
+        }
+    }
+}

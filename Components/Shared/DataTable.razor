@@ -1,0 +1,36 @@
+@typeparam TItem
+
+<div class="data-table-wrap">
+    <table class="data-table">
+        @if (HeaderTemplate is not null)
+        {
+            <thead>
+                <tr>@HeaderTemplate</tr>
+            </thead>
+        }
+        <tbody>
+            @if (Items is not null && Items.Any())
+            {
+                @foreach (var item in Items)
+                {
+                    <tr>@RowTemplate(item)</tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="data-table-empty" colspan="100">
+                        <span class="bi bi-inbox"></span> @EmptyMessage
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter] public IEnumerable<TItem>? Items { get; set; }
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
+    [Parameter, EditorRequired] public RenderFragment<TItem> RowTemplate { get; set; } = default!;
+    [Parameter] public string EmptyMessage { get; set; } = "No records found.";
+}

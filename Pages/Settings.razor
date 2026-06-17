@@ -1,0 +1,123 @@
+@page "/settings"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject IUserPreferencesService Prefs
+
+<PageTitle>Settings · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Settings" Subtitle="System preferences and account controls" Icon="bi-gear-fill" />
+
+@if (email is null)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else
+{
+    <div class="settings-layout">
+        <div class="card-surface">
+            <div class="set-nav">
+                @foreach (var s in sections)
+                {
+                    <button class="set-nav-item @(s.Key == section ? "active" : "")" @onclick="() => section = s.Key">
+                        <span class="bi @s.Icon"></span> @s.Label
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="card-surface">
+            @if (section == "profile")
+            {
+                <h2 class="section-title">Profile Settings</h2>
+                <div class="form-row">
+                    <label>Language</label>
+                    <select class="form-select" @bind="_p.Language"><option>English (US)</option><option>العربية</option><option>한국어</option></select>
+                </div>
+                <div class="form-row">
+                    <label>Date Format</label>
+                    <select class="form-select" @bind="_p.DateFormat"><option>DD MMM YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option></select>
+                </div>
+                <div class="form-row">
+                    <label>Time Zone</label>
+                    <select class="form-select" @bind="_p.TimeZone"><option>(GMT+04:00) Dubai</option><option>(GMT+00:00) London</option><option>(GMT+09:00) Seoul</option></select>
+                </div>
+                <div class="form-row">
+                    <label>Theme</label>
+                    <select class="form-select" @bind="_p.Theme"><option>Light</option><option>Dark</option><option>System</option></select>
+                </div>
+            }
+            else if (section == "notifications")
+            {
+                <h2 class="section-title">Notification Settings</h2>
+                <label class="set-check"><input type="checkbox" @bind="_p.EmailNotifications" /> Email notifications</label>
+                <label class="set-check"><input type="checkbox" @bind="_p.PushNotifications" /> Push notifications</label>
+                <label class="set-check"><input type="checkbox" @bind="_p.WeeklyDigest" /> Weekly digest email</label>
+                <label class="set-check"><input type="checkbox" @bind="_p.DocExpiryReminders" /> Reminders for expiring documents</label>
+            }
+            else if (section == "security")
+            {
+                <h2 class="section-title">Password &amp; Security</h2>
+                <div class="form-row"><label>Current password</label><input type="password" class="form-control" placeholder="••••••••" /></div>
+                <div class="form-row"><label>New password</label><input type="password" class="form-control" placeholder="••••••••" /></div>
+                <div class="form-row"><label>Confirm new password</label><input type="password" class="form-control" placeholder="••••••••" /></div>
+                <label class="set-check"><input type="checkbox" /> Enable two-factor authentication (2FA)</label>
+            }
+            else
+            {
+                <h2 class="section-title">Preferences</h2>
+                <div class="form-row">
+                    <label>Display density</label>
+                    <select class="form-select" @bind="_p.Density"><option>Comfortable</option><option>Compact</option></select>
+                </div>
+                <div class="form-row">
+                    <label>Default landing page</label>
+                    <select class="form-select" @bind="_p.DefaultPage"><option>Dashboard</option><option>Calendar</option><option>My Documents</option></select>
+                </div>
+                <div class="form-row">
+                    <label>Items per page</label>
+                    <select class="form-select" @bind="_p.ItemsPerPage"><option value="10">10</option><option value="25">25</option><option value="50">50</option></select>
+                </div>
+            }
+
+            <div style="text-align:right;border-top:1px solid var(--hcp-border);padding-top:1rem;margin-top:1rem;">
+                @if (saved)
+                {
+                    <span class="text-muted-sm" style="margin-right:0.75rem;color:#16a34a;"><span class="bi bi-check-circle-fill"></span> Saved</span>
+                }
+                <button class="btn btn-primary" @onclick="Save">Save Changes</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private record Section(string Key, string Label, string Icon);
+
+    private Employee? me;
+    private string? email;
+    private string section = "profile";
+    private bool saved;
+    private UserPreferences _p = new();
+
+    private readonly Section[] sections =
+    {
+        new("profile", "Profile Settings", "bi-person-gear"),
+        new("notifications", "Notification Settings", "bi-bell"),
+        new("security", "Password & Security", "bi-shield-lock"),
+        new("preferences", "Preferences", "bi-sliders"),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        email = me?.Email;
+        if (email is not null) _p = Prefs.Get(email);
+    }
+
+    private void Save()
+    {
+        if (email is null) return;
+        Prefs.Save(email, _p);
+        saved = true;
+    }
+}

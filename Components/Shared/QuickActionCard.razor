@@ -1,0 +1,11 @@
+<a class="quick-action" href="@Href">
+    <span class="quick-action-icon bi @Icon"></span>
+    <span class="quick-action-label">@Label</span>
+    <span class="quick-action-arrow bi bi-arrow-right"></span>
+</a>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string Href { get; set; } = "";
+    [Parameter] public string Icon { get; set; } = "bi-lightning-charge";
+}

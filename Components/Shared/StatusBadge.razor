@@ -1,0 +1,23 @@
+<span class="status-badge sb-@Resolved">@(string.IsNullOrEmpty(Text) ? Status : Text)</span>
+
+@code {
+    /// <summary>The status text to display (e.g. an enum value or label).</summary>
+    [Parameter] public string Status { get; set; } = "";
+
+    /// <summary>Optional override label; falls back to <see cref="Status"/>.</summary>
+    [Parameter] public string? Text { get; set; }
+
+    /// <summary>Optional explicit variant: success, warning, danger, info, secondary.</summary>
+    [Parameter] public string? Variant { get; set; }
+
+    private string Resolved => Variant ?? Infer(Status);
+
+    private static string Infer(string status) => status.ToLowerInvariant() switch
+    {
+        "approved" or "completed" or "valid" or "active" or "reimbursed" => "success",
+        "pending" or "submitted" or "inprogress" or "expiringsoon" or "onleave" or "on leave" or "draft" => "warning",
+        "rejected" or "expired" or "overdue" => "danger",
+        "notstarted" => "info",
+        _ => "secondary"
+    };
+}

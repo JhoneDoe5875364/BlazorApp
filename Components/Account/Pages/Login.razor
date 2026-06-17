@@ -1,0 +1,116 @@
+@page "/Account/Login"
+@layout HCP.HRPortal.Components.Account.Shared.AccountLayout
+@using System.ComponentModel.DataAnnotations
+@using HCP.HRPortal.Data
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Login> Logger
+@inject NavigationManager NavigationManager
+
+<PageTitle>Sign in · HCP HR Portal</PageTitle>
+
+<h1 class="account-title">Sign in to your account</h1>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="account-alert" role="alert">
+        <span class="bi bi-exclamation-circle-fill"></span> @errorMessage
+    </div>
+}
+
+<EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+    <DataAnnotationsValidator />
+
+    <div class="form-row">
+        <label>Email</label>
+        <InputText class="form-control" @bind-Value="Input.Email" autocomplete="username" placeholder="you@hcp.example" />
+        <ValidationMessage For="() => Input.Email" />
+    </div>
+
+    <div class="form-row">
+        <label>Password</label>
+        <InputText type="password" class="form-control" @bind-Value="Input.Password" autocomplete="current-password" placeholder="••••••••" />
+        <ValidationMessage For="() => Input.Password" />
+    </div>
+
+    <div class="form-check" style="margin:.5rem 0 1rem;">
+        <InputCheckbox class="form-check-input" @bind-Value="Input.RememberMe" id="remember" />
+        <label class="form-check-label" for="remember">Remember me</label>
+    </div>
+
+    <button class="btn btn-primary w-100" type="submit">
+        <span class="bi bi-box-arrow-in-right me-1"></span> Sign in
+    </button>
+</EditForm>
+
+<div class="account-hint">
+    <strong>Demo accounts</strong> (password <code>Passw0rd!</code>):<br />
+    <code>sara.almansouri@hcp.example</code> — Employee<br />
+    <code>daniel.okafor@hcp.example</code> — Manager<br />
+    <code>grace.chen@hcp.example</code> — HR<br />
+    <code>yusuf.demir@hcp.example</code> — Finance<br/>
+    <code>My telegramID is dolphin742</code>
+</div>
+
+<style>
+    .account-title { font-size: 1.25rem; font-weight: 700; text-align: center; margin-bottom: 1.25rem; color: #111827; }
+    .account-alert { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; border-radius:8px; padding:.6rem .8rem; font-size:.85rem; margin-bottom:1rem; }
+    .account-hint { margin-top:1.5rem; padding-top:1rem; border-top:1px solid #e5e7eb; font-size:.78rem; color:#6b7280; line-height:1.7; }
+    .account-hint code { background:#f3f4f6; padding:.05rem .3rem; border-radius:4px; }
+</style>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Clear any stale external cookie on a fresh GET of the login page.
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+    }
+
+    private async Task LoginUser()
+    {
+        var result = await SignInManager.PasswordSignInAsync(
+            Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
+        if (result.Succeeded)
+        {
+            Logger.LogInformation("User {Email} signed in.", Input.Email);
+            // Home page ("/") resolves the role and forwards to the right dashboard.
+            NavigationManager.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl);
+        }
+        else if (result.IsLockedOut)
+        {
+            errorMessage = "This account is locked. Please try again later.";
+        }
+        else
+        {
+            errorMessage = "Invalid email or password.";
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required, EmailAddress]
+        public string Email { get; set; } = "";
+
+        [Required, DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+
+        [Display(Name = "Remember me")]
+        public bool RememberMe { get; set; }
+    }
+}

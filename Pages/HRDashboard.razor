@@ -1,0 +1,125 @@
+@page "/hr-dashboard"
+@attribute [Authorize(Roles = Roles.HR)]
+@inject IEmployeeService Employees
+@inject ITimeOffService TimeOff
+@inject ITrainingService Training
+@inject IDocumentService Documents
+
+<PageTitle>HR Dashboard · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Welcome back 👋"
+            Subtitle="Here's what's happening in HR today."
+            Icon="bi-people-fill" />
+
+<div class="dash-grid">
+    <DashboardCard Title="Total Employees" Value="@Employees.HeadCount.ToString()" Icon="bi-people-fill" Tone="primary" Trend="@($"{Employees.OnLeaveCount} on leave")" />
+    <DashboardCard Title="Pending Leave Requests" Value="@TimeOff.PendingCount.ToString()" Icon="bi-hourglass-split" Tone="info" Trend="Awaiting approval" />
+    <DashboardCard Title="Visa Expiring" Value="@Documents.VisaExpiringSoon.ToString()" Icon="bi-passport" Tone="warning" Trend="Within 90 days" />
+    <DashboardCard Title="Passport Expiring" Value="@Documents.PassportExpiringSoon.ToString()" Icon="bi-passport-fill" Tone="warning" Trend="Within 180 days" />
+    <DashboardCard Title="Contracts Due" Value="@Documents.ContractsDue.ToString()" Icon="bi-file-earmark-text" Tone="danger" Trend="Renewal needed" />
+    <DashboardCard Title="Training Compliance" Value="@($"{TrainingCompliance}%")" Icon="bi-mortarboard-fill" Tone="purple" Trend="Mandatory complete" />
+</div>
+
+<div class="three-col mb-grid">
+    <div class="card-surface">
+        <div class="section-head"><h2 class="section-title">Upcoming HR reminders</h2></div>
+        <div class="reminder-row">
+            <div class="reminder-ic tone-warning"><span class="bi bi-passport"></span></div>
+            <div><div style="font-weight:600">Visa renewals due</div><div class="cell-sub">@Documents.VisaExpiringSoon employee(s) within 90 days</div></div>
+        </div>
+        <div class="reminder-row">
+            <div class="reminder-ic tone-danger"><span class="bi bi-file-earmark-text"></span></div>
+            <div><div style="font-weight:600">Contracts to renew</div><div class="cell-sub">@Documents.ContractsDue contract(s) due</div></div>
+        </div>
+        <div class="reminder-row">
+            <div class="reminder-ic tone-purple"><span class="bi bi-mortarboard"></span></div>
+            <div><div style="font-weight:600">Training compliance</div><div class="cell-sub">@TrainingCompliance% of mandatory courses complete</div></div>
+        </div>
+        <div class="reminder-row">
+            <div class="reminder-ic tone-info"><span class="bi bi-hourglass-split"></span></div>
+            <div><div style="font-weight:600">Leave approvals</div><div class="cell-sub">@TimeOff.PendingCount request(s) pending</div></div>
+        </div>
+    </div>
+
+    <div class="card-surface">
+        <div class="section-head"><h2 class="section-title">Recent employee activity</h2><a class="section-link" href="employee-records">View all →</a></div>
+        @foreach (var r in recentActivity)
+        {
+            <div class="list-row">
+                <Avatar Name="@r.Name" Size="sm" />
+                <div class="list-row-main">
+                    <div class="list-row-strong">@r.Name</div>
+                    <div class="cell-sub">@r.Action</div>
+                </div>
+                <span class="list-row-time">@r.When</span>
+            </div>
+        }
+    </div>
+
+    <div class="card-surface">
+        <h2 class="section-title">Quick actions</h2>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <QuickActionCard Label="Add new employee" Href="employee-records" Icon="bi-person-plus-fill" />
+            <QuickActionCard Label="Review approvals" Href="approvals" Icon="bi-check2-square" />
+            <QuickActionCard Label="Document expiry" Href="document-expiry" Icon="bi-exclamation-triangle-fill" />
+            <QuickActionCard Label="Run HR report" Href="reports" Icon="bi-bar-chart-fill" />
+        </div>
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="card-surface">
+        <div class="section-head"><h2 class="section-title">Pending leave approvals</h2><a class="section-link" href="approvals">View all →</a></div>
+        <DataTable Items="TimeOff.GetPending()" EmptyMessage="No pending leave requests.">
+            <HeaderTemplate>
+                <th>Employee</th>
+                <th>Type</th>
+                <th>Dates</th>
+                <th>Days</th>
+            </HeaderTemplate>
+            <RowTemplate Context="r">
+                <td>
+                    <div class="cell-person"><Avatar Name="@r.EmployeeName" Size="sm" /><span>@r.EmployeeName</span></div>
+                </td>
+                <td>@r.Type</td>
+                <td>@r.StartDate.ToString("dd MMM") – @r.EndDate.ToString("dd MMM")</td>
+                <td>@r.Days</td>
+            </RowTemplate>
+        </DataTable>
+    </div>
+
+    <div class="card-surface">
+        <h2 class="section-title">Workforce overview</h2>
+        <DonutChart Segments="deptSegments" CenterValue="@Employees.HeadCount.ToString()" CenterLabel="Total" />
+    </div>
+</div>
+
+@code {
+    private List<DonutChart.Segment> deptSegments = new();
+    private List<(string Name, string Action, string When)> recentActivity = new();
+
+    private static readonly string[] Palette = { "#1f6fe5", "#16a34a", "#d98e04", "#7c3aed", "#0d94b8", "#dc2626", "#db2777" };
+
+    private int TrainingCompliance
+    {
+        get
+        {
+            var all = Training.GetAll().Where(t => t.IsMandatory).ToList();
+            return all.Count == 0 ? 100 : (int)Math.Round(100.0 * all.Count(t => t.Status == TrainingStatus.Completed) / all.Count);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        var i = 0;
+        deptSegments = Employees.ByDepartment()
+            .Select(g => new DonutChart.Segment(g.Key, g.Count(), Palette[i++ % Palette.Length]))
+            .ToList();
+
+        recentActivity = TimeOff.GetAll().Take(3)
+            .Select(r => (r.EmployeeName, $"Submitted {r.Type} leave request", "recently"))
+            .Concat(Training.GetAll().Where(t => t.Status == TrainingStatus.Completed).Take(2)
+                .Select(t => (t.EmployeeName, $"Completed {t.CourseName}", "this week")))
+            .ToList();
+    }
+}

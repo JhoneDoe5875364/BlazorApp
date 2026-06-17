@@ -1,0 +1,165 @@
+@page "/salary-certificates"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject ISalaryCertificateService CertSvc
+
+<PageTitle>Salary Certificates · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Salary Certificates"
+            Subtitle="Payslips &amp; salary certificates"
+            Icon="bi-cash-stack" />
+
+@if (me is null)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else
+{
+<div class="two-col">
+    <div class="card-surface">
+        <h2 class="section-title">Recent Payslips</h2>
+        <DataTable Items="_payslips" EmptyMessage="No payslips available.">
+            <HeaderTemplate>
+                <th>Month</th>
+                <th>Gross</th>
+                <th>Net</th>
+                <th></th>
+            </HeaderTemplate>
+            <RowTemplate Context="p">
+                <td>@p.Month</td>
+                <td class="amount">@p.Gross.ToString("N2")</td>
+                <td class="amount">@p.Net.ToString("N2")</td>
+                <td>
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <span class="bi bi-download me-1"></span>Download
+                    </button>
+                </td>
+            </RowTemplate>
+        </DataTable>
+    </div>
+
+    <div class="card-surface">
+        <h2 class="section-title">Request a Salary Certificate</h2>
+        <p>
+            A formal salary certificate confirms your current position, department, and remuneration
+            details. It is commonly required for visa applications, bank loans, and rental agreements.
+        </p>
+        <p class="text-muted-sm">
+            Certificate will be addressed on behalf of: <strong>@me.FullName</strong> &middot; @me.JobTitle, @me.Department
+        </p>
+
+        <div style="margin-top:1rem;">
+            <div class="form-row">
+                <label>Purpose</label>
+                <select class="form-select" @bind="purpose">
+                    <option>Bank loan</option>
+                    <option>Visa application</option>
+                    <option>Rental agreement</option>
+                    <option>Embassy / consulate</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Addressed to (bank, landlord, embassy…)</label>
+                <input class="form-control" @bind="addressee" placeholder="e.g. Emirates NBD" />
+            </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <button class="btn btn-primary" @onclick="Submit">
+                <span class="bi bi-file-earmark-text me-1"></span>Request certificate
+            </button>
+            @if (justRequested)
+            {
+                <span class="text-success ms-2"><span class="bi bi-check-circle-fill me-1"></span>Request submitted.</span>
+            }
+        </div>
+
+        <div class="placeholder-note" style="margin-top: 1rem;">
+            Requests are processed by HR within 3 business days. You will receive an email
+            notification when your certificate is ready to download.
+        </div>
+
+        @if (myRequests.Count > 0)
+        {
+            <h2 class="section-title" style="margin-top:1.5rem;">My Requests</h2>
+            <DataTable Items="myRequests" EmptyMessage="No requests yet.">
+                <HeaderTemplate>
+                    <th>Requested</th>
+                    <th>Purpose</th>
+                    <th>Addressed to</th>
+                    <th>Status</th>
+                </HeaderTemplate>
+                <RowTemplate Context="r">
+                    <td>@r.RequestedOn.ToString("dd MMM yyyy")</td>
+                    <td>@r.Purpose</td>
+                    <td>@r.Addressee</td>
+                    <td><StatusBadge Status="@r.Status.ToString()" Variant="@StatusVariant(r.Status)" Text="@r.Status.ToString()" /></td>
+                </RowTemplate>
+            </DataTable>
+        }
+    </div>
+</div>
+}
+
+@code {
+    private record Payslip(string Month, decimal Gross, decimal Net);
+
+    private Employee? me;
+    private Payslip[] _payslips = Array.Empty<Payslip>();
+    private List<SalaryCertificateRequest> myRequests = new();
+
+    private string purpose = "Bank loan";
+    private string addressee = "";
+    private bool justRequested;
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        if (me is null) return;
+
+        var gross = Math.Round(me.AnnualSalary / 12, 2);
+        var net   = Math.Round(gross * 0.78m, 2);
+
+        _payslips = new[]
+        {
+            new Payslip("May 2026", gross, net),
+            new Payslip("Apr 2026", gross, net),
+            new Payslip("Mar 2026", gross, net),
+            new Payslip("Feb 2026", gross, net),
+            new Payslip("Jan 2026", gross, net),
+            new Payslip("Dec 2025", gross, net),
+        };
+
+        Reload();
+    }
+
+    private void Reload() => myRequests = me is null ? new() : CertSvc.GetForEmployee(me.Id).ToList();
+
+    private void Submit()
+    {
+        if (me is null) return;
+
+        CertSvc.Add(new SalaryCertificateRequest
+        {
+            EmployeeId = me.Id,
+            EmployeeName = me.FullName,
+            Purpose = purpose,
+            Addressee = string.IsNullOrWhiteSpace(addressee) ? "—" : addressee.Trim(),
+            RequestedOn = DateOnly.FromDateTime(DateTime.Today),
+            Status = CertificateStatus.Pending,
+        });
+
+        justRequested = true;
+        addressee = "";
+        Reload();
+    }
+
+    private static string StatusVariant(CertificateStatus s) => s switch
+    {
+        CertificateStatus.Issued => "success",
+        CertificateStatus.Rejected => "danger",
+        CertificateStatus.Processing => "info",
+        _ => "warning"
+    };
+}

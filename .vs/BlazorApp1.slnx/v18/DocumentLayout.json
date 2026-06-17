@@ -1,0 +1,139 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|c:\\users\\cscot\\source\\repos\\blazorapp1\\hcp.hrportal.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|solutionrelative:hcp.hrportal.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|c:\\users\\cscot\\source\\repos\\blazorapp1\\components\\layout\\topbar.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|solutionrelative:components\\layout\\topbar.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|c:\\users\\cscot\\source\\repos\\blazorapp1\\components\\shared\\quickactioncard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|solutionrelative:components\\shared\\quickactioncard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|c:\\users\\cscot\\source\\repos\\blazorapp1\\components\\shared\\pageheader.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|solutionrelative:components\\shared\\pageheader.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|c:\\users\\cscot\\source\\repos\\blazorapp1\\components\\shared\\datatable.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|solutionrelative:components\\shared\\datatable.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|c:\\users\\cscot\\source\\repos\\blazorapp1\\components\\shared\\statusbadge.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|solutionrelative:components\\shared\\statusbadge.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|c:\\users\\cscot\\source\\repos\\blazorapp1\\components\\shared\\dashboardcard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE1A2CE8-CEC0-43A7-BE41-EC71411B65D4}|HCP.HRPortal.csproj|solutionrelative:components\\shared\\dashboardcard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "HCP.HRPortal",
+              "DocumentMoniker": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\HCP.HRPortal.csproj",
+              "RelativeDocumentMoniker": "HCP.HRPortal.csproj",
+              "ToolTip": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\HCP.HRPortal.csproj*",
+              "RelativeToolTip": "HCP.HRPortal.csproj*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-19T07:37:45.039Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "QuickActionCard.razor",
+              "DocumentMoniker": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\QuickActionCard.razor",
+              "RelativeDocumentMoniker": "Components\\Shared\\QuickActionCard.razor",
+              "ToolTip": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\QuickActionCard.razor",
+              "RelativeToolTip": "Components\\Shared\\QuickActionCard.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-19T07:26:13.752Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PageHeader.razor",
+              "DocumentMoniker": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\PageHeader.razor",
+              "RelativeDocumentMoniker": "Components\\Shared\\PageHeader.razor",
+              "ToolTip": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\PageHeader.razor",
+              "RelativeToolTip": "Components\\Shared\\PageHeader.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-19T07:26:00.292Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TopBar.razor",
+              "DocumentMoniker": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Layout\\TopBar.razor",
+              "RelativeDocumentMoniker": "Components\\Layout\\TopBar.razor",
+              "ToolTip": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Layout\\TopBar.razor",
+              "RelativeToolTip": "Components\\Layout\\TopBar.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-19T07:25:04.6Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DataTable.razor",
+              "DocumentMoniker": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\DataTable.razor",
+              "RelativeDocumentMoniker": "Components\\Shared\\DataTable.razor",
+              "ToolTip": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\DataTable.razor",
+              "RelativeToolTip": "Components\\Shared\\DataTable.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-19T07:25:50.35Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "StatusBadge.razor",
+              "DocumentMoniker": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\StatusBadge.razor",
+              "RelativeDocumentMoniker": "Components\\Shared\\StatusBadge.razor",
+              "ToolTip": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\StatusBadge.razor",
+              "RelativeToolTip": "Components\\Shared\\StatusBadge.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-19T07:25:41.05Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DashboardCard.razor",
+              "DocumentMoniker": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\DashboardCard.razor",
+              "RelativeDocumentMoniker": "Components\\Shared\\DashboardCard.razor",
+              "ToolTip": "C:\\Users\\cscot\\source\\repos\\BlazorApp1\\Components\\Shared\\DashboardCard.razor",
+              "RelativeToolTip": "Components\\Shared\\DashboardCard.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-19T07:25:31.087Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+@page "/training"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject ITrainingService TrainingSvc
+
+<PageTitle>Training · HCP HR Portal</PageTitle>
+
+<PageHeader Title="My Training"
+            Subtitle="Your courses, progress, and compliance"
+            Icon="bi-mortarboard-fill" />
+
+@if (loading)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else
+{
+    <div class="dash-grid">
+        <DashboardCard Title="Total Courses" Value="@total.ToString()" Icon="bi-mortarboard-fill" Tone="primary" Trend="Assigned to you" />
+        <DashboardCard Title="Completed" Value="@completed.ToString()" Icon="bi-check-circle-fill" Tone="success" Trend="Finished" />
+        <DashboardCard Title="In Progress" Value="@inProgress.ToString()" Icon="bi-hourglass-split" Tone="info" Trend="Ongoing" />
+        <DashboardCard Title="Overdue" Value="@overdue.ToString()" Icon="bi-exclamation-triangle-fill" Tone="danger" Trend="Past due date" />
+    </div>
+
+    <div class="card-surface">
+        <div class="cal-tabs">
+            @foreach (var t in tabs)
+            {
+                <button class="cal-tab @(t == tab ? "active" : "")" @onclick="() => tab = t">@t</button>
+            }
+        </div>
+
+        <DataTable Items="Filtered" EmptyMessage="No courses in this view.">
+            <HeaderTemplate>
+                <th>Course Name</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th style="width:180px;">Progress</th>
+                <th>Action</th>
+            </HeaderTemplate>
+            <RowTemplate Context="c">
+                <td>
+                    <span style="font-weight:600">@c.CourseName</span>
+                    @if (c.IsMandatory)
+                    {
+                        <span class="status-badge sb-warning" style="margin-left:0.4rem;font-size:0.7rem;">Mandatory</span>
+                    }
+                </td>
+                <td>@c.Category</td>
+                <td><StatusBadge Status="@c.Status.ToString()" /></td>
+                <td>@c.DueDate.ToString("dd MMM yyyy")</td>
+                <td>
+                    <div class="progress-track" style="width:100%;"><div class="progress-fill" style="width:@(c.ProgressPercent)%;"></div></div>
+                    <span class="cell-sub">@c.ProgressPercent%</span>
+                </td>
+                <td>
+                    @if (me is not null && c.EmployeeName == me.FullName && c.Status != TrainingStatus.Completed)
+                    {
+                        <button class="btn btn-outline-secondary btn-sm me-1" @onclick="() => Progress(c, c.ProgressPercent + 25)">+25%</button>
+                        <button class="btn btn-success btn-sm" @onclick="() => Progress(c, 100)">Complete</button>
+                    }
+                    else
+                    {
+                        <span class="text-muted-sm">—</span>
+                    }
+                </td>
+            </RowTemplate>
+        </DataTable>
+    </div>
+}
+
+@code {
+    private bool loading = true;
+    private Employee? me;
+    private List<TrainingRecord> myCourses = new();
+    private List<TrainingRecord> allCourses = new();
+    private string tab = "My Training";
+    private readonly string[] tabs = { "My Training", "Completed", "Overdue", "All Courses" };
+    private int total, completed, inProgress, overdue;
+    private readonly DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        Reload();
+        loading = false;
+    }
+
+    private void Reload()
+    {
+        myCourses = me is null ? new() : TrainingSvc.GetForEmployee(me.FullName).ToList();
+        allCourses = TrainingSvc.GetAll().ToList();
+
+        total = myCourses.Count;
+        completed = myCourses.Count(c => c.Status == TrainingStatus.Completed);
+        inProgress = myCourses.Count(c => c.Status == TrainingStatus.InProgress);
+        overdue = myCourses.Count(c => c.Status != TrainingStatus.Completed && c.DueDate < today);
+    }
+
+    private void Progress(TrainingRecord c, int percent)
+    {
+        TrainingSvc.SetProgress(c.Id, percent);
+        Reload();
+    }
+
+    private IEnumerable<TrainingRecord> Filtered => tab switch
+    {
+        "Completed" => myCourses.Where(c => c.Status == TrainingStatus.Completed),
+        "Overdue" => myCourses.Where(c => c.Status != TrainingStatus.Completed && c.DueDate < today),
+        "All Courses" => allCourses,
+        _ => myCourses
+    };
+}

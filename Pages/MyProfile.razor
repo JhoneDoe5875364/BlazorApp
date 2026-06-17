@@ -1,0 +1,198 @@
+@page "/profile"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject IEmployeeService Employees
+@inject IDocumentService Documents
+@inject ITrainingService Training
+@inject IWebHostEnvironment Env
+
+<PageTitle>My Profile · HCP HR Portal</PageTitle>
+
+@if (me is null)
+{
+    <p class="text-muted-sm">Loading your profile…</p>
+}
+else
+{
+<PageHeader Title="My Profile" Subtitle="@($"{me.JobTitle} · {me.Department}")" Icon="bi-person-circle" />
+
+<div class="card-surface mb-grid">
+    <div style="display:flex;align-items:center;gap:1.25rem;">
+        <Avatar Name="@me.FullName" Size="lg" PhotoUrl="@me.PhotoUrl" />
+        <div style="flex:1;">
+            <div style="font-size:1.25rem;font-weight:700;">@me.FullName</div>
+            <div class="cell-sub">@me.JobTitle &mdash; @me.Department</div>
+            <div style="margin-top:0.35rem;"><StatusBadge Status="@me.Status" /></div>
+        </div>
+        <div style="text-align:right;">
+            <label class="btn btn-outline-secondary btn-sm" style="cursor:pointer;margin:0;">
+                <span class="bi bi-camera me-1"></span>Change photo
+                <InputFile OnChange="OnPhotoSelected" accept="image/*" style="display:none;" />
+            </label>
+            @if (!string.IsNullOrEmpty(photoMsg))
+            {
+                <div class="cell-sub" style="margin-top:0.4rem;">@photoMsg</div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="two-col" style="align-items:start;">
+    <div>
+    <div class="card-surface mb-grid">
+        <h2 class="section-title">Personal details</h2>
+        <table style="width:100%;border-collapse:collapse;">
+            <tbody>
+                <tr>
+                    <td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;width:40%;white-space:nowrap;">Email</td>
+                    <td style="padding:0.45rem 0;">@me.Email</td>
+                </tr>
+                <tr>
+                    <td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;">Phone</td>
+                    <td style="padding:0.45rem 0;">@me.Phone</td>
+                </tr>
+                <tr>
+                    <td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;">Location</td>
+                    <td style="padding:0.45rem 0;">@me.Location</td>
+                </tr>
+                <tr>
+                    <td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;">Manager</td>
+                    <td style="padding:0.45rem 0;">@me.ManagerName</td>
+                </tr>
+                <tr>
+                    <td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;">Hire date</td>
+                    <td style="padding:0.45rem 0;">@me.HireDate.ToString("dd MMM yyyy")</td>
+                </tr>
+                <tr>
+                    <td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;">Years of service</td>
+                    <td style="padding:0.45rem 0;">@me.YearsOfService yr@(me.YearsOfService == 1 ? "" : "s")</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top:1rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem;">
+                <span class="text-muted-sm">Annual leave used</span>
+                <span class="text-muted-sm">@me.AnnualLeaveUsed / @me.AnnualLeaveTotal days</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" style="width:@(leavePercent)%;"></div>
+            </div>
+            <div class="cell-sub" style="margin-top:0.3rem;">@me.AnnualLeaveRemaining days remaining</div>
+        </div>
+    </div>
+
+    <div class="card-surface">
+        <h2 class="section-title">Employment</h2>
+        <table style="width:100%;border-collapse:collapse;">
+            <tbody>
+                <tr><td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;width:40%;white-space:nowrap;">Employee ID</td><td style="padding:0.45rem 0;">EMP-@me.Id.ToString("000")</td></tr>
+                <tr><td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;">Job title</td><td style="padding:0.45rem 0;">@me.JobTitle</td></tr>
+                <tr><td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;">Department</td><td style="padding:0.45rem 0;">@me.Department</td></tr>
+                <tr><td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;">Employment type</td><td style="padding:0.45rem 0;">Full Time</td></tr>
+                <tr><td class="text-muted-sm" style="padding:0.45rem 0.5rem 0.45rem 0;">Status</td><td style="padding:0.45rem 0;"><StatusBadge Status="@me.Status" /></td></tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <div>
+        <div class="card-surface mb-grid">
+            <h2 class="section-title">My documents</h2>
+            <DataTable Items="@docs" EmptyMessage="No documents found.">
+                <HeaderTemplate>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Expires</th>
+                    <th>Status</th>
+                </HeaderTemplate>
+                <RowTemplate Context="d">
+                    <td>@d.Name</td>
+                    <td>@d.Type</td>
+                    <td>@d.ExpiryDate.ToString("dd MMM yyyy")</td>
+                    <td><StatusBadge Status="@d.Status.ToString()" /></td>
+                </RowTemplate>
+            </DataTable>
+        </div>
+
+        <div class="card-surface">
+            <h2 class="section-title">My training</h2>
+            <DataTable Items="@courses" EmptyMessage="No training records found.">
+                <HeaderTemplate>
+                    <th>Course</th>
+                    <th>Progress</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                </HeaderTemplate>
+                <RowTemplate Context="t">
+                    <td>
+                        @t.CourseName
+                        @if (t.IsMandatory)
+                        {
+                            <span class="status-badge sb-warning" style="margin-left:0.4rem;font-size:0.7rem;">Mandatory</span>
+                        }
+                    </td>
+                    <td style="min-width:100px;">
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:@(t.ProgressPercent)%;"></div>
+                        </div>
+                        <div class="cell-sub">@t.ProgressPercent%</div>
+                    </td>
+                    <td>@t.DueDate.ToString("dd MMM yyyy")</td>
+                    <td><StatusBadge Status="@t.Status.ToString()" /></td>
+                </RowTemplate>
+            </DataTable>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+    private Employee? me;
+    private List<DocumentRecord> docs = new();
+    private List<TrainingRecord> courses = new();
+    private int leavePercent;
+    private string? photoMsg;
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        if (me is not null)
+        {
+            docs = Documents.GetForOwner(me.FullName).ToList();
+            courses = Training.GetForEmployee(me.FullName).ToList();
+            leavePercent = me.AnnualLeaveTotal > 0
+                ? (int)Math.Round((double)me.AnnualLeaveUsed / me.AnnualLeaveTotal * 100)
+                : 0;
+        }
+    }
+
+    private async Task OnPhotoSelected(InputFileChangeEventArgs e)
+    {
+        if (me is null) return;
+        var file = e.File;
+        if (file is null) return;
+
+        const long maxBytes = 5 * 1024 * 1024;
+        if (!file.ContentType.StartsWith("image/")) { photoMsg = "Please choose an image file."; return; }
+        if (file.Size > maxBytes) { photoMsg = "Image must be 5 MB or smaller."; return; }
+
+        var ext = Path.GetExtension(file.Name);
+        if (string.IsNullOrWhiteSpace(ext)) ext = ".png";
+
+        var dir = Path.Combine(Env.WebRootPath, "uploads", "avatars");
+        Directory.CreateDirectory(dir);
+        var fileName = $"emp-{me.Id}-{DateTime.UtcNow.Ticks}{ext}";
+        var fullPath = Path.Combine(dir, fileName);
+
+        await using (var fs = File.Create(fullPath))
+        {
+            await file.OpenReadStream(maxBytes).CopyToAsync(fs);
+        }
+
+        var url = $"uploads/avatars/{fileName}";
+        Employees.SetPhoto(me.Id, url);
+        me.PhotoUrl = url;
+        photoMsg = "Photo updated.";
+    }
+}

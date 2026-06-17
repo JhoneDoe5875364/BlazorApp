@@ -1,0 +1,37 @@
+@using HCP.HRPortal.Components.Account.Shared
+
+<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                @if (context.User.Identity?.IsAuthenticated != true)
+                {
+                    <RedirectToLogin />
+                }
+                else
+                {
+                    <div class="not-found">
+                        <span class="bi bi-shield-lock"></span>
+                        <h1>Access denied</h1>
+                        <p>Your role doesn't have access to this page.</p>
+                        <a class="btn btn-primary" href="">Back to my dashboard</a>
+                    </div>
+                }
+            </NotAuthorized>
+            <Authorizing>
+                <p class="text-muted-sm" style="padding:2rem;">Authorizing…</p>
+            </Authorizing>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="typeof(Layout.MainLayout)">
+            <div class="not-found">
+                <span class="bi bi-compass"></span>
+                <h1>Page not found</h1>
+                <p>The page you're looking for doesn't exist or hasn't been built yet.</p>
+                <a class="btn btn-primary" href="">Back to Dashboard</a>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>

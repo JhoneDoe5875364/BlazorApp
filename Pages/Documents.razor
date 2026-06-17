@@ -1,0 +1,189 @@
+@page "/documents"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject AuthenticationStateProvider AuthState
+@inject IDocumentService DocsSvc
+
+<PageTitle>Documents · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Documents"
+            Subtitle="Personal, HR, finance, and public documents"
+            Icon="bi-folder-fill" />
+
+@if (me is null)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else
+{
+    <div class="cal-tabs">
+        @foreach (var t in tabs)
+        {
+            <button class="cal-tab @(t == currentTab ? "active" : "")" @onclick="() => currentTab = t">
+                <span class="bi @TabIcon(t)"></span> @t
+            </button>
+        }
+        <button class="cal-tab" style="margin-left:auto;" @onclick="() => showUpload = !showUpload">
+            <span class="bi bi-upload"></span> Upload
+        </button>
+    </div>
+
+    @if (showUpload)
+    {
+        <div class="form-card mb-grid">
+            <h2 class="section-title">Upload a document</h2>
+            <EditForm Model="_upload" OnValidSubmit="DoUpload">
+                <DataAnnotationsValidator />
+                <div class="form-row">
+                    <label>Name</label>
+                    <InputText class="form-control" @bind-Value="_upload.Name" placeholder="e.g. Passport" />
+                </div>
+                <div class="form-row">
+                    <label>Type</label>
+                    <InputSelect class="form-select" @bind-Value="_upload.Type">
+                        <option value="Identity">Identity</option>
+                        <option value="Visa">Visa</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="Certificate">Certificate</option>
+                    </InputSelect>
+                </div>
+                <div class="form-row">
+                    <label>Issue date</label>
+                    <InputDate class="form-control" @bind-Value="_upload.IssueDate" />
+                </div>
+                <div class="form-row">
+                    <label>Expiry date</label>
+                    <InputDate class="form-control" @bind-Value="_upload.ExpiryDate" />
+                </div>
+                <button class="btn btn-primary" type="submit">
+                    <span class="bi bi-upload me-1"></span>Save document
+                </button>
+            </EditForm>
+        </div>
+    }
+
+    <div class="card-surface">
+        @if (currentTab == "Public Documents")
+        {
+            <DataTable Items="_public" EmptyMessage="No public documents.">
+                <HeaderTemplate>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Updated</th>
+                </HeaderTemplate>
+                <RowTemplate Context="d">
+                    <td style="font-weight:600">@d.Name</td>
+                    <td>@d.Type</td>
+                    <td>@d.Updated</td>
+                </RowTemplate>
+            </DataTable>
+        }
+        else
+        {
+            <DataTable Items="CurrentDocs()" EmptyMessage="No documents found.">
+                <HeaderTemplate>
+                    @if (currentTab != "My Documents")
+                    {
+                        <th>Owner</th>
+                    }
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Issued</th>
+                    <th>Expires</th>
+                    <th>Status</th>
+                </HeaderTemplate>
+                <RowTemplate Context="d">
+                    @if (currentTab != "My Documents")
+                    {
+                        <td>@d.Owner</td>
+                    }
+                    <td style="font-weight:600">@d.Name</td>
+                    <td>@d.Type</td>
+                    <td>@d.IssueDate.ToString("dd MMM yyyy")</td>
+                    <td>@d.ExpiryDate.ToString("dd MMM yyyy")</td>
+                    <td><StatusBadge Status="@d.Status.ToString()" /></td>
+                </RowTemplate>
+            </DataTable>
+        }
+    </div>
+}
+
+@code {
+    private Employee? me;
+    private List<string> tabs = new();
+    private string currentTab = "My Documents";
+    private bool showUpload;
+    private UploadModel _upload = NewUpload();
+
+    private record PublicDoc(string Name, string Type, string Updated);
+    private readonly PublicDoc[] _public =
+    {
+        new("Employee Handbook v2.0", "Policy", "01 May 2026"),
+        new("Travel & Expense Policy", "Policy", "12 Apr 2026"),
+        new("Benefits Guide 2026", "Benefits", "08 Jan 2026"),
+        new("Code of Conduct", "Policy", "25 Apr 2026"),
+        new("IT Security Policy v2.1", "Policy", "01 May 2026"),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+
+        var state = await AuthState.GetAuthenticationStateAsync();
+        var user = state.User;
+
+        tabs = new List<string> { "My Documents" };
+        if (user.IsInRole(Roles.HR)) tabs.Add("HR Documents");
+        if (user.IsInRole(Roles.Finance)) tabs.Add("Finance Documents");
+        tabs.Add("Public Documents");
+    }
+
+    private IEnumerable<DocumentRecord> CurrentDocs() => currentTab switch
+    {
+        "HR Documents" => DocsSvc.GetAll(),
+        "Finance Documents" => DocsSvc.GetFinanceDocuments(),
+        _ => me is null ? Enumerable.Empty<DocumentRecord>() : DocsSvc.GetForOwner(me.FullName)
+    };
+
+    private void DoUpload()
+    {
+        if (me is null) return;
+        DocsSvc.Add(new DocumentRecord
+        {
+            Name = _upload.Name,
+            Type = _upload.Type,
+            Owner = me.FullName,
+            IssueDate = _upload.IssueDate,
+            ExpiryDate = _upload.ExpiryDate
+        });
+        _upload = NewUpload();
+        showUpload = false;
+        currentTab = "My Documents";
+    }
+
+    private static UploadModel NewUpload() => new()
+    {
+        Type = "Identity",
+        IssueDate = DateOnly.FromDateTime(DateTime.Today),
+        ExpiryDate = DateOnly.FromDateTime(DateTime.Today.AddYears(1))
+    };
+
+    private static string TabIcon(string tab) => tab switch
+    {
+        "My Documents" => "bi-person",
+        "HR Documents" => "bi-shield-check",
+        "Finance Documents" => "bi-cash-coin",
+        "Public Documents" => "bi-building",
+        _ => "bi-folder"
+    };
+
+    private sealed class UploadModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Name { get; set; } = "";
+        public string Type { get; set; } = "Identity";
+        public DateOnly IssueDate { get; set; }
+        public DateOnly ExpiryDate { get; set; }
+    }
+}

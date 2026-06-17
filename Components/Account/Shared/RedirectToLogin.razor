@@ -1,0 +1,14 @@
+@inject NavigationManager NavigationManager
+
+@code {
+    // Renders nothing; just forwards an unauthenticated visitor to the login page,
+    // preserving where they were trying to go via ReturnUrl.
+    protected override void OnInitialized()
+    {
+        var returnUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var target = string.IsNullOrEmpty(returnUrl)
+            ? "Account/Login"
+            : $"Account/Login?ReturnUrl={Uri.EscapeDataString("/" + returnUrl)}";
+        NavigationManager.NavigateTo(target, forceLoad: true);
+    }
+}

@@ -1,0 +1,33 @@
+@page "/contracts"
+@attribute [Authorize(Roles = Roles.HR)]
+@inject IDocumentService Documents
+
+<PageTitle>Contracts · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Contracts"
+            Subtitle="Employment and vendor contracts on file"
+            Icon="bi-file-earmark-text-fill" />
+
+<div class="card-surface">
+    <DataTable Items="@Documents.GetByType("Contract")" EmptyMessage="No contracts found.">
+        <HeaderTemplate>
+            <th>Owner</th>
+            <th>Name</th>
+            <th>Issued</th>
+            <th>Expires</th>
+            <th>Status</th>
+        </HeaderTemplate>
+        <RowTemplate Context="d">
+            <td>@d.Owner</td>
+            <td style="font-weight:600">@d.Name</td>
+            <td>@d.IssueDate.ToString("dd MMM yyyy")</td>
+            <td>@d.ExpiryDate.ToString("dd MMM yyyy")</td>
+            <td><StatusBadge Status="@d.Status.ToString()" /></td>
+        </RowTemplate>
+    </DataTable>
+</div>
+
+<div class="placeholder-note">
+    <span class="bi bi-pencil-square"></span>
+    Contract templates and e-signing workflows are coming soon.
+</div>

@@ -1,0 +1,212 @@
+@page "/timesheets"
+@attribute [Authorize]
+@inject CurrentUserService CurrentUser
+@inject ITimesheetService Sheets
+
+<PageTitle>Timesheets · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Timesheets" Subtitle="Log and submit your weekly hours" Icon="bi-clock-fill" />
+
+@if (email is null)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else
+{
+    <div class="dash-grid">
+        <DashboardCard Title="Total hours this week" Value="@($"{TotalHours:N1} hrs")" Icon="bi-clock-fill" Tone="primary" Trend="@($"Target {5 * StdDay:N0} hrs")" />
+        <DashboardCard Title="Days fully logged" Value="@($"{DaysFull} / 5")" Icon="bi-calendar-check-fill" Tone="success" Trend="@($"{StdDay:N0} hrs / day")" />
+        <DashboardCard Title="Status" Value="@_week.Status.ToString()" Icon="bi-send-check-fill" Tone="@(_week.Status == TimesheetStatus.Draft ? "warning" : "success")" Trend="This week" />
+    </div>
+
+    <div class="card-surface">
+        <div class="cal-toolbar">
+            <h2 class="section-title" style="margin:0;">Week of @_weekStart.ToString("dd MMM") – @_weekStart.AddDays(6).ToString("dd MMM yyyy")</h2>
+            <div class="cal-nav">
+                <button class="cal-nav-btn" style="width:auto;padding:0 0.7rem;" @onclick="ThisWeek">This Week</button>
+                <button class="cal-nav-btn" @onclick="Prev"><span class="bi bi-chevron-left"></span></button>
+                <button class="cal-nav-btn" @onclick="Next"><span class="bi bi-chevron-right"></span></button>
+                <button class="btn btn-primary btn-sm" disabled="@(_week.Status != TimesheetStatus.Draft)" @onclick="Submit">
+                    <span class="bi bi-send me-1"></span>@(_week.Status == TimesheetStatus.Draft ? "Submit Timesheet" : "Submitted")
+                </button>
+            </div>
+        </div>
+
+        <p class="text-muted-sm" style="margin-top:0.4rem;">
+            Standard day is <strong>@StdDay.ToString("N0") hours = 100%</strong>.
+            Split a day across multiple projects by adding rows — the % column updates automatically.
+        </p>
+
+        @for (int i = 0; i < 5; i++)
+        {
+            var day = _weekStart.AddDays(i);
+            var rows = _week.Entries.Where(e => e.Date == day).ToList();
+            var dayHours = rows.Sum(e => e.Hours);
+            var dayPct = StdDay > 0 ? dayHours / StdDay * 100 : 0;
+            var ok = Math.Abs(dayHours - StdDay) < 0.01;
+
+            <div class="card-surface" style="margin-top:1rem;padding:0.9rem 1rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+                    <strong>@day.ToString("dddd, dd MMM")</strong>
+                    <span class="@(ok ? "text-muted-sm" : "")" style="@(ok ? "color:#16a34a;font-weight:600;" : "color:#b91c1c;font-weight:600;")">
+                        @dayHours.ToString("0.##") hrs · @dayPct.ToString("0")%
+                        @if (!ok && rows.Count > 0)
+                        {
+                            <span class="bi bi-exclamation-triangle-fill" style="margin-left:0.3rem;" title="Should total @StdDay hrs / 100%"></span>
+                        }
+                    </span>
+                </div>
+
+                @if (rows.Count == 0)
+                {
+                    <p class="text-muted-sm" style="margin:0 0 0.4rem 0;">No entries — add one below.</p>
+                }
+                else
+                {
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:24%;">Project</th>
+                                    <th>Task</th>
+                                    <th>Description</th>
+                                    <th style="width:8rem;">Hours</th>
+                                    <th style="width:5rem;">%</th>
+                                    @if (_week.Status == TimesheetStatus.Draft)
+                                    {
+                                        <th style="width:3rem;"></th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var e in rows)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (_week.Status == TimesheetStatus.Draft)
+                                            {
+                                                <select class="form-select" style="padding:0.3rem 0.5rem;" @bind="e.Project">
+                                                    @foreach (var p in Sheets.Projects)
+                                                    {
+                                                        <option value="@p.Code">@p.Code — @p.Name</option>
+                                                    }
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <span style="font-weight:600;">@e.Project</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (_week.Status == TimesheetStatus.Draft)
+                                            {
+                                                <input class="form-control" style="padding:0.3rem 0.5rem;" @bind="e.Task" />
+                                            }
+                                            else { @e.Task }
+                                        </td>
+                                        <td>
+                                            @if (_week.Status == TimesheetStatus.Draft)
+                                            {
+                                                <input class="form-control" style="padding:0.3rem 0.5rem;" @bind="e.Description" />
+                                            }
+                                            else { @e.Description }
+                                        </td>
+                                        <td>
+                                            @if (_week.Status == TimesheetStatus.Draft)
+                                            {
+                                                <input type="number" step="0.5" min="0" max="24" class="form-control"
+                                                       style="width:5rem;padding:0.3rem 0.5rem;" @bind="e.Hours" />
+                                            }
+                                            else { @e.Hours.ToString("0.##") }
+                                        </td>
+                                        <td><span class="text-muted-sm">@((StdDay > 0 ? e.Hours / StdDay * 100 : 0).ToString("0"))%</span></td>
+                                        @if (_week.Status == TimesheetStatus.Draft)
+                                        {
+                                            <td>
+                                                <button class="btn btn-outline-danger btn-sm" title="Remove row"
+                                                        @onclick="() => RemoveRow(e.Id)">
+                                                    <span class="bi bi-trash"></span>
+                                                </button>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @if (_week.Status == TimesheetStatus.Draft)
+                {
+                    <button class="btn btn-outline-secondary btn-sm" style="margin-top:0.5rem;" @onclick="() => AddRow(day)">
+                        <span class="bi bi-plus-lg me-1"></span>Add project row
+                    </button>
+                }
+            </div>
+        }
+
+        @if (_week.Status == TimesheetStatus.Submitted)
+        {
+            <div class="text-muted-sm" style="margin-top:0.8rem;color:#16a34a;"><span class="bi bi-check-circle-fill"></span> Timesheet submitted for approval.</div>
+        }
+    </div>
+}
+
+@code {
+    private Employee? me;
+    private string? email;
+    private DateOnly _weekStart = Monday(DateOnly.FromDateTime(DateTime.Today));
+    private TimesheetWeek _week = new();
+
+    private double StdDay => Sheets.StandardDayHours;
+    private double TotalHours => _week.Entries.Sum(e => e.Hours);
+    private int DaysFull => Enumerable.Range(0, 5)
+        .Count(i => Math.Abs(_week.Entries.Where(e => e.Date == _weekStart.AddDays(i)).Sum(e => e.Hours) - StdDay) < 0.01);
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        email = me?.Email;
+        LoadWeek();
+    }
+
+    private void LoadWeek()
+    {
+        if (email is not null) _week = Sheets.Get(email, _weekStart);
+    }
+
+    private void Prev() { _weekStart = _weekStart.AddDays(-7); LoadWeek(); }
+    private void Next() { _weekStart = _weekStart.AddDays(7); LoadWeek(); }
+    private void ThisWeek() { _weekStart = Monday(DateOnly.FromDateTime(DateTime.Today)); LoadWeek(); }
+
+    private void AddRow(DateOnly day)
+    {
+        if (email is null) return;
+        var defaultProject = Sheets.Projects.FirstOrDefault()?.Code ?? "";
+        Sheets.AddEntry(email, _weekStart, new TimesheetEntry
+        {
+            Date = day,
+            Project = defaultProject,
+            Task = "",
+            Description = "",
+            Hours = 0,
+        });
+        LoadWeek();
+    }
+
+    private void RemoveRow(Guid id)
+    {
+        if (email is null) return;
+        Sheets.RemoveEntry(email, _weekStart, id);
+        LoadWeek();
+    }
+
+    private void Submit()
+    {
+        if (email is null) return;
+        Sheets.Submit(email, _weekStart);
+        LoadWeek();
+    }
+
+    private static DateOnly Monday(DateOnly d) => d.AddDays(-((int)d.DayOfWeek == 0 ? 6 : (int)d.DayOfWeek - 1));
+}

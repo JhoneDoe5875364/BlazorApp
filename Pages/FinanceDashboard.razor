@@ -1,0 +1,177 @@
+@page "/finance-dashboard"
+@attribute [Authorize(Roles = Roles.Finance)]
+@inject IExpenseService Expenses
+@inject ICalendarService CalendarSvc
+@inject IInvoiceService InvoiceSvc
+@inject ITimesheetService Timesheets
+@inject ISalaryCertificateService CertSvc
+@inject CurrentUserService CurrentUser
+@inject INotificationService Notifier
+
+<PageTitle>Finance Dashboard · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Finance Dashboard"
+            Subtitle="Expenses, timesheets, invoices, and finance due dates"
+            Icon="bi-cash-coin" />
+
+<div class="dash-grid">
+    <DashboardCard Title="Pending Expenses" Value="@($"${Expenses.TotalSubmitted.ToString("N0")}")" Icon="bi-receipt" Tone="warning" Trend="@($"{Expenses.PendingCount} claims awaiting")" />
+    <DashboardCard Title="Total Reimbursed" Value="@($"${Expenses.TotalReimbursed.ToString("N0")}")" Icon="bi-check-circle-fill" Tone="success" Trend="Paid out" />
+    <DashboardCard Title="Pending Timesheets" Value="@pendingTimesheets.ToString()" Icon="bi-clock-history" Tone="info" Trend="Awaiting approval" />
+    <DashboardCard Title="Salary Cert Requests" Value="@certRequests.ToString()" Icon="bi-file-earmark-text" Tone="primary" Trend="To process" />
+    <DashboardCard Title="Invoices Due" Value="@invoicesDue.ToString()" Icon="bi-file-earmark-ruled-fill" Tone="warning" Trend="This month" />
+    <DashboardCard Title="Payroll Cut-off" Value="@payrollCutoff" Icon="bi-calendar2-week-fill" Tone="danger" Trend="Submit changes" />
+</div>
+
+<div class="three-col mb-grid">
+    <div class="card-surface">
+        <div class="section-head"><h2 class="section-title"><span class="bi bi-calendar3" style="color:var(--hcp-primary);margin-right:0.45rem;"></span>Finance due dates</h2><a class="section-link" href="calendar">View Calendar →</a></div>
+        @if (dueDates.Count == 0)
+        {
+            <p class="text-muted-sm">No upcoming finance deadlines.</p>
+        }
+        else
+        {
+            @foreach (var ev in dueDates)
+            {
+                <div class="ev-item">
+                    <div class="ev-date"><div class="m">@ev.Date.ToString("MMM").ToUpper()</div><div class="d">@ev.Date.Day</div></div>
+                    <div class="ev-body"><div class="ev-title">@ev.Title</div><div class="cell-sub">@ev.Category</div></div>
+                    <span class="bi bi-calendar-event ev-ic"></span>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="card-surface">
+        <div class="section-head"><h2 class="section-title">Claims awaiting approval</h2><a class="section-link" href="expenses">View all →</a></div>
+        @if (!pending.Any())
+        {
+            <p class="text-muted-sm">Nothing awaiting approval. 🎉</p>
+        }
+        else
+        {
+            @foreach (var c in pending)
+            {
+                <div class="approval-row">
+                    <Avatar Name="@c.SubmittedBy" Size="sm" />
+                    <div class="approval-meta">
+                        <div class="approval-name">@c.Title</div>
+                        <div class="approval-sub">@c.SubmittedBy · @c.Currency @c.Amount.ToString("N0")</div>
+                    </div>
+                    <div class="approval-actions">
+                        <button class="approve-btn" title="Approve" @onclick="() => Decide(c, ExpenseStatus.Approved)"><span class="bi bi-check-lg"></span></button>
+                        <button class="reject-btn" title="Reject" @onclick="() => Decide(c, ExpenseStatus.Rejected)"><span class="bi bi-x-lg"></span></button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="card-surface">
+        <h2 class="section-title">Spend by status</h2>
+        <DonutChart Segments="spendSegments" CenterValue="@($"${TotalAll.ToString("N0")}")" CenterLabel="Total" />
+    </div>
+</div>
+
+<div class="card-surface">
+    <div class="section-head"><h2 class="section-title">All expense claims</h2><a class="section-link" href="expenses">View all →</a></div>
+    <DataTable Items="all" EmptyMessage="No expense claims found.">
+        <HeaderTemplate>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Submitted By</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+        </HeaderTemplate>
+        <RowTemplate Context="c">
+            <td>@c.Title</td>
+            <td>@c.Category</td>
+            <td><div class="cell-person"><Avatar Name="@c.SubmittedBy" Size="sm" /><span>@c.SubmittedBy</span></div></td>
+            <td>@c.Date.ToString("dd MMM yyyy")</td>
+            <td><span class="amount">@c.Currency @c.Amount.ToString("N0")</span></td>
+            <td><StatusBadge Status="@c.Status.ToString()" /></td>
+            <td>
+                @if (c.Status == ExpenseStatus.Submitted)
+                {
+                    <button class="btn btn-success btn-sm me-1" @onclick="() => Decide(c, ExpenseStatus.Approved)">Approve</button>
+                    <button class="btn btn-outline-danger btn-sm" @onclick="() => Decide(c, ExpenseStatus.Rejected)">Reject</button>
+                }
+                else if (c.Status == ExpenseStatus.Approved)
+                {
+                    <button class="btn btn-primary btn-sm" @onclick="() => Decide(c, ExpenseStatus.Reimbursed)">Mark reimbursed</button>
+                }
+                else
+                {
+                    <span class="text-muted-sm">—</span>
+                }
+            </td>
+        </RowTemplate>
+    </DataTable>
+</div>
+
+@code {
+    private Employee? me;
+    private List<ExpenseClaim> pending = new();
+    private List<ExpenseClaim> all = new();
+    private List<CalendarItem> dueDates = new();
+    private List<DonutChart.Segment> spendSegments = new();
+    private decimal TotalAll;
+    private int invoicesDue;
+    private int pendingTimesheets;
+    private int certRequests;
+    private string payrollCutoff = "—";
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        dueDates = CalendarSvc.GetItems(CalendarView.FinanceDueDates, null).ToList();
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        invoicesDue = InvoiceSvc.GetAll()
+            .Count(i => i.Status != InvoiceStatus.Paid && i.DueDate.Year == today.Year && i.DueDate.Month == today.Month);
+        pendingTimesheets = Timesheets.PendingApprovalCount();
+        certRequests = CertSvc.PendingCount();
+
+        // Days until the next payroll cut-off, read from the finance calendar.
+        var cutoff = dueDates
+            .Where(d => d.Title.Contains("Payroll", StringComparison.OrdinalIgnoreCase) && d.Date >= today)
+            .OrderBy(d => d.Date)
+            .FirstOrDefault();
+        if (cutoff is not null)
+        {
+            var days = cutoff.Date.DayNumber - today.DayNumber;
+            payrollCutoff = days == 0 ? "Today" : days == 1 ? "1 day" : $"{days} days";
+        }
+
+        Reload();
+    }
+
+    private void Reload()
+    {
+        all = Expenses.GetAll().ToList();
+        pending = all.Where(c => c.Status == ExpenseStatus.Submitted).ToList();
+        TotalAll = all.Sum(c => c.Amount);
+        spendSegments = all.GroupBy(c => c.Status)
+            .Select(g => new DonutChart.Segment(g.Key.ToString(), (double)g.Sum(c => c.Amount), StatusColor(g.Key)))
+            .ToList();
+    }
+
+    private void Decide(ExpenseClaim c, ExpenseStatus status)
+    {
+        Expenses.SetStatus(c.Id, status);
+        Notifier.NotifyExpenseDecision(c, me?.Email ?? "", status); // notify submitter, not the finance user
+        Reload();
+    }
+
+    private static string StatusColor(ExpenseStatus s) => s switch
+    {
+        ExpenseStatus.Reimbursed => "#16a34a",
+        ExpenseStatus.Approved => "#1f6fe5",
+        ExpenseStatus.Submitted => "#d98e04",
+        ExpenseStatus.Rejected => "#dc2626",
+        _ => "#9ca3af"
+    };
+}

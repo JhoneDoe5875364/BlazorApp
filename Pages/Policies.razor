@@ -1,0 +1,116 @@
+@page "/policies"
+@attribute [Authorize]
+@inject IPolicyService PolicySvc
+@inject CurrentUserService CurrentUser
+
+<PageTitle>Company Policies · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Policies &amp; Acknowledgements"
+            Subtitle="Company policies and your acknowledgement status"
+            Icon="bi-file-earmark-text-fill" />
+
+@if (email is null)
+{
+    <p class="text-muted-sm">Loading…</p>
+}
+else
+{
+    <div class="dash-grid">
+        <DashboardCard Title="Total Policies" Value="@PolicySvc.All.Count.ToString()" Icon="bi-file-earmark-text-fill" Tone="primary" Trend="Published" />
+        <DashboardCard Title="Acknowledged" Value="@ackCount.ToString()" Icon="bi-check-circle-fill" Tone="success" Trend="Signed by you" />
+        <DashboardCard Title="Pending" Value="@pendingCount.ToString()" Icon="bi-hourglass-split" Tone="warning" Trend="Awaiting acknowledgement" />
+        <DashboardCard Title="Overdue" Value="@overdueCount.ToString()" Icon="bi-exclamation-triangle-fill" Tone="danger" Trend="Mandatory & unsigned" />
+    </div>
+
+    <div class="card-surface">
+        <div class="cal-tabs">
+            @foreach (var t in tabs)
+            {
+                <button class="cal-tab @(t == tab ? "active" : "")" @onclick="() => tab = t">@t</button>
+            }
+        </div>
+
+        @if (tab == "Policies")
+        {
+            <DataTable Items="PolicySvc.All" EmptyMessage="No policies found.">
+                <HeaderTemplate>
+                    <th>Policy Name</th>
+                    <th>Category</th>
+                    <th>Version</th>
+                    <th>Last Updated</th>
+                    <th></th>
+                </HeaderTemplate>
+                <RowTemplate Context="p">
+                    <td style="font-weight:600">@p.Name @if (p.Mandatory) { <span class="status-badge sb-warning" style="margin-left:0.3rem;font-size:0.68rem;">Mandatory</span> }</td>
+                    <td><StatusBadge Variant="info" Text="@p.Category" Status="@p.Category" /></td>
+                    <td>@p.Version</td>
+                    <td>@p.Updated</td>
+                    <td><a class="section-link" href="documents">View →</a></td>
+                </RowTemplate>
+            </DataTable>
+        }
+        else
+        {
+            <DataTable Items="PolicySvc.All" EmptyMessage="No acknowledgements.">
+                <HeaderTemplate>
+                    <th>Policy Name</th>
+                    <th>Version</th>
+                    <th>Acknowledged Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </HeaderTemplate>
+                <RowTemplate Context="p">
+                    <td style="font-weight:600">@p.Name</td>
+                    <td>@p.Version</td>
+                    <td>@(PolicySvc.AcknowledgedOn(email!, p.Id)?.ToString("dd MMM yyyy") ?? "—")</td>
+                    <td>
+                        @if (PolicySvc.IsAcknowledged(email!, p.Id))
+                        {
+                            <StatusBadge Variant="success" Text="Acknowledged" Status="Acknowledged" />
+                        }
+                        else if (p.Mandatory)
+                        {
+                            <StatusBadge Variant="danger" Text="Overdue" Status="Overdue" />
+                        }
+                        else
+                        {
+                            <StatusBadge Variant="warning" Text="Pending" Status="Pending" />
+                        }
+                    </td>
+                    <td>
+                        @if (!PolicySvc.IsAcknowledged(email!, p.Id))
+                        {
+                            <button class="btn btn-primary btn-sm" @onclick="() => Acknowledge(p.Id)">Acknowledge</button>
+                        }
+                        else
+                        {
+                            <span class="text-muted-sm">—</span>
+                        }
+                    </td>
+                </RowTemplate>
+            </DataTable>
+        }
+    </div>
+}
+
+@code {
+    private Employee? me;
+    private string? email;
+    private string tab = "Policies";
+    private readonly string[] tabs = { "Policies", "Acknowledgements" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+        email = me?.Email;
+    }
+
+    private int ackCount => email is null ? 0 : PolicySvc.All.Count(p => PolicySvc.IsAcknowledged(email, p.Id));
+    private int pendingCount => email is null ? 0 : PolicySvc.All.Count(p => !PolicySvc.IsAcknowledged(email, p.Id));
+    private int overdueCount => email is null ? 0 : PolicySvc.All.Count(p => p.Mandatory && !PolicySvc.IsAcknowledged(email, p.Id));
+
+    private void Acknowledge(int policyId)
+    {
+        if (email is not null) PolicySvc.Acknowledge(email, policyId);
+    }
+}

@@ -1,0 +1,118 @@
+@page "/approvals"
+@attribute [Authorize(Roles = Roles.Manager + "," + Roles.HR)]
+@inject ITimeOffService TimeOff
+@inject IExpenseService ExpenseService
+@inject CurrentUserService CurrentUser
+@inject INotificationService Notifier
+
+<PageTitle>Approvals · HCP HR Portal</PageTitle>
+
+<PageHeader Title="Approvals" Subtitle="Review requests and see what you've processed" Icon="bi-check2-square" />
+
+<div class="dash-grid">
+    <DashboardCard Title="Pending" Value="@TimeOff.GetPending().Count().ToString()" Icon="bi-hourglass-split" Tone="warning" Trend="Time-off awaiting you" />
+    <DashboardCard Title="Approved" Value="@CountByStatus(TimeOffStatus.Approved).ToString()" Icon="bi-check-circle-fill" Tone="success" Trend="Granted" />
+    <DashboardCard Title="Rejected" Value="@CountByStatus(TimeOffStatus.Rejected).ToString()" Icon="bi-x-circle-fill" Tone="danger" Trend="Declined" />
+</div>
+
+<div class="card-surface mb-grid">
+    <div class="cal-tabs">
+        @foreach (var t in tabs)
+        {
+            <button class="cal-tab @(t == tab ? "active" : "")" @onclick="() => tab = t">@t</button>
+        }
+    </div>
+
+    <DataTable Items="FilteredLeave" EmptyMessage="@($"No {tab.ToLower()} time-off requests.")">
+        <HeaderTemplate>
+            <th>Employee</th>
+            <th>Type</th>
+            <th>Dates</th>
+            <th>Days</th>
+            <th>Attachment</th>
+            @if (tab == "Pending")
+            {
+                <th>Actions</th>
+            }
+            else
+            {
+                <th>Status</th>
+            }
+        </HeaderTemplate>
+        <RowTemplate Context="r">
+            <td>@r.EmployeeName</td>
+            <td>@r.Type</td>
+            <td>@r.StartDate.ToString("dd MMM yyyy") – @r.EndDate.ToString("dd MMM yyyy")</td>
+            <td>@r.Days</td>
+            <td>
+                @if (!string.IsNullOrEmpty(r.AttachmentUrl))
+                {
+                    <a href="@r.AttachmentUrl" target="_blank" rel="noopener" title="@r.AttachmentName">
+                        <span class="bi bi-paperclip"></span> @r.AttachmentName
+                    </a>
+                }
+                else
+                {
+                    <span class="text-muted-sm">—</span>
+                }
+            </td>
+            @if (tab == "Pending")
+            {
+                <td>
+                    <button class="btn btn-success btn-sm me-1" @onclick="() => Decide(r, true)"><span class="bi bi-check-lg"></span> Approve</button>
+                    <button class="btn btn-outline-danger btn-sm" @onclick="() => Decide(r, false)"><span class="bi bi-x-lg"></span> Reject</button>
+                </td>
+            }
+            else
+            {
+                <td><StatusBadge Status="@r.Status.ToString()" /></td>
+            }
+        </RowTemplate>
+    </DataTable>
+</div>
+
+<div class="card-surface">
+    <h2 class="section-title">Pending expenses</h2>
+    <p class="text-muted-sm">Expense approval is handled by Finance — items shown for visibility only.</p>
+    <DataTable Items="ExpenseService.GetByStatus(ExpenseStatus.Submitted)" EmptyMessage="No submitted expense claims.">
+        <HeaderTemplate>
+            <th>Title</th>
+            <th>Submitted by</th>
+            <th>Amount</th>
+            <th>Status</th>
+        </HeaderTemplate>
+        <RowTemplate Context="c">
+            <td>@c.Title</td>
+            <td>@c.SubmittedBy</td>
+            <td class="amount">@c.Amount.ToString("N2") @c.Currency</td>
+            <td><StatusBadge Status="@c.Status.ToString()" /></td>
+        </RowTemplate>
+    </DataTable>
+</div>
+
+@code {
+    private Employee? me;
+    private string tab = "Pending";
+    private readonly string[] tabs = { "Pending", "Approved", "Rejected", "All" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = await CurrentUser.GetEmployeeAsync();
+    }
+
+    private int CountByStatus(TimeOffStatus s) => TimeOff.GetAll().Count(r => r.Status == s);
+
+    private IEnumerable<Models.TimeOffRequest> FilteredLeave => tab switch
+    {
+        "Approved" => TimeOff.GetAll().Where(r => r.Status == TimeOffStatus.Approved),
+        "Rejected" => TimeOff.GetAll().Where(r => r.Status == TimeOffStatus.Rejected),
+        "All" => TimeOff.GetAll(),
+        _ => TimeOff.GetPending()
+    };
+
+    private void Decide(Models.TimeOffRequest r, bool approved)
+    {
+        TimeOff.SetStatus(r.Id, approved ? TimeOffStatus.Approved : TimeOffStatus.Rejected);
+        Notifier.NotifyLeaveDecision(r, me?.Email ?? "", approved); // notify the requester, not the approver
+    }
+}
