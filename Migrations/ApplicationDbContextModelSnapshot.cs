@@ -91,6 +91,44 @@ namespace HCP.HRPortal.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("HCP.HRPortal.Models.Announcement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("varchar(4000)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Date");
+
+                    b.ToTable("Announcements", (string)null);
+                });
+
             modelBuilder.Entity("HCP.HRPortal.Models.BusinessTrip", b =>
                 {
                     b.Property<int>("Id")
@@ -228,6 +266,16 @@ namespace HCP.HRPortal.Migrations
                         .HasPrecision(12, 2)
                         .HasColumnType("decimal(12,2)");
 
+                    b.Property<DateOnly?>("Birthday")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("ContractEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)");
+
                     b.Property<string>("Department")
                         .IsRequired()
                         .HasMaxLength(80)
@@ -237,6 +285,10 @@ namespace HCP.HRPortal.Migrations
                         .IsRequired()
                         .HasMaxLength(160)
                         .HasColumnType("varchar(160)");
+
+                    b.Property<string>("EmploymentType")
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -261,6 +313,10 @@ namespace HCP.HRPortal.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("varchar(120)");
 
+                    b.Property<string>("PersonalEmail")
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(40)
@@ -269,6 +325,13 @@ namespace HCP.HRPortal.Migrations
                     b.Property<string>("PhotoUrl")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
+
+                    b.Property<string>("PreferredName")
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)");
+
+                    b.Property<DateOnly?>("ProbationEndDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Status")
                         .IsRequired()

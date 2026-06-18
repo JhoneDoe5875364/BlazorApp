@@ -2,6 +2,9 @@
 @attribute [Authorize(Roles = Roles.HR)]
 @inject IEmployeeService Employees
 @inject IDocumentService Documents
+@inject UserManager<HCP.HRPortal.Data.ApplicationUser> UserMgr
+@inject Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole> RoleMgr
+@inject IWebHostEnvironment Env
 
 <PageTitle>Employee Records · HCP HR Portal</PageTitle>
 
@@ -15,23 +18,100 @@
 {
     <div class="form-card mb-grid">
         <h2 class="section-title">@(_edit.Id == 0 ? "Add employee" : $"Edit — {_edit.FullName}")</h2>
+
+        <h3 class="section-title" style="font-size:0.85rem;margin-top:0.5rem;">Photo</h3>
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+            <Avatar Name="@(string.IsNullOrWhiteSpace(_edit.FullName) ? "?" : _edit.FullName)"
+                    Size="lg"
+                    PhotoUrl="@(string.IsNullOrEmpty(_photoPreviewUrl) ? _edit.PhotoUrl : _photoPreviewUrl)" />
+            <div style="flex:1;">
+                <InputFile OnChange="OnPhotoSelected" accept=".jpg,.jpeg,.png,.gif,.webp" class="form-control" />
+                <div class="text-muted-sm" style="margin-top:0.3rem;">
+                    Optional. JPG / PNG / GIF / WEBP, max @(MaxPhotoBytes / (1024*1024)) MB.
+                </div>
+                @if (_pickedPhoto is not null)
+                {
+                    <div class="text-muted-sm" style="margin-top:0.3rem;">
+                        <span class="bi bi-paperclip"></span> @_pickedPhoto.Name (@FormatBytes(_pickedPhoto.Size))
+                        <button type="button" class="btn btn-link btn-sm" style="padding:0;margin-left:0.4rem;" @onclick="ClearPickedPhoto">cancel</button>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(_edit.PhotoUrl) && _pickedPhoto is null)
+                {
+                    <button type="button" class="btn btn-outline-danger btn-sm" style="margin-top:0.3rem;" @onclick="RemovePhoto">
+                        <span class="bi bi-trash"></span> Remove photo
+                    </button>
+                }
+                @if (!string.IsNullOrEmpty(_photoError))
+                {
+                    <div class="text-muted-sm" style="color:#b91c1c;margin-top:0.3rem;">@_photoError</div>
+                }
+            </div>
+        </div>
+
+        <h3 class="section-title" style="font-size:0.85rem;margin-top:0.5rem;">Basic Info</h3>
         <div class="two-col" style="align-items:start;">
             <div>
                 <div class="form-row"><label>Full name</label><input class="form-control" @bind="_edit.FullName" /></div>
+                <div class="form-row"><label>Preferred name</label><input class="form-control" @bind="_preferredName" placeholder="(optional)" /></div>
                 <div class="form-row"><label>Job title</label><input class="form-control" @bind="_edit.JobTitle" /></div>
                 <div class="form-row"><label>Department</label><input class="form-control" @bind="_edit.Department" /></div>
-                <div class="form-row"><label>Email</label><input class="form-control" @bind="_edit.Email" /></div>
             </div>
             <div>
+                <div class="form-row"><label>Work email</label><input class="form-control" @bind="_edit.Email" /></div>
+                <div class="form-row"><label>Personal email</label><input class="form-control" @bind="_personalEmail" placeholder="(optional)" /></div>
                 <div class="form-row"><label>Phone</label><input class="form-control" @bind="_edit.Phone" /></div>
-                <div class="form-row"><label>Location</label><input class="form-control" @bind="_edit.Location" /></div>
-                <div class="form-row"><label>Manager</label><input class="form-control" @bind="_edit.ManagerName" /></div>
-                <div class="form-row"><label>Status</label><select class="form-select" @bind="_edit.Status"><option>Active</option><option>On Leave</option><option>Inactive</option></select></div>
-                <div class="form-row"><label>Hire date</label><input type="date" class="form-control" @bind="_edit.HireDate" /></div>
+                <div class="form-row"><label>Birthday</label><input type="date" class="form-control" @bind="_birthday" /></div>
             </div>
         </div>
-        <button class="btn btn-primary me-1" @onclick="SaveEmployee">Save</button>
-        <button class="btn btn-outline-secondary" @onclick="() => showForm = false">Cancel</button>
+
+        <h3 class="section-title" style="font-size:0.85rem;margin-top:1rem;">Location &amp; Reporting</h3>
+        <div class="two-col" style="align-items:start;">
+            <div>
+                <div class="form-row"><label>Work location</label><input class="form-control" @bind="_edit.Location" /></div>
+                <div class="form-row"><label>Country</label><input class="form-control" @bind="_country" placeholder="(optional)" /></div>
+            </div>
+            <div>
+                <div class="form-row"><label>Direct manager</label><input class="form-control" @bind="_edit.ManagerName" /></div>
+                <div class="form-row"><label>Status</label><select class="form-select" @bind="_edit.Status"><option>Active</option><option>On Leave</option><option>Inactive</option></select></div>
+            </div>
+        </div>
+
+        <h3 class="section-title" style="font-size:0.85rem;margin-top:1rem;">Employment Dates</h3>
+        <div class="two-col" style="align-items:start;">
+            <div>
+                <div class="form-row"><label>Employment type</label>
+                    <select class="form-select" @bind="_employmentType">
+                        <option value="">(unspecified)</option>
+                        <option>Employee</option><option>Consultant</option><option>Contractor</option><option>Intern</option>
+                    </select>
+                </div>
+                <div class="form-row"><label>Hire / start date</label><input type="date" class="form-control" @bind="_edit.HireDate" /></div>
+            </div>
+            <div>
+                <div class="form-row"><label>Probation end date</label><input type="date" class="form-control" @bind="_probationEnd" /></div>
+                <div class="form-row"><label>Contract end date</label><input type="date" class="form-control" @bind="_contractEnd" /></div>
+            </div>
+        </div>
+
+        <div style="margin-top:0.75rem;">
+            <button class="btn btn-primary me-1" @onclick="SaveEmployee">Save</button>
+            <button class="btn btn-outline-secondary" @onclick="() => showForm = false">Cancel</button>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_saveMessage))
+        {
+            <div class="text-muted-sm" style="margin-top:0.6rem;color:@(_saveError ? "#b91c1c" : "#16a34a");">
+                <span class="bi @(_saveError ? "bi-exclamation-circle-fill" : "bi-check-circle-fill")"></span> @_saveMessage
+            </div>
+        }
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(_toast))
+{
+    <div class="card-surface mb-grid" style="border-left:4px solid #16a34a;">
+        <strong><span class="bi bi-check-circle-fill" style="color:#16a34a;margin-right:0.4rem;"></span>@_toast</strong>
     </div>
 }
 
@@ -66,6 +146,7 @@
                     <tr>
                         <th>Employee</th>
                         <th>Department</th>
+                        <th>Role</th>
                         <th>Manager</th>
                         <th>Status</th>
                     </tr>
@@ -73,7 +154,7 @@
                 <tbody>
                     @if (Paged.Count == 0)
                     {
-                        <tr><td colspan="4" class="data-table-empty">No employees match your filters.</td></tr>
+                        <tr><td colspan="5" class="data-table-empty">No employees match your filters.</td></tr>
                     }
                     @foreach (var e in Paged)
                     {
@@ -85,6 +166,7 @@
                                 </div>
                             </td>
                             <td>@e.Department</td>
+                            <td><StatusBadge Status="@Roles.For(e)" Variant="@RoleVariant(Roles.For(e))" Text="@Roles.For(e)" /></td>
                             <td>@e.ManagerName</td>
                             <td><StatusBadge Status="@e.Status" /></td>
                         </tr>
@@ -125,12 +207,42 @@
             </div>
 
             <h2 class="section-title" style="margin:1.25rem 0 0.5rem;font-size:0.9rem;">Contact</h2>
-            <div class="detail-kv"><span class="k">Email</span><span>@selected.Email</span></div>
+            @if (!string.IsNullOrEmpty(selected.PreferredName))
+            {
+                <div class="detail-kv"><span class="k">Preferred name</span><span>@selected.PreferredName</span></div>
+            }
+            <div class="detail-kv"><span class="k">Work email</span><span>@selected.Email</span></div>
+            @if (!string.IsNullOrEmpty(selected.PersonalEmail))
+            {
+                <div class="detail-kv"><span class="k">Personal email</span><span>@selected.PersonalEmail</span></div>
+            }
             <div class="detail-kv"><span class="k">Phone</span><span>@selected.Phone</span></div>
             <div class="detail-kv"><span class="k">Location</span><span>@selected.Location</span></div>
+            @if (!string.IsNullOrEmpty(selected.Country))
+            {
+                <div class="detail-kv"><span class="k">Country</span><span>@selected.Country</span></div>
+            }
             <div class="detail-kv"><span class="k">Manager</span><span>@selected.ManagerName</span></div>
+            @if (selected.Birthday is not null)
+            {
+                <div class="detail-kv"><span class="k">Birthday</span><span>@selected.Birthday.Value.ToString("dd MMM yyyy")</span></div>
+            }
+
+            <h2 class="section-title" style="margin:1.25rem 0 0.5rem;font-size:0.9rem;">Employment</h2>
+            @if (!string.IsNullOrEmpty(selected.EmploymentType))
+            {
+                <div class="detail-kv"><span class="k">Type</span><span>@selected.EmploymentType</span></div>
+            }
             <div class="detail-kv"><span class="k">Joined</span><span>@selected.HireDate.ToString("dd MMM yyyy")</span></div>
             <div class="detail-kv"><span class="k">Years of service</span><span>@selected.YearsOfService</span></div>
+            @if (selected.ProbationEndDate is not null)
+            {
+                <div class="detail-kv"><span class="k">Probation ends</span><span>@selected.ProbationEndDate.Value.ToString("dd MMM yyyy")</span></div>
+            }
+            @if (selected.ContractEndDate is not null)
+            {
+                <div class="detail-kv"><span class="k">Contract ends</span><span>@selected.ContractEndDate.Value.ToString("dd MMM yyyy")</span></div>
+            }
 
             <h2 class="section-title" style="margin:1.25rem 0 0.5rem;font-size:0.9rem;">Key document dates</h2>
             @if (SelectedDocs.Count == 0)
@@ -161,26 +273,196 @@
     private Employee? selected;
     private Employee _edit = new();
     private bool showForm;
+    private string? _saveMessage;
+    private bool _saveError;
+    private string? _toast;
+
+    // Local bindings for nullable / new XLSX-derived fields — kept out of the model directly
+    // so the date inputs and empty-string handling are predictable.
+    private string? _preferredName;
+    private string? _personalEmail;
+    private string? _country;
+    private string? _employmentType;
+    private DateOnly? _birthday;
+    private DateOnly? _probationEnd;
+    private DateOnly? _contractEnd;
+
+    private const string DefaultPassword = "Passw0rd!";
+
+    // --- Photo upload state ---
+    private const long MaxPhotoBytes = 2 * 1024 * 1024;                 // 2 MB
+    private static readonly string[] AllowedPhotoExt = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+    private IBrowserFile? _pickedPhoto;
+    private string? _photoPreviewUrl;       // data: URL for in-form preview before save
+    private string? _photoError;
 
     protected override void OnInitialized() => all = Employees.GetAll().ToList();
 
     private void StartAdd()
     {
         _edit = new Employee { Status = "Active", HireDate = DateOnly.FromDateTime(DateTime.Today) };
+        LoadOptionalFields(_edit);
+        _saveMessage = null; _saveError = false; _toast = null;
+        ClearPickedPhoto();
         showForm = true;
     }
 
     private void StartEdit(Employee e)
     {
         _edit = Clone(e);
+        LoadOptionalFields(_edit);
+        _saveMessage = null; _saveError = false; _toast = null;
+        ClearPickedPhoto();
         showForm = true;
     }
 
-    private void SaveEmployee()
+    private async Task OnPhotoSelected(InputFileChangeEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(_edit.FullName) || string.IsNullOrWhiteSpace(_edit.Email)) return;
-        if (_edit.Id == 0) Employees.Add(_edit);
+        _photoError = null;
+        var f = e.File;
+        if (f.Size > MaxPhotoBytes)
+        {
+            _photoError = $"Image is too large ({FormatBytes(f.Size)}). Max {MaxPhotoBytes / (1024*1024)} MB.";
+            _pickedPhoto = null; _photoPreviewUrl = null;
+            return;
+        }
+        var ext = Path.GetExtension(f.Name).ToLowerInvariant();
+        if (!AllowedPhotoExt.Contains(ext))
+        {
+            _photoError = $"File type '{ext}' is not allowed.";
+            _pickedPhoto = null; _photoPreviewUrl = null;
+            return;
+        }
+        _pickedPhoto = f;
+
+        // Build a data: URL preview so the avatar updates immediately in the form.
+        using var ms = new MemoryStream();
+        await f.OpenReadStream(MaxPhotoBytes).CopyToAsync(ms);
+        var b64 = Convert.ToBase64String(ms.ToArray());
+        _photoPreviewUrl = $"data:{f.ContentType};base64,{b64}";
+    }
+
+    private void ClearPickedPhoto()
+    {
+        _pickedPhoto = null;
+        _photoPreviewUrl = null;
+        _photoError = null;
+    }
+
+    private void RemovePhoto()
+    {
+        _edit.PhotoUrl = null;
+        _photoPreviewUrl = null;
+        _pickedPhoto = null;
+    }
+
+    private void LoadOptionalFields(Employee e)
+    {
+        _preferredName = e.PreferredName;
+        _personalEmail = e.PersonalEmail;
+        _country = e.Country;
+        _employmentType = e.EmploymentType ?? "";
+        _birthday = e.Birthday;
+        _probationEnd = e.ProbationEndDate;
+        _contractEnd = e.ContractEndDate;
+    }
+
+    private void ApplyOptionalFields(Employee e)
+    {
+        e.PreferredName = string.IsNullOrWhiteSpace(_preferredName) ? null : _preferredName.Trim();
+        e.PersonalEmail = string.IsNullOrWhiteSpace(_personalEmail) ? null : _personalEmail.Trim().ToLowerInvariant();
+        e.Country = string.IsNullOrWhiteSpace(_country) ? null : _country.Trim();
+        e.EmploymentType = string.IsNullOrWhiteSpace(_employmentType) ? null : _employmentType.Trim();
+        e.Birthday = _birthday;
+        e.ProbationEndDate = _probationEnd;
+        e.ContractEndDate = _contractEnd;
+    }
+
+    private async Task SaveEmployee()
+    {
+        _saveMessage = null; _saveError = false; _toast = null;
+
+        if (string.IsNullOrWhiteSpace(_edit.FullName) || string.IsNullOrWhiteSpace(_edit.Email))
+        {
+            _saveMessage = "Full name and email are required."; _saveError = true; return;
+        }
+
+        _edit.FullName = _edit.FullName.Trim();
+        _edit.Email = _edit.Email.Trim().ToLowerInvariant();
+        ApplyOptionalFields(_edit);
+
+        var isNew = _edit.Id == 0;
+        if (isNew) Employees.Add(_edit);
         else Employees.Update(_edit);
+
+        // Photo must be saved AFTER the employee row exists, so the filename can use the
+        // generated Id. Re-fetch to pick up the new Id on an Add.
+        var savedForPhoto = isNew
+            ? Employees.GetAll().FirstOrDefault(x => x.Email == _edit.Email)
+            : _edit;
+        if (savedForPhoto is not null && _pickedPhoto is not null)
+        {
+            try
+            {
+                var url = await SavePhotoAsync(savedForPhoto.Id, _pickedPhoto);
+                savedForPhoto.PhotoUrl = url;
+                _edit.PhotoUrl = url;
+                Employees.Update(savedForPhoto);
+            }
+            catch (Exception ex)
+            {
+                _saveMessage = $"Saved, but photo upload failed: {ex.Message}";
+                _saveError = true;
+            }
+        }
+        else if (savedForPhoto is not null && !isNew && savedForPhoto.PhotoUrl != _edit.PhotoUrl)
+        {
+            // PhotoUrl was cleared via "Remove photo" — persist the null.
+            Employees.Update(_edit);
+        }
+
+        // Sync Identity role with the (possibly-changed) department/title.
+        // On Add we already assigned the role above; here we re-derive for existing users.
+        if (!isNew)
+        {
+            await SyncIdentityRoleAsync(_edit);
+        }
+
+        if (isNew)
+        {
+            // Also create the Identity login + assign the auto-derived role, using the
+            // shared default password. The recipient changes it later via /Account/ChangePassword.
+            var existing = await UserMgr.FindByEmailAsync(_edit.Email);
+            if (existing is null)
+            {
+                var savedEmployee = Employees.GetAll().FirstOrDefault(x => x.Email == _edit.Email);
+                var user = new ApplicationUser
+                {
+                    UserName = _edit.Email,
+                    Email = _edit.Email,
+                    EmailConfirmed = true,
+                    EmployeeId = savedEmployee?.Id,
+                };
+                var result = await UserMgr.CreateAsync(user, DefaultPassword);
+                if (result.Succeeded)
+                {
+                    var role = Roles.For(_edit);
+                    if (!await RoleMgr.RoleExistsAsync(role))
+                        await RoleMgr.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(role));
+                    await UserMgr.AddToRoleAsync(user, role);
+                    _toast = $"Account created for {_edit.FullName} — role: {role}. Default password: {DefaultPassword}";
+                }
+                else
+                {
+                    _toast = $"Employee saved but account creation failed: {string.Join("; ", result.Errors.Select(e => e.Description))}";
+                }
+            }
+            else
+            {
+                _toast = $"Employee saved. Identity account for {_edit.Email} already existed — left as-is.";
+            }
+        }
+
         all = Employees.GetAll().ToList();
         selected = all.FirstOrDefault(x => x.Email == _edit.Email);
         showForm = false;
@@ -191,7 +473,11 @@
         Id = e.Id, FullName = e.FullName, JobTitle = e.JobTitle, Department = e.Department,
         Email = e.Email, Phone = e.Phone, Location = e.Location, ManagerName = e.ManagerName,
         Status = e.Status, HireDate = e.HireDate, PhotoUrl = e.PhotoUrl,
-        AnnualSalary = e.AnnualSalary, AnnualLeaveTotal = e.AnnualLeaveTotal, AnnualLeaveUsed = e.AnnualLeaveUsed
+        AnnualSalary = e.AnnualSalary, AnnualLeaveTotal = e.AnnualLeaveTotal, AnnualLeaveUsed = e.AnnualLeaveUsed,
+        PreferredName = e.PreferredName, PersonalEmail = e.PersonalEmail,
+        Birthday = e.Birthday, EmploymentType = e.EmploymentType,
+        ProbationEndDate = e.ProbationEndDate, ContractEndDate = e.ContractEndDate,
+        Country = e.Country
     };
 
     private List<Employee> Filtered
@@ -223,4 +509,60 @@
     private void OnSearch(ChangeEventArgs e) { search = e.Value?.ToString() ?? ""; page = 0; }
     private void OnDept(ChangeEventArgs e) { dept = e.Value?.ToString() ?? ""; page = 0; }
     private void SetStatus(string s) { status = s; page = 0; }
+
+    private static string RoleVariant(string role) => role switch
+    {
+        "HR" => "purple",
+        "Manager" => "info",
+        "Finance" => "warning",
+        _ => "secondary"
+    };
+
+    /// <summary>
+    /// Recomputes the Identity role for an existing employee's login and updates it if it
+    /// differs from what's currently assigned. Called from SaveEmployee on every edit so a
+    /// department/title change propagates to portal access immediately.
+    /// </summary>
+    private async Task SyncIdentityRoleAsync(Employee e)
+    {
+        var user = await UserMgr.FindByEmailAsync(e.Email);
+        if (user is null) return;
+
+        var desired = Roles.For(e);
+        if (!await RoleMgr.RoleExistsAsync(desired))
+            await RoleMgr.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(desired));
+
+        var current = await UserMgr.GetRolesAsync(user);
+        if (current.Count == 1 && current[0] == desired) return; // already correct
+
+        if (current.Count > 0)
+            await UserMgr.RemoveFromRolesAsync(user, current);
+        await UserMgr.AddToRoleAsync(user, desired);
+
+        var oldList = current.Count == 0 ? "(none)" : string.Join(",", current);
+        _toast = string.IsNullOrEmpty(_toast)
+            ? $"Role updated: {oldList} → {desired}. User may need to sign out / back in for changes to take effect."
+            : _toast + $" Role updated: {oldList} → {desired}.";
+    }
+
+    private async Task<string> SavePhotoAsync(int employeeId, IBrowserFile file)
+    {
+        var ext = Path.GetExtension(file.Name).ToLowerInvariant();
+        if (!AllowedPhotoExt.Contains(ext)) ext = ".png";
+        var dir = Path.Combine(Env.WebRootPath, "uploads", "avatars");
+        Directory.CreateDirectory(dir);
+        var stored = $"emp-{employeeId}-{DateTime.UtcNow.Ticks}{ext}";
+        var path = Path.Combine(dir, stored);
+        await using (var fs = File.Create(path))
+        await using (var src = file.OpenReadStream(MaxPhotoBytes))
+            await src.CopyToAsync(fs);
+        return $"uploads/avatars/{stored}";
+    }
+
+    private static string FormatBytes(long bytes) => bytes switch
+    {
+        >= 1024 * 1024 => $"{bytes / 1024.0 / 1024.0:0.#} MB",
+        >= 1024 => $"{bytes / 1024.0:0.#} KB",
+        _ => $"{bytes} B",
+    };
 }

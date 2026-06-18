@@ -6,6 +6,7 @@
 @inject ICalendarService Calendar
 @inject ITrainingService Training
 @inject IDocumentService Documents
+@inject IAnnouncementService AnnouncementSvc
 
 <PageTitle>Dashboard · HCP HR Portal</PageTitle>
 
@@ -128,21 +129,28 @@ else
     <div class="two-col" style="align-items:stretch;grid-template-columns:1fr 2fr;">
         <div class="card-surface">
             <div class="section-head"><h2 class="section-title">Company announcements</h2><a class="section-link" href="announcements">View all →</a></div>
-            <div class="announce mb-grid">
-                <div class="announce-img"></div>
-                <div class="announce-body">
-                    <div class="announce-title">@_announcements[0].Title</div>
-                    <div class="cell-sub">@_announcements[0].Date</div>
-                    <p style="margin:0.4rem 0 0;font-size:0.9rem;">@_announcements[0].Summary</p>
-                </div>
-            </div>
-            @foreach (var a in _announcements.Skip(1))
+            @if (announcements.Count == 0)
             {
-                <div class="event-row">
-                    <span class="bi bi-megaphone-fill" style="color:#2563eb;"></span>
-                    <div style="flex:1"><div style="font-weight:600">@a.Title</div><div class="cell-sub">@a.Summary</div></div>
-                    <span class="cell-sub">@a.Date</span>
+                <p class="text-muted-sm">No announcements yet.</p>
+            }
+            else
+            {
+                <div class="announce mb-grid">
+                    <div class="announce-img"></div>
+                    <div class="announce-body">
+                        <div class="announce-title">@announcements[0].Title</div>
+                        <div class="cell-sub">@announcements[0].Date.ToString("dd MMM yyyy")</div>
+                        <p style="margin:0.4rem 0 0;font-size:0.9rem;">@Brief(announcements[0].Body)</p>
+                    </div>
                 </div>
+                @foreach (var a in announcements.Skip(1))
+                {
+                    <div class="event-row">
+                        <span class="bi bi-megaphone-fill" style="color:#2563eb;"></span>
+                        <div style="flex:1"><div style="font-weight:600">@a.Title</div><div class="cell-sub">@Brief(a.Body)</div></div>
+                        <span class="cell-sub">@a.Date.ToString("dd MMM yyyy")</span>
+                    </div>
+                }
             }
         </div>
 
@@ -175,13 +183,13 @@ else
     private DocumentRecord? nextDoc;
     private List<DonutChart.Segment> trainingSegments = new();
 
-    private record Announcement(string Title, string Date, string Summary);
-    private readonly Announcement[] _announcements =
+    private List<Announcement> announcements = new();
+
+    private static string Brief(string body)
     {
-        new("HCP Sustainable Aviation Fuel milestone", "16 May 2026", "Over 2 million gallons of SAF delivered this quarter."),
-        new("Updated Travel Policy", "12 May 2026", "Please review the new travel policy effective 1 June."),
-        new("Q2 Town Hall", "28 May 2026", "Company-wide town hall at 10:00."),
-    };
+        if (string.IsNullOrEmpty(body)) return "";
+        return body.Length <= 120 ? body : body[..120].TrimEnd() + "…";
+    }
 
     private static string EvIcon(CalendarEventType t) => t switch
     {
@@ -224,5 +232,7 @@ else
             new("In progress", inProgress, "#1f6fe5"),
             new("Not started", Math.Max(notStarted, trainingTotal == 0 ? 1 : 0), "#e6eaf0"),
         };
+
+        announcements = AnnouncementSvc.GetRecent(5).ToList();
     }
 }

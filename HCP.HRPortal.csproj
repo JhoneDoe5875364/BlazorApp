@@ -14,6 +14,17 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.12" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+    <PackageReference Include="ClosedXML" Version="0.104.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Bootstrap source for the Employees table — read by DbInitializer at first boot
+         when the table is empty. Copied next to the executable in dev (bin/Debug/) and
+         publish (publish/) so File.Exists(ContentRoot/MasterEmployee.xlsx) finds it. -->
+    <None Update="MasterEmployee.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

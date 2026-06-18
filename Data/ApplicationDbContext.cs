@@ -27,6 +27,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PerformanceFeedback> PerformanceFeedback => Set<PerformanceFeedback>();
     public DbSet<SalaryCertificateRequest> SalaryCertificateRequests => Set<SalaryCertificateRequest>();
     public DbSet<BusinessTrip> BusinessTrips => Set<BusinessTrip>();
+    public DbSet<Announcement> Announcements => Set<Announcement>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -46,6 +47,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.Status).HasMaxLength(20);
             e.Property(x => x.AnnualSalary).HasPrecision(12, 2);
             e.Property(x => x.PhotoUrl).HasMaxLength(256);
+            e.Property(x => x.PreferredName).HasMaxLength(80);
+            e.Property(x => x.PersonalEmail).HasMaxLength(160);
+            e.Property(x => x.EmploymentType).HasMaxLength(40);
+            e.Property(x => x.Country).HasMaxLength(80);
             e.HasIndex(x => x.Email).IsUnique();
         });
 
@@ -180,6 +185,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
             e.HasIndex(x => x.EmployeeId);
             e.HasIndex(x => x.DepartDate);
+        });
+
+        // --- Announcements --------------------------------------------------
+        b.Entity<Announcement>(e =>
+        {
+            e.ToTable("Announcements");
+            e.Property(x => x.Title).HasMaxLength(200);
+            e.Property(x => x.Body).HasMaxLength(4000);
+            e.Property(x => x.Author).HasMaxLength(160);
+            e.Property(x => x.Category).HasMaxLength(40);
+            e.HasIndex(x => x.Date);
         });
 
         // --- Calendar -------------------------------------------------------

@@ -2,6 +2,8 @@
 @attribute [Authorize(Roles = Roles.Manager + "," + Roles.HR)]
 @inject ITimeOffService TimeOff
 @inject IExpenseService ExpenseService
+@inject IEmployeeService Employees
+@inject AuthenticationStateProvider AuthState
 @inject CurrentUserService CurrentUser
 @inject INotificationService Notifier
 
@@ -10,10 +12,18 @@
 <PageHeader Title="Approvals" Subtitle="Review requests and see what you've processed" Icon="bi-check2-square" />
 
 <div class="dash-grid">
-    <DashboardCard Title="Pending" Value="@TimeOff.GetPending().Count().ToString()" Icon="bi-hourglass-split" Tone="warning" Trend="Time-off awaiting you" />
-    <DashboardCard Title="Approved" Value="@CountByStatus(TimeOffStatus.Approved).ToString()" Icon="bi-check-circle-fill" Tone="success" Trend="Granted" />
-    <DashboardCard Title="Rejected" Value="@CountByStatus(TimeOffStatus.Rejected).ToString()" Icon="bi-x-circle-fill" Tone="danger" Trend="Declined" />
+    <DashboardCard Title="Pending" Value="@VisibleAll.Count(r => r.Status == TimeOffStatus.Pending).ToString()" Icon="bi-hourglass-split" Tone="warning" Trend="@(scopeIsHR ? "All time-off awaiting" : "Your team awaiting")" />
+    <DashboardCard Title="Approved" Value="@VisibleAll.Count(r => r.Status == TimeOffStatus.Approved).ToString()" Icon="bi-check-circle-fill" Tone="success" Trend="Granted" />
+    <DashboardCard Title="Rejected" Value="@VisibleAll.Count(r => r.Status == TimeOffStatus.Rejected).ToString()" Icon="bi-x-circle-fill" Tone="danger" Trend="Declined" />
 </div>
+
+@if (!scopeIsHR)
+{
+    <p class="text-muted-sm" style="margin-bottom:0.5rem;">
+        <span class="bi bi-info-circle"></span>
+        Showing requests from your <strong>@reportIds.Count</strong> direct report(s) only.
+    </p>
+}
 
 <div class="card-surface mb-grid">
     <div class="cal-tabs">
@@ -94,20 +104,33 @@
     private Employee? me;
     private string tab = "Pending";
     private readonly string[] tabs = { "Pending", "Approved", "Rejected", "All" };
+    private HashSet<int> reportIds = new();
+    private bool scopeIsHR;     // HR sees everything; Manager (no HR) sees only their direct reports
 
     protected override async Task OnInitializedAsync()
     {
         me = await CurrentUser.GetEmployeeAsync();
+
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        scopeIsHR = authState.User.IsInRole(Roles.HR);
+
+        if (!scopeIsHR && me is not null)
+        {
+            reportIds = Employees.GetDirectReports(me.FullName).Select(r => r.Id).ToHashSet();
+        }
     }
 
-    private int CountByStatus(TimeOffStatus s) => TimeOff.GetAll().Count(r => r.Status == s);
+    /// <summary>All time-off requests this user is allowed to see (regardless of tab).</summary>
+    private IEnumerable<Models.TimeOffRequest> VisibleAll =>
+        scopeIsHR ? TimeOff.GetAll()
+                  : TimeOff.GetAll().Where(r => reportIds.Contains(r.EmployeeId));
 
     private IEnumerable<Models.TimeOffRequest> FilteredLeave => tab switch
     {
-        "Approved" => TimeOff.GetAll().Where(r => r.Status == TimeOffStatus.Approved),
-        "Rejected" => TimeOff.GetAll().Where(r => r.Status == TimeOffStatus.Rejected),
-        "All" => TimeOff.GetAll(),
-        _ => TimeOff.GetPending()
+        "Approved" => VisibleAll.Where(r => r.Status == TimeOffStatus.Approved),
+        "Rejected" => VisibleAll.Where(r => r.Status == TimeOffStatus.Rejected),
+        "All" => VisibleAll,
+        _ => VisibleAll.Where(r => r.Status == TimeOffStatus.Pending)
     };
 
     private void Decide(Models.TimeOffRequest r, bool approved)

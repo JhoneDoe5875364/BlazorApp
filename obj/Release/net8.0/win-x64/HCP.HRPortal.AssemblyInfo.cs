@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HCP.HRPortal")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+97f0c8e44bf37743728c40bc076ed475a8094da9")]
 [assembly: System.Reflection.AssemblyProductAttribute("HCP.HRPortal")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HCP.HRPortal")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

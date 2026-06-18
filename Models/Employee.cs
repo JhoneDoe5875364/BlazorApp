@@ -21,6 +21,15 @@ public class Employee
     /// <summary>Relative URL of the uploaded profile photo (null = use initials avatar).</summary>
     public string? PhotoUrl { get; set; }
 
+    // --- Additional XLSX-sourced fields (optional, may be null for legacy demo employees) ---
+    public string? PreferredName { get; set; }
+    public string? PersonalEmail { get; set; }
+    public DateOnly? Birthday { get; set; }
+    public string? EmploymentType { get; set; }            // e.g. "Employee", "Consultant"
+    public DateOnly? ProbationEndDate { get; set; }
+    public DateOnly? ContractEndDate { get; set; }
+    public string? Country { get; set; }
+
     [NotMapped]
     public int AnnualLeaveRemaining => AnnualLeaveTotal - AnnualLeaveUsed;
 

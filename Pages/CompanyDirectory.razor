@@ -29,10 +29,17 @@
                     <div style="font-weight:700;">@e.FullName</div>
                     <div class="cell-sub">@e.JobTitle</div>
                     <div class="cell-sub">@e.Department</div>
+                    <div style="margin-top:0.25rem;"><StatusBadge Status="@Roles.For(e)" Variant="@RoleVariant(Roles.For(e))" Text="@Roles.For(e)" /></div>
                 </div>
             </div>
             <div class="text-muted-sm"><span class="bi bi-envelope" style="margin-right:0.4rem;"></span><a href="mailto:@e.Email">@e.Email</a></div>
-            <div class="text-muted-sm"><span class="bi bi-telephone" style="margin-right:0.4rem;"></span>@e.Phone</div>
+            <div class="text-muted-sm">
+                <span class="bi bi-telephone" style="margin-right:0.4rem;"></span>
+                @if (!string.IsNullOrWhiteSpace(e.Phone))
+                {
+                    <a href="tel:@TelHref(e.Phone)" title="Call @e.Phone">@e.Phone</a>
+                }
+            </div>
             <div class="text-muted-sm"><span class="bi bi-geo-alt" style="margin-right:0.4rem;"></span>@e.Location</div>
         </div>
     }
@@ -68,4 +75,29 @@
 
     private void OnSearch(ChangeEventArgs e) => search = e.Value?.ToString() ?? "";
     private void OnDept(ChangeEventArgs e) => dept = e.Value?.ToString() ?? "";
+
+    private static string RoleVariant(string role) => role switch
+    {
+        "HR" => "purple",
+        "Manager" => "info",
+        "Finance" => "warning",
+        _ => "secondary"
+    };
+
+    /// <summary>
+    /// Normalise a phone number for the tel: URI scheme — keeps only digits and a single
+    /// leading '+' so the OS dialler accepts it regardless of how the source had it
+    /// formatted (spaces, dashes, parentheses, etc.).
+    /// </summary>
+    private static string TelHref(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return "";
+        var sb = new System.Text.StringBuilder(phone.Length);
+        foreach (var ch in phone)
+        {
+            if (ch == '+' && sb.Length == 0) sb.Append('+');
+            else if (char.IsDigit(ch)) sb.Append(ch);
+        }
+        return sb.ToString();
+    }
 }

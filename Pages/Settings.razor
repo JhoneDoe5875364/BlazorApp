@@ -57,10 +57,13 @@ else
             else if (section == "security")
             {
                 <h2 class="section-title">Password &amp; Security</h2>
-                <div class="form-row"><label>Current password</label><input type="password" class="form-control" placeholder="••••••••" /></div>
-                <div class="form-row"><label>New password</label><input type="password" class="form-control" placeholder="••••••••" /></div>
-                <div class="form-row"><label>Confirm new password</label><input type="password" class="form-control" placeholder="••••••••" /></div>
-                <label class="set-check"><input type="checkbox" /> Enable two-factor authentication (2FA)</label>
+                <p class="text-muted-sm" style="margin-bottom:1rem;">
+                    For security reasons, password changes happen on a separate, dedicated page.
+                </p>
+                <a class="btn btn-primary" href="/Account/ChangePassword">
+                    <span class="bi bi-shield-lock me-1"></span> Change password
+                </a>
+                <label class="set-check" style="margin-top:1rem;"><input type="checkbox" /> Enable two-factor authentication (2FA)</label>
             }
             else
             {

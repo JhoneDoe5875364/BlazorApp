@@ -1,4 +1,5 @@
 E:\Work_Data\BlazorApp1\publish\appsettings.Development.json
 E:\Work_Data\BlazorApp1\publish\appsettings.json
 E:\Work_Data\BlazorApp1\publish\HCP.HRPortal.pdb
+E:\Work_Data\BlazorApp1\publish\MasterEmployee.xlsx
 E:\Work_Data\BlazorApp1\publish\HCP.HRPortal.exe

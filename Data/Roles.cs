@@ -1,3 +1,5 @@
+using HCP.HRPortal.Models;
+
 namespace HCP.HRPortal.Data;
 
 /// <summary>
@@ -21,6 +23,37 @@ public static class Roles
         Finance => "/finance-dashboard",
         _ => "/employee-dashboard",
     };
+
+    /// <summary>
+    /// Derives the portal role from an employee's department and job title.
+    /// Used both by DB seeding and by manual / bulk employee creation flows.
+    /// </summary>
+    public static string For(Employee e) => For(e.Department, e.JobTitle);
+
+    /// <summary>Department/title overload — used by import flows that may not have a full Employee yet.</summary>
+    public static string For(string? department, string? jobTitle)
+    {
+        var dept = (department ?? "").Trim();
+        var title = (jobTitle ?? "").Trim();
+
+        // HR / Finance / Accounting departments map to fixed roles regardless of title.
+        if (dept.Equals("Human Resources", StringComparison.OrdinalIgnoreCase))
+            return HR;
+        if (dept.Equals("Finance", StringComparison.OrdinalIgnoreCase)
+            || dept.Equals("Accounting", StringComparison.OrdinalIgnoreCase))
+            return Finance;
+
+        // Anyone in Executive is a manager (CEO/COO/etc.).
+        if (dept.Equals("Executive", StringComparison.OrdinalIgnoreCase))
+            return Manager;
+
+        // Title-based leadership detection (covers "MGR" suffix used in the XLSX too).
+        string[] leadership = { "Manager", "MGR", "Director", "Head", "VP", "Chief", "Lead" };
+        if (leadership.Any(k => title.Contains(k, StringComparison.OrdinalIgnoreCase)))
+            return Manager;
+
+        return Employee;
+    }
 
     /// <summary>
     /// Demo account email per role, used by the prototype "View as" role switcher.

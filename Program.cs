@@ -118,6 +118,7 @@ builder.Services.AddSingleton<IInvoiceService, FakeInvoiceService>();
 builder.Services.AddSingleton<IPerformanceService, FakePerformanceService>();
 builder.Services.AddSingleton<ISalaryCertificateService, FakeSalaryCertificateService>();
 builder.Services.AddSingleton<ITravelService, FakeTravelService>();
+builder.Services.AddSingleton<IAnnouncementService, FakeAnnouncementService>();
 
 // Resolves the signed-in user's Employee profile (scoped to the circuit).
 builder.Services.AddScoped<CurrentUserService>();
@@ -149,5 +150,30 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+// Auto-open the user's default browser at the bound URL the instant Kestrel is ready,
+// so a recipient who double-clicks the exe gets the login page without having to copy
+// the URL from the console. Set HCP_NO_BROWSER=1 to skip (headless / service / smoke
+// tests). The try/catch keeps the server alive even if the browser launch fails.
+if (Environment.GetEnvironmentVariable("HCP_NO_BROWSER") != "1")
+{
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        var url = app.Urls.FirstOrDefault() ?? "http://localhost:5000";
+        var browserUrl = url.Replace("0.0.0.0", "localhost").Replace("[::]", "localhost");
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = browserUrl,
+                UseShellExecute = true,
+            });
+        }
+        catch
+        {
+            // Browser launch is best-effort — the server keeps running regardless.
+        }
+    });
+}
 
 app.Run();

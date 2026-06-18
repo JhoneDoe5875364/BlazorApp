@@ -28,6 +28,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBY2NvdW50XFBhZ2VzXEFjY2Vzc0RlbmllZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/Work_Data/BlazorApp1/Components/Account/Pages/ChangePassword.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBY2NvdW50XFBhZ2VzXENoYW5nZVBhc3N3b3JkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/Work_Data/BlazorApp1/Components/Account/Pages/DemoLogin.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBY2NvdW50XFBhZ2VzXERlbW9Mb2dpbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -118,6 +122,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [E:/Work_Data/BlazorApp1/Pages/EmployeeDashboard.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW1wbG95ZWVEYXNoYm9hcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/Work_Data/BlazorApp1/Pages/EmployeeImport.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW1wbG95ZWVJbXBvcnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/Work_Data/BlazorApp1/Pages/EmployeeRecords.razor]

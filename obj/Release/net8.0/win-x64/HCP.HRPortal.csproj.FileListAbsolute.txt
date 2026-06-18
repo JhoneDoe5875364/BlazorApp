@@ -786,3 +786,13 @@ E:\Work_Data\BlazorApp1\obj\Release\net8.0\win-x64\refint\HCP.HRPortal.dll
 E:\Work_Data\BlazorApp1\obj\Release\net8.0\win-x64\HCP.HRPortal.pdb
 E:\Work_Data\BlazorApp1\obj\Release\net8.0\win-x64\HCP.HRPortal.genruntimeconfig.cache
 E:\Work_Data\BlazorApp1\obj\Release\net8.0\win-x64\ref\HCP.HRPortal.dll
+E:\Work_Data\BlazorApp1\obj\Release\net8.0\win-x64\HCP.HRPortal.sourcelink.json
+E:\Work_Data\BlazorApp1\bin\Release\net8.0\win-x64\ClosedXML.dll
+E:\Work_Data\BlazorApp1\bin\Release\net8.0\win-x64\ClosedXML.Parser.dll
+E:\Work_Data\BlazorApp1\bin\Release\net8.0\win-x64\DocumentFormat.OpenXml.dll
+E:\Work_Data\BlazorApp1\bin\Release\net8.0\win-x64\DocumentFormat.OpenXml.Framework.dll
+E:\Work_Data\BlazorApp1\bin\Release\net8.0\win-x64\ExcelNumberFormat.dll
+E:\Work_Data\BlazorApp1\bin\Release\net8.0\win-x64\RBush.dll
+E:\Work_Data\BlazorApp1\bin\Release\net8.0\win-x64\SixLabors.Fonts.dll
+E:\Work_Data\BlazorApp1\bin\Release\net8.0\win-x64\System.IO.Packaging.dll
+E:\Work_Data\BlazorApp1\bin\Release\net8.0\win-x64\MasterEmployee.xlsx
