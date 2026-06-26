@@ -28,6 +28,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SalaryCertificateRequest> SalaryCertificateRequests => Set<SalaryCertificateRequest>();
     public DbSet<BusinessTrip> BusinessTrips => Set<BusinessTrip>();
     public DbSet<Announcement> Announcements => Set<Announcement>();
+    public DbSet<Payslip> Payslips => Set<Payslip>();
+    public DbSet<CompanyPolicy> CompanyPolicies => Set<CompanyPolicy>();
+    public DbSet<PolicyAcknowledgement> PolicyAcknowledgements => Set<PolicyAcknowledgement>();
+    public DbSet<TimesheetProject> TimesheetProjects => Set<TimesheetProject>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -51,7 +55,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.PersonalEmail).HasMaxLength(160);
             e.Property(x => x.EmploymentType).HasMaxLength(40);
             e.Property(x => x.Country).HasMaxLength(80);
+            e.Property(x => x.EmployeeNumber).HasMaxLength(20);
             e.HasIndex(x => x.Email).IsUnique();
+            e.HasIndex(x => x.EmployeeNumber);
         });
 
         // --- Identity user <-> Employee (1:1) -------------------------------
@@ -92,6 +98,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.Notes).HasMaxLength(400);
             e.Property(x => x.Amount).HasPrecision(12, 2);
             e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.ReceiptUrl).HasMaxLength(512);
+            e.Property(x => x.ReceiptName).HasMaxLength(200);
             e.HasIndex(x => x.Status);
         });
 
@@ -113,6 +121,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.Category).HasMaxLength(40);
             e.Property(x => x.EmployeeName).HasMaxLength(120);
             e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.DocumentUrl).HasMaxLength(512);
+            e.Property(x => x.DocumentName).HasMaxLength(200);
         });
 
         // --- Invoices -------------------------------------------------------
@@ -187,6 +197,49 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.HasIndex(x => x.DepartDate);
         });
 
+        // --- Payslips -------------------------------------------------------
+        b.Entity<Payslip>(e =>
+        {
+            e.ToTable("Payslips");
+            e.Property(x => x.EmployeeName).HasMaxLength(120);
+            e.Property(x => x.Period).HasMaxLength(40);
+            e.Property(x => x.Currency).HasMaxLength(8);
+            e.Property(x => x.Gross).HasPrecision(12, 2);
+            e.Property(x => x.Net).HasPrecision(12, 2);
+            e.Property(x => x.PdfUrl).HasMaxLength(512);
+            e.Property(x => x.FileName).HasMaxLength(200);
+            e.HasIndex(x => x.EmployeeId);
+            e.HasIndex(x => x.PeriodStart);
+        });
+
+        // --- Timesheet Projects ---------------------------------------------
+        b.Entity<TimesheetProject>(e =>
+        {
+            e.ToTable("TimesheetProjects");
+            e.Property(x => x.Code).HasMaxLength(40).IsRequired();
+            e.Property(x => x.Name).HasMaxLength(160).IsRequired();
+            e.Property(x => x.Client).HasMaxLength(120);
+            e.HasIndex(x => x.Code).IsUnique();
+        });
+
+        // --- Company Policies -----------------------------------------------
+        b.Entity<CompanyPolicy>(e =>
+        {
+            e.ToTable("CompanyPolicies");
+            e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+            e.Property(x => x.Category).HasMaxLength(60);
+            e.Property(x => x.Version).HasMaxLength(20);
+            e.Property(x => x.Updated).HasMaxLength(40);
+            e.Property(x => x.DocumentUrl).HasMaxLength(512);
+        });
+
+        b.Entity<PolicyAcknowledgement>(e =>
+        {
+            e.ToTable("PolicyAcknowledgements");
+            e.Property(x => x.UserEmail).HasMaxLength(160).IsRequired();
+            e.HasIndex(x => new { x.PolicyId, x.UserEmail }).IsUnique();
+        });
+
         // --- Announcements --------------------------------------------------
         b.Entity<Announcement>(e =>
         {
@@ -205,7 +258,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.Title).HasMaxLength(160);
             e.Property(x => x.Description).HasMaxLength(400);
             e.Property(x => x.Type).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.Country).HasMaxLength(8);
+            e.Property(x => x.Scope).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.CreatedBy).HasMaxLength(160);
             e.HasIndex(x => x.Date);
+            e.HasIndex(x => x.Country);
+            e.HasIndex(x => x.Scope);
         });
     }
 }

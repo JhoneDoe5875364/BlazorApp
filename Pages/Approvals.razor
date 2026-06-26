@@ -1,5 +1,5 @@
 @page "/approvals"
-@attribute [Authorize(Roles = Roles.Manager + "," + Roles.HR)]
+@attribute [Authorize(Roles = Roles.ApproverOrAdmin)]
 @inject ITimeOffService TimeOff
 @inject IExpenseService ExpenseService
 @inject IEmployeeService Employees
@@ -107,8 +107,14 @@
     private HashSet<int> reportIds = new();
     private bool scopeIsHR;     // HR sees everything; Manager (no HR) sees only their direct reports
 
+    /// <summary>Lets KPI cards link here with a pre-selected tab, e.g. /approvals?tab=Approved.</summary>
+    [SupplyParameterFromQuery] public string? Tab { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        if (!string.IsNullOrEmpty(Tab) && tabs.Contains(Tab, StringComparer.OrdinalIgnoreCase))
+            tab = tabs.First(t => t.Equals(Tab, StringComparison.OrdinalIgnoreCase));
+
         me = await CurrentUser.GetEmployeeAsync();
 
         var authState = await AuthState.GetAuthenticationStateAsync();

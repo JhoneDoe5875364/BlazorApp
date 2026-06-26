@@ -1,8 +1,10 @@
+using HCP.HRPortal.Data;
+using HCP.HRPortal.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace HCP.HRPortal.Services;
 
 public enum TimesheetStatus { Draft, Submitted, Approved }
-
-public record TimesheetProject(string Code, string Name);
 
 public class TimesheetEntry
 {
@@ -30,8 +32,15 @@ public interface ITimesheetService
     /// <summary>Standard length of a working day in hours (used for the % allocation display).</summary>
     double StandardDayHours { get; }
 
-    /// <summary>Catalog of projects employees can log time against.</summary>
+    /// <summary>Catalog of active projects employees can log time against.</summary>
     IReadOnlyList<TimesheetProject> Projects { get; }
+
+    /// <summary>All projects including inactive ones — Super Admin view.</summary>
+    IReadOnlyList<TimesheetProject> AllProjects { get; }
+
+    void AddProject(TimesheetProject project);
+    void UpdateProject(TimesheetProject project);
+    void DeleteProject(int id);
 
     TimesheetWeek Get(string userEmail, DateOnly weekStart);
     void Submit(string userEmail, DateOnly weekStart);
@@ -50,23 +59,60 @@ public class TimesheetService : ITimesheetService
 {
     private readonly object _lock = new();
     private readonly Dictionary<(string Email, DateOnly Week), TimesheetWeek> _weeks = new();
+    private readonly IDbContextFactory<ApplicationDbContext> _factory;
 
     public double StandardDayHours => 8.0;
 
-    public IReadOnlyList<TimesheetProject> Projects { get; } = new[]
+    public IReadOnlyList<TimesheetProject> Projects
     {
-        new TimesheetProject("HCP-ENG-001",  "Engineering — Site Inspections"),
-        new TimesheetProject("HCP-ENG-002",  "Engineering — Mechanical Design"),
-        new TimesheetProject("HCP-ENG-003",  "Engineering — Drawings & Reviews"),
-        new TimesheetProject("HCP-PROJ-002", "Project Planning"),
-        new TimesheetProject("HCP-PROJ-003", "Client Engagements"),
-        new TimesheetProject("HCP-PROJ-004", "Project Documentation"),
-        new TimesheetProject("HCP-OPS-001",  "Operations Support"),
-        new TimesheetProject("HCP-INT-001",  "Internal — Training & Admin"),
-    };
+        get
+        {
+            using var db = _factory.CreateDbContext();
+            return db.TimesheetProjects.Where(p => p.IsActive).OrderBy(p => p.Code).ToList();
+        }
+    }
 
-    public TimesheetService()
+    public IReadOnlyList<TimesheetProject> AllProjects
     {
+        get
+        {
+            using var db = _factory.CreateDbContext();
+            return db.TimesheetProjects.OrderBy(p => p.Code).ToList();
+        }
+    }
+
+    public void AddProject(TimesheetProject project)
+    {
+        using var db = _factory.CreateDbContext();
+        project.Id = 0;
+        db.TimesheetProjects.Add(project);
+        db.SaveChanges();
+    }
+
+    public void UpdateProject(TimesheetProject project)
+    {
+        using var db = _factory.CreateDbContext();
+        var existing = db.TimesheetProjects.FirstOrDefault(p => p.Id == project.Id);
+        if (existing is null) return;
+        existing.Code = project.Code;
+        existing.Name = project.Name;
+        existing.IsActive = project.IsActive;
+        existing.Client = project.Client;
+        db.SaveChanges();
+    }
+
+    public void DeleteProject(int id)
+    {
+        using var db = _factory.CreateDbContext();
+        var existing = db.TimesheetProjects.FirstOrDefault(p => p.Id == id);
+        if (existing is null) return;
+        db.TimesheetProjects.Remove(existing);
+        db.SaveChanges();
+    }
+
+    public TimesheetService(IDbContextFactory<ApplicationDbContext> factory)
+    {
+        _factory = factory;
         // Pre-submit a few weeks so the Finance "Pending Timesheets" KPI reflects real stored
         // state on a fresh boot. The count rises as employees submit via the Timesheets page.
         var monday = WeekStart(DateOnly.FromDateTime(DateTime.Today));

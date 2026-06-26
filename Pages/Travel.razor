@@ -2,12 +2,62 @@
 @attribute [Authorize]
 @inject CurrentUserService CurrentUser
 @inject ITravelService TravelSvc
+@inject ISharePointFileService SharePoint
+@inject IWebHostEnvironment Env
+@inject ILogger<Travel> Logger
 
 <PageTitle>Travel · HCP HR Portal</PageTitle>
 
 <PageHeader Title="Travel"
             Subtitle="Business travel requests"
-            Icon="bi-airplane-engines-fill" />
+            Icon="bi-airplane-engines-fill">
+    <Actions>
+        <button class="btn btn-primary btn-sm" @onclick="() => showForm = !showForm">
+            <span class="bi bi-plus-lg me-1"></span>New Trip Request
+        </button>
+    </Actions>
+</PageHeader>
+
+@if (showForm)
+{
+    <div class="form-card mb-grid">
+        <h2 class="section-title">Request a business trip</h2>
+        <div class="two-col" style="align-items:start;">
+            <div>
+                <div class="form-row"><label>Destination</label><input class="form-control" @bind="_form.Destination" placeholder="e.g. London, UK" /></div>
+                <div class="form-row"><label>Purpose</label><input class="form-control" @bind="_form.Purpose" placeholder="e.g. Client meeting, conference" /></div>
+                <div class="form-row"><label>Estimated Cost (USD)</label><input type="number" step="0.01" class="form-control" @bind="_form.EstimatedCost" /></div>
+            </div>
+            <div>
+                <div class="form-row"><label>Depart date</label><input type="date" class="form-control" @bind="_form.DepartDate" /></div>
+                <div class="form-row"><label>Return date</label><input type="date" class="form-control" @bind="_form.ReturnDate" /></div>
+                <div class="form-row">
+                    <label>Itinerary attachment <span class="text-muted-sm">(optional — PDF)</span></label>
+                    <InputFile class="form-control" OnChange="OnFileSelected" accept=".pdf,.jpg,.png" />
+                    @if (_picked is not null)
+                    {
+                        <div class="text-muted-sm" style="margin-top:0.3rem;">
+                            <span class="bi bi-paperclip"></span> @_picked.Name
+                            <button type="button" class="btn btn-link btn-sm" style="padding:0;margin-left:0.4rem;" @onclick="() => _picked = null">remove</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div style="margin-top:0.5rem;">
+            <button class="btn btn-primary me-1" @onclick="Submit" disabled="@_busy">
+                @(_busy ? "Submitting…" : "Submit request")
+            </button>
+            <button class="btn btn-outline-secondary" @onclick="() => showForm = false">Cancel</button>
+            @if (!string.IsNullOrEmpty(_msg))
+            {
+                <span class="text-muted-sm" style="margin-left:0.6rem;color:#16a34a;">
+                    <span class="bi bi-check-circle-fill"></span> @_msg
+                </span>
+            }
+        </div>
+    </div>
+}
 
 @if (me is null)
 {
@@ -91,4 +141,68 @@ else
         TripStatus.Rejected => "danger",
         _ => "warning"
     };
+
+    // --- New-request form state ---
+    private const long MaxAttachBytes = 5 * 1024 * 1024;
+
+    private bool showForm;
+    private bool _busy;
+    private string? _msg;
+    private IBrowserFile? _picked;
+    private BusinessTrip _form = NewForm();
+
+    private static BusinessTrip NewForm() => new()
+    {
+        DepartDate = DateOnly.FromDateTime(DateTime.Today.AddDays(7)),
+        ReturnDate = DateOnly.FromDateTime(DateTime.Today.AddDays(10)),
+        Status = TripStatus.Pending,
+    };
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        var f = e.File;
+        if (f.Size > MaxAttachBytes) return;
+        _picked = f;
+    }
+
+    private async Task Submit()
+    {
+        if (me is null || string.IsNullOrWhiteSpace(_form.Destination)) return;
+        _busy = true;
+        try
+        {
+            _form.EmployeeId = me.Id;
+            _form.EmployeeName = me.FullName;
+
+            // Optional itinerary upload — SharePoint preferred, disk fallback.
+            if (_picked is not null && SharePoint.IsEnabled)
+            {
+                try
+                {
+                    using var buf = new MemoryStream();
+                    await _picked.OpenReadStream(MaxAttachBytes).CopyToAsync(buf);
+                    buf.Position = 0;
+                    var fname = $"{DateTime.UtcNow:yyyyMMdd-HHmmss}_{Path.GetFileName(_picked.Name)}";
+                    var result = await SharePoint.UploadAsync(me, FileCategory.Travel, fname, buf);
+                    Logger.LogInformation("[SharePoint] Travel itinerary uploaded for {Emp} → {Url}",
+                        me.EmployeeNumber, result.WebUrl);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "[SharePoint] Travel itinerary upload failed.");
+                }
+            }
+
+            TravelSvc.Add(_form);
+            _msg = $"Trip to {_form.Destination} requested.";
+            _form = NewForm();
+            _picked = null;
+            // Re-load my trips
+            trips = TravelSvc.GetForEmployee(me.Id).ToList();
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
 }

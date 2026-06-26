@@ -4,6 +4,8 @@
 @inject ITimeOffService TimeOff
 @inject INotificationService Notifier
 @inject IWebHostEnvironment Env
+@inject ISharePointFileService SharePoint
+@inject ILogger<TimeOffRequest> Logger
 
 <PageTitle>Time Off · HCP HR Portal</PageTitle>
 
@@ -169,9 +171,30 @@ else
 
     private async Task<(string Url, string Name)> SaveAttachmentAsync(IBrowserFile file)
     {
+        var safeName = Path.GetFileName(file.Name);
+
+        // Prefer SharePoint when configured; otherwise fall back to local disk.
+        if (SharePoint.IsEnabled && me is not null)
+        {
+            try
+            {
+                using var buf = new MemoryStream();
+                await file.OpenReadStream(MaxFileSize).CopyToAsync(buf);
+                buf.Position = 0;
+                var spFileName = $"{DateTime.UtcNow:yyyyMMdd-HHmmss}_{safeName}";
+                var result = await SharePoint.UploadAsync(me, FileCategory.TimeOffAttachments, spFileName, buf);
+                Logger.LogInformation("[SharePoint] Time-off attachment uploaded for {Emp} → {Url}",
+                    me.EmployeeNumber, result.WebUrl);
+                return (result.WebUrl, safeName);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "[SharePoint] Time-off attachment upload failed — falling back to disk.");
+            }
+        }
+
         var dir = Path.Combine(Env.WebRootPath, "uploads", "timeoff");
         Directory.CreateDirectory(dir);
-        var safeName = Path.GetFileName(file.Name);
         var stored = $"{Guid.NewGuid():N}_{safeName}";
         var path = Path.Combine(dir, stored);
         await using (var fs = File.Create(path))

@@ -1,10 +1,14 @@
 @page "/employee-records"
-@attribute [Authorize(Roles = Roles.HR)]
+@attribute [Authorize(Roles = Roles.HRorAdmin)]
 @inject IEmployeeService Employees
 @inject IDocumentService Documents
 @inject UserManager<HCP.HRPortal.Data.ApplicationUser> UserMgr
 @inject Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole> RoleMgr
 @inject IWebHostEnvironment Env
+@inject ISharePointFileService SharePoint
+@inject ILogger<EmployeeRecords> Logger
+@inject AuthenticationStateProvider AuthState
+@inject IJSRuntime JS
 
 <PageTitle>Employee Records · HCP HR Portal</PageTitle>
 
@@ -204,6 +208,25 @@
                 </div>
                 <StatusBadge Status="@selected.Status" />
                 <button class="btn btn-outline-secondary btn-sm" style="width:100%;margin-top:0.5rem;" @onclick="() => StartEdit(selected)"><span class="bi bi-pencil me-1"></span>Edit</button>
+                @if (selected is not null)
+                {
+                    <button class="btn btn-outline-primary btn-sm" style="width:100%;margin-top:0.4rem;" @onclick="() => ToggleSuperAdmin(selected)">
+                        <span class="bi bi-shield-fill-check me-1"></span>
+                        @(_isSuperAdminCache.TryGetValue(selected.Email, out var v) && v ? "Revoke Super Admin" : "Grant Super Admin")
+                    </button>
+                    @if (_currentIsSuperAdmin)
+                    {
+                        <button class="btn btn-outline-danger btn-sm" style="width:100%;margin-top:0.4rem;" @onclick="() => DeleteEmployee(selected)">
+                            <span class="bi bi-trash3-fill me-1"></span>Delete employee
+                        </button>
+                    }
+                    @if (!string.IsNullOrEmpty(_adminToast))
+                    {
+                        <div class="text-muted-sm" style="margin-top:0.4rem;color:#16a34a;">
+                            <span class="bi bi-check-circle-fill"></span> @_adminToast
+                        </div>
+                    }
+                }
             </div>
 
             <h2 class="section-title" style="margin:1.25rem 0 0.5rem;font-size:0.9rem;">Contact</h2>
@@ -222,7 +245,21 @@
             {
                 <div class="detail-kv"><span class="k">Country</span><span>@selected.Country</span></div>
             }
-            <div class="detail-kv"><span class="k">Manager</span><span>@selected.ManagerName</span></div>
+            <div class="detail-kv">
+                <span class="k">Manager</span>
+                @{ var mgrFull = ResolveManager(selected.ManagerName); }
+                @if (mgrFull is not null)
+                {
+                    <span>
+                        <a href="company-directory?search=@Uri.EscapeDataString(mgrFull.FullName)"
+                           title="@($"{mgrFull.JobTitle}, {mgrFull.Department}")">@mgrFull.FullName</a>
+                    </span>
+                }
+                else
+                {
+                    <span>@selected.ManagerName</span>
+                }
+            </div>
             @if (selected.Birthday is not null)
             {
                 <div class="detail-kv"><span class="k">Birthday</span><span>@selected.Birthday.Value.ToString("dd MMM yyyy")</span></div>
@@ -288,6 +325,58 @@
     private DateOnly? _contractEnd;
 
     private const string DefaultPassword = "Passw0rd!";
+    private readonly Dictionary<string, bool> _isSuperAdminCache = new();
+    private string? _adminToast;
+    private bool _currentIsSuperAdmin;   // controls visibility of the Delete button
+
+    private async Task DeleteEmployee(Employee emp)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm",
+            $"Delete {emp.FullName} ({emp.Email})?\n\n" +
+            "This removes the employee record AND their login account. " +
+            "Time-off requests linked to this employee will be cascade-deleted. " +
+            "This cannot be undone.");
+        if (!confirmed) return;
+
+        var user = await UserMgr.FindByEmailAsync(emp.Email);
+        if (user is not null) await UserMgr.DeleteAsync(user);
+        Employees.Delete(emp.Id);
+
+        _adminToast = $"Deleted {emp.FullName}.";
+        selected = null;
+        all = Employees.GetAll().ToList();
+    }
+
+    private async Task ToggleSuperAdmin(Employee emp)
+    {
+        var user = await UserMgr.FindByEmailAsync(emp.Email);
+        if (user is null) { _adminToast = "No Identity account for this employee."; return; }
+
+        if (!await RoleMgr.RoleExistsAsync(Roles.SuperAdmin))
+            await RoleMgr.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(Roles.SuperAdmin));
+
+        var isAdmin = await UserMgr.IsInRoleAsync(user, Roles.SuperAdmin);
+        if (isAdmin)
+        {
+            await UserMgr.RemoveFromRoleAsync(user, Roles.SuperAdmin);
+            _isSuperAdminCache[emp.Email] = false;
+            _adminToast = $"Super Admin revoked from {emp.FullName}.";
+        }
+        else
+        {
+            await UserMgr.AddToRoleAsync(user, Roles.SuperAdmin);
+            _isSuperAdminCache[emp.Email] = true;
+            _adminToast = $"Super Admin granted to {emp.FullName}. They may need to sign out / back in.";
+        }
+    }
+
+    /// <summary>Called when the selected employee changes — refresh the cached IsInRole flag for the toggle label.</summary>
+    private async Task EnsureSuperAdminFlagAsync(Employee? emp)
+    {
+        if (emp is null || _isSuperAdminCache.ContainsKey(emp.Email)) return;
+        var user = await UserMgr.FindByEmailAsync(emp.Email);
+        _isSuperAdminCache[emp.Email] = user is not null && await UserMgr.IsInRoleAsync(user, Roles.SuperAdmin);
+    }
 
     // --- Photo upload state ---
     private const long MaxPhotoBytes = 2 * 1024 * 1024;                 // 2 MB
@@ -296,7 +385,12 @@
     private string? _photoPreviewUrl;       // data: URL for in-form preview before save
     private string? _photoError;
 
-    protected override void OnInitialized() => all = Employees.GetAll().ToList();
+    protected override async Task OnInitializedAsync()
+    {
+        all = Employees.GetAll().ToList();
+        var state = await AuthState.GetAuthenticationStateAsync();
+        _currentIsSuperAdmin = state.User.IsInRole(Roles.SuperAdmin);
+    }
 
     private void StartAdd()
     {
@@ -518,6 +612,24 @@
         _ => "secondary"
     };
 
+    /// <summary>Resolve a manager name (sometimes only a first name in the XLSX) to a real
+    /// Employee row by full / first / last / contains match. Returns null if ambiguous.</summary>
+    private Employee? ResolveManager(string? rawName)
+    {
+        if (string.IsNullOrWhiteSpace(rawName)) return null;
+        var raw = rawName.Trim();
+        var exact = all.FirstOrDefault(x => string.Equals(x.FullName.Trim(), raw, StringComparison.OrdinalIgnoreCase));
+        if (exact is not null) return exact;
+        var byFirst = all.Where(x => x.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                      .FirstOrDefault()?.Equals(raw, StringComparison.OrdinalIgnoreCase) == true).ToList();
+        if (byFirst.Count == 1) return byFirst[0];
+        var byLast = all.Where(x => x.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                     .LastOrDefault()?.Equals(raw, StringComparison.OrdinalIgnoreCase) == true).ToList();
+        if (byLast.Count == 1) return byLast[0];
+        var contains = all.Where(x => x.FullName.Contains(raw, StringComparison.OrdinalIgnoreCase)).ToList();
+        return contains.Count == 1 ? contains[0] : null;
+    }
+
     /// <summary>
     /// Recomputes the Identity role for an existing employee's login and updates it if it
     /// differs from what's currently assigned. Called from SaveEmployee on every edit so a
@@ -549,6 +661,37 @@
     {
         var ext = Path.GetExtension(file.Name).ToLowerInvariant();
         if (!AllowedPhotoExt.Contains(ext)) ext = ".png";
+        var fileName = $"avatar-{DateTime.UtcNow.Ticks}{ext}";
+
+        // Prefer SharePoint when configured; fall back to local disk so the portal
+        // still works during development without M365 credentials.
+        if (SharePoint.IsEnabled)
+        {
+            var emp = Employees.GetAll().FirstOrDefault(x => x.Id == employeeId);
+            if (emp is not null)
+            {
+                try
+                {
+                    await using var src = file.OpenReadStream(MaxPhotoBytes);
+                    using var buffer = new MemoryStream();
+                    await src.CopyToAsync(buffer);
+                    buffer.Position = 0;
+                    var result = await SharePoint.UploadAsync(emp, FileCategory.Profile, fileName, buffer);
+                    Logger.LogInformation(
+                        "[SharePoint] Uploaded photo for {EmployeeNumber} {FullName} → {WebUrl}",
+                        emp.EmployeeNumber, emp.FullName, result.WebUrl);
+                    return result.WebUrl; // user-clickable SharePoint URL
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex,
+                        "[SharePoint] Photo upload failed for {EmployeeId} — falling back to local disk.",
+                        employeeId);
+                }
+            }
+        }
+
+        // Local disk fallback
         var dir = Path.Combine(Env.WebRootPath, "uploads", "avatars");
         Directory.CreateDirectory(dir);
         var stored = $"emp-{employeeId}-{DateTime.UtcNow.Ticks}{ext}";

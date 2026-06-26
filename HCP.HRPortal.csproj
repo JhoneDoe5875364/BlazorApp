@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>hcp-hrportal-m365</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,8 +14,10 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.12" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.12" />
     <PackageReference Include="ClosedXML" Version="0.104.1" />
+    <PackageReference Include="Microsoft.Graph" Version="5.56.0" />
+    <PackageReference Include="Azure.Identity" Version="1.13.1" />
   </ItemGroup>
 
   <ItemGroup>

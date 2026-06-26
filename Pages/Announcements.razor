@@ -1,5 +1,5 @@
 @page "/announcements"
-@attribute [Authorize(Roles = Roles.HR)]
+@attribute [Authorize(Roles = Roles.HRorAdmin)]
 @inject IAnnouncementService AnnouncementSvc
 @inject CurrentUserService CurrentUser
 

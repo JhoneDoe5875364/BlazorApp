@@ -1,5 +1,5 @@
 @page "/management-dashboard"
-@attribute [Authorize(Roles = Roles.Manager)]
+@attribute [Authorize(Roles = Roles.ManagerOrAdmin)]
 @inject CurrentUserService CurrentUser
 @inject IEmployeeService Employees
 @inject ITimeOffService TimeOff
@@ -22,13 +22,13 @@
 else
 {
     <div class="dash-grid">
-        <DashboardCard Title="Direct Reports" Value="@reports.Count.ToString()" Icon="bi-people-fill" Tone="primary" Trend="Your team" />
-        <DashboardCard Title="Team On Leave" Value="@onLeave.ToString()" Icon="bi-airplane-fill" Tone="warning" Trend="This month" />
-        <DashboardCard Title="Pending Approvals" Value="@pendingTeam.Count.ToString()" Icon="bi-hourglass-split" Tone="info" Trend="To review" />
-        <DashboardCard Title="Training Compliance" Value="@($"{trainingCompliance}%")" Icon="bi-mortarboard-fill" Tone="purple" Trend="Team average" />
-        <DashboardCard Title="Reviews Due" Value="@reviewsDue.ToString()" Icon="bi-star-fill" Tone="info" Trend="This quarter" />
-        <DashboardCard Title="Upcoming Time Off" Value="@upcomingLeave.ToString()" Icon="bi-calendar-event-fill" Tone="success" Trend="Booked ahead" />
-        <DashboardCard Title="Upcoming Travel" Value="@upcomingTravel.ToString()" Icon="bi-airplane-engines-fill" Tone="info" Trend="Trips this month" />
+        <DashboardCard Title="Direct Reports" Value="@reports.Count.ToString()" Icon="bi-people-fill" Tone="primary" Trend="Your team" Href="/company-directory" />
+        <DashboardCard Title="Team On Leave" Value="@onLeave.ToString()" Icon="bi-airplane-fill" Tone="warning" Trend="This month" Href="/approvals?tab=Approved" />
+        <DashboardCard Title="Pending Approvals" Value="@pendingTeam.Count.ToString()" Icon="bi-hourglass-split" Tone="info" Trend="To review" Href="/approvals?tab=Pending" />
+        <DashboardCard Title="Training Compliance" Value="@($"{trainingCompliance}%")" Icon="bi-mortarboard-fill" Tone="purple" Trend="Team average" Href="/reports?tab=Training Report" />
+        <DashboardCard Title="Reviews Due" Value="@reviewsDue.ToString()" Icon="bi-star-fill" Tone="info" Trend="This quarter" Href="/performance" />
+        <DashboardCard Title="Upcoming Time Off" Value="@upcomingLeave.ToString()" Icon="bi-calendar-event-fill" Tone="success" Trend="Booked ahead" Href="/approvals?tab=Approved" />
+        <DashboardCard Title="Upcoming Travel" Value="@upcomingTravel.ToString()" Icon="bi-airplane-engines-fill" Tone="info" Trend="Trips this month" Href="/travel" />
     </div>
 
     <div class="three-col mb-grid">
@@ -154,7 +154,12 @@ else
         trainingCompliance = teamTraining.Count == 0 ? 100
             : (int)Math.Round(100.0 * teamTraining.Count(t => t.Status == TrainingStatus.Completed) / teamTraining.Count);
 
-        teamEvents = CalendarSvc.GetItems(CalendarView.Team, me, reportNames).Take(5).ToList();
+        // Show only events from today onwards — never past holidays / past meetings.
+        var todayDate = DateOnly.FromDateTime(DateTime.Today);
+        teamEvents = CalendarSvc.GetItems(CalendarView.Team, me, reportNames)
+            .Where(i => i.Date >= todayDate)
+            .Take(5)
+            .ToList();
 
         // Performance reviews for the team (real data — seeded per employee for the cycle).
         var teamReviews = Performance.GetForEmployees(reportIds).ToList();

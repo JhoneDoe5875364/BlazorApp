@@ -39,6 +39,10 @@ public static class DbInitializer
             await SeedFromMasterXlsxAsync(db, env, logger);
             await SeedUsersAsync(db, sp);
             await BackfillPhotosAsync(db);
+            await BackfillEmployeeNumbersAsync(db, logger);
+            await SeedHolidaysAsync(db, logger);
+            await SeedPoliciesAsync(db, logger);
+            await SeedTimesheetProjectsAsync(db, logger);
         }
         catch (Exception ex)
         {
@@ -219,6 +223,292 @@ public static class DbInitializer
             e.PhotoUrl = $"images/people/{Slug(e.FullName)}.jpg";
         if (toFix.Count > 0)
             await db.SaveChangesAsync();
+    }
+
+    // ---------------------------------------------------------------- holidays
+    /// <summary>
+    /// Seeds UAE / US / UK public holidays for 2026 and 2027 if not already present.
+    /// Country shown in parentheses in the title, e.g. "Independence Day (US)".
+    /// Idempotent: skips events that already exist (same title + date).
+    /// </summary>
+    private static async Task SeedHolidaysAsync(ApplicationDbContext db, ILogger logger)
+    {
+        var existing = await db.CalendarEvents
+            .Where(c => c.Type == CalendarEventType.Holiday)
+            .Select(c => new { c.Title, c.Date })
+            .ToListAsync();
+        var existingKey = existing.Select(x => (x.Title, x.Date)).ToHashSet();
+
+        var holidays = new List<(string Country, string Name, DateOnly Date)>
+        {
+            // ------ UAE (Federal public holidays) ------
+            ("UAE", "New Year's Day",                       new(2026, 1, 1)),
+            ("UAE", "Eid al-Fitr (Day 1)",                  new(2026, 3, 20)),
+            ("UAE", "Eid al-Fitr (Day 2)",                  new(2026, 3, 21)),
+            ("UAE", "Eid al-Fitr (Day 3)",                  new(2026, 3, 22)),
+            ("UAE", "Arafat Day",                           new(2026, 5, 27)),
+            ("UAE", "Eid al-Adha (Day 1)",                  new(2026, 5, 28)),
+            ("UAE", "Eid al-Adha (Day 2)",                  new(2026, 5, 29)),
+            ("UAE", "Islamic New Year",                     new(2026, 6, 17)),
+            ("UAE", "Prophet Muhammad's Birthday",          new(2026, 8, 26)),
+            ("UAE", "Commemoration Day",                    new(2026, 12, 1)),
+            ("UAE", "National Day (Day 1)",                 new(2026, 12, 2)),
+            ("UAE", "National Day (Day 2)",                 new(2026, 12, 3)),
+
+            ("UAE", "New Year's Day",                       new(2027, 1, 1)),
+            ("UAE", "Eid al-Fitr (Day 1)",                  new(2027, 3, 10)),
+            ("UAE", "Eid al-Fitr (Day 2)",                  new(2027, 3, 11)),
+            ("UAE", "Eid al-Fitr (Day 3)",                  new(2027, 3, 12)),
+            ("UAE", "Arafat Day",                           new(2027, 5, 16)),
+            ("UAE", "Eid al-Adha (Day 1)",                  new(2027, 5, 17)),
+            ("UAE", "Eid al-Adha (Day 2)",                  new(2027, 5, 18)),
+            ("UAE", "Eid al-Adha (Day 3)",                  new(2027, 5, 19)),
+            ("UAE", "Islamic New Year",                     new(2027, 6, 7)),
+            ("UAE", "Prophet Muhammad's Birthday",          new(2027, 8, 16)),
+            ("UAE", "Commemoration Day",                    new(2027, 12, 1)),
+            ("UAE", "National Day (Day 1)",                 new(2027, 12, 2)),
+            ("UAE", "National Day (Day 2)",                 new(2027, 12, 3)),
+
+            // ------ US (Federal holidays) ------
+            ("US",  "New Year's Day",                       new(2026, 1, 1)),
+            ("US",  "Martin Luther King Jr. Day",           new(2026, 1, 19)),
+            ("US",  "Presidents' Day",                      new(2026, 2, 16)),
+            ("US",  "Memorial Day",                         new(2026, 5, 25)),
+            ("US",  "Juneteenth",                           new(2026, 6, 19)),
+            ("US",  "Independence Day (observed)",          new(2026, 7, 3)),
+            ("US",  "Labor Day",                            new(2026, 9, 7)),
+            ("US",  "Columbus Day",                         new(2026, 10, 12)),
+            ("US",  "Veterans Day",                         new(2026, 11, 11)),
+            ("US",  "Thanksgiving Day",                     new(2026, 11, 26)),
+            ("US",  "Christmas Day",                        new(2026, 12, 25)),
+
+            ("US",  "New Year's Day",                       new(2027, 1, 1)),
+            ("US",  "Martin Luther King Jr. Day",           new(2027, 1, 18)),
+            ("US",  "Presidents' Day",                      new(2027, 2, 15)),
+            ("US",  "Memorial Day",                         new(2027, 5, 31)),
+            ("US",  "Juneteenth (observed)",                new(2027, 6, 18)),
+            ("US",  "Independence Day (observed)",          new(2027, 7, 5)),
+            ("US",  "Labor Day",                            new(2027, 9, 6)),
+            ("US",  "Columbus Day",                         new(2027, 10, 11)),
+            ("US",  "Veterans Day",                         new(2027, 11, 11)),
+            ("US",  "Thanksgiving Day",                     new(2027, 11, 25)),
+            ("US",  "Christmas Day (observed)",             new(2027, 12, 24)),
+
+            // ------ UK (Bank holidays — England & Wales) ------
+            ("UK",  "New Year's Day",                       new(2026, 1, 1)),
+            ("UK",  "Good Friday",                          new(2026, 4, 3)),
+            ("UK",  "Easter Monday",                        new(2026, 4, 6)),
+            ("UK",  "Early May Bank Holiday",               new(2026, 5, 4)),
+            ("UK",  "Spring Bank Holiday",                  new(2026, 5, 25)),
+            ("UK",  "Summer Bank Holiday",                  new(2026, 8, 31)),
+            ("UK",  "Christmas Day",                        new(2026, 12, 25)),
+            ("UK",  "Boxing Day (observed)",                new(2026, 12, 28)),
+
+            ("UK",  "New Year's Day",                       new(2027, 1, 1)),
+            ("UK",  "Good Friday",                          new(2027, 3, 26)),
+            ("UK",  "Easter Monday",                        new(2027, 3, 29)),
+            ("UK",  "Early May Bank Holiday",               new(2027, 5, 3)),
+            ("UK",  "Spring Bank Holiday",                  new(2027, 5, 31)),
+            ("UK",  "Summer Bank Holiday",                  new(2027, 8, 30)),
+            ("UK",  "Christmas Day (observed)",             new(2027, 12, 27)),
+            ("UK",  "Boxing Day (observed)",                new(2027, 12, 28)),
+        };
+
+        int added = 0;
+        foreach (var (country, name, date) in holidays)
+        {
+            var title = $"{name} ({country})";
+            if (existingKey.Contains((title, date))) continue;
+            db.CalendarEvents.Add(new CalendarEvent
+            {
+                Title = title,
+                Date = date,
+                Type = CalendarEventType.Holiday,
+                Description = $"Public holiday in {country}.",
+                Country = country,
+                Scope = CalendarEventScope.Company,
+                CreatedBy = "(system seed)",
+            });
+            added++;
+        }
+        if (added > 0)
+        {
+            await db.SaveChangesAsync();
+            logger.LogInformation(
+                "Seeded {Count} initial public holidays (UAE/US/UK, 2026-2027). HR can edit / delete / add more from /holiday-admin.",
+                added);
+        }
+    }
+
+    // ---------------------------------------------------------------- policies
+    /// <summary>
+    /// Seeds the initial set of 9 company policies if the table is empty. HR can
+    /// then add / edit / delete from the /policies page UI. We pre-populate the
+    /// Diversity & Inclusion policy with its SharePoint URL since that one has
+    /// been compiled and is intended for upload to Public HR Documents/Policies/.
+    /// </summary>
+    private static async Task SeedPoliciesAsync(ApplicationDbContext db, ILogger logger)
+    {
+        if (await db.CompanyPolicies.AnyAsync()) return;
+
+        const string spRoot = "https://hansaconsultprojects815.sharepoint.com/sites/HCPHRHUB/Public%20HR%20Documents/Policies";
+
+        var initial = new[]
+        {
+            new CompanyPolicy { Name = "Diversity & Inclusion Policy", Category = "HR", Version = "v1.0", Updated = "2025", Mandatory = true,
+                DocumentUrl = $"{spRoot}/ST_HCP_Diversity_Inclusion_Policy.pdf" },
+            new CompanyPolicy { Name = "Employee Handbook",            Category = "HR",         Version = "v2.0", Updated = "01 May 2026", Mandatory = true },
+            new CompanyPolicy { Name = "Code of Conduct",              Category = "Compliance", Version = "v1.3", Updated = "25 Apr 2026", Mandatory = true },
+            new CompanyPolicy { Name = "IT Security Policy",           Category = "IT",         Version = "v2.1", Updated = "01 May 2026", Mandatory = true },
+            new CompanyPolicy { Name = "Travel & Expense Policy",      Category = "Finance",    Version = "v1.2", Updated = "12 May 2026", Mandatory = false },
+            new CompanyPolicy { Name = "Data Privacy & GDPR",          Category = "Compliance", Version = "v3.0", Updated = "10 Apr 2026", Mandatory = true },
+            new CompanyPolicy { Name = "Health & Safety",              Category = "HSE",        Version = "v1.5", Updated = "20 Mar 2026", Mandatory = true },
+            new CompanyPolicy { Name = "Remote Work Policy",           Category = "HR",         Version = "v1.0", Updated = "15 Feb 2026", Mandatory = false },
+            new CompanyPolicy { Name = "Anti-Bribery Policy",          Category = "Compliance", Version = "v2.2", Updated = "30 Jan 2026", Mandatory = true },
+        };
+        db.CompanyPolicies.AddRange(initial);
+        await db.SaveChangesAsync();
+        logger.LogInformation("Seeded {Count} initial company policies.", initial.Length);
+    }
+
+    // ---------------------------------------------------------------- timesheet projects
+    /// <summary>Seeds the live project catalog (format: NUMBER-CLIENT-DESCRIPTION) on first boot,
+    /// AND on subsequent boots cleans up the legacy "HCP-*" placeholder rows and adds any newly
+    /// listed projects that aren't yet in the catalog. User-added rows are never touched.</summary>
+    private static async Task SeedTimesheetProjectsAsync(ApplicationDbContext db, ILogger logger)
+    {
+        string[] raw =
+        {
+            "2401-NPMC-Anrria Design",
+            "2402-JACB-PA Apron",
+            "2403-WELK-South Africa Airport",
+            "2405-JACB-KSIA Detailed Master Plan",
+            "2406-RENA-Musandam Oman",
+            "2407-POAC-",
+            "2501-JACB-ABHA Storage Expansion",
+            "2508-POAC-",
+            "2512-VIT-",
+            "2513-HHOP-Heathrow Operations",
+            "2513.1-HHOP-",
+            "2514-VITA-FSMPC Yap Phase 1",
+            "2523-OILC-",
+            "2524-OILC-",
+            "2529-STO-Maldives Storage Tank",
+            "2535-POAC-Vuda Tank Expansion",
+            "2537-POAC-",
+            "2541-VIT-",
+            "2543-VIT-",
+            "2548-ENOC-",
+            "2554-POAC-",
+            "2555-VIT-",
+            "2556-NPT-",
+            "2559-AMAN-Concourse A",
+            "2563-PII-Hydrant Oversight",
+            "2564-JACB-KSIA CR 32",
+            "2565-FLCO-",
+            "2567-JACB-KSIA CR 33 Cargo",
+            "2569-AERT-ZIA Hydrant Expansion",
+            "2577-QUAD-New Lisbon Airport",
+            "2580-AERT-KSIA T3 & T4",
+            "2581-POAC-Malau New Tank",
+            "2583-JEDC-KSIA Consultancy",
+            "2584-SACM-Montevideo Upgrade",
+            "258-VIT-",
+            "2586-QUAD-New Lisbon Airport BIM",
+            "5000-POAC-",
+            "5001-POAC-",
+            "5002-POAC-",
+            "5003-POAC-",
+        };
+
+        // Legacy cleanup: remove the older "HCP-ENG-*/HCP-PROJ-*/HCP-OPS-*/HCP-INT-*" placeholders
+        // that the prototype used to seed. They are known defaults — safe to drop.
+        var legacy = await db.TimesheetProjects
+            .Where(p => p.Code.StartsWith("HCP-"))
+            .ToListAsync();
+        if (legacy.Count > 0)
+        {
+            db.TimesheetProjects.RemoveRange(legacy);
+            await db.SaveChangesAsync();
+            logger.LogInformation("Removed {Count} legacy HCP-* placeholder projects.", legacy.Count);
+        }
+
+        // Upsert the live catalog. Any user-added project (not matching a 'NUM-CLIENT' code on
+        // the list) is left alone.
+        var existing = await db.TimesheetProjects.Select(p => p.Code).ToListAsync();
+        var added = 0;
+        foreach (var line in raw)
+        {
+            var parts  = line.Split('-', 3);
+            var num    = parts.Length > 0 ? parts[0] : line;
+            var client = parts.Length > 1 ? parts[1] : "";
+            var desc   = parts.Length > 2 ? parts[2] : "";
+            var code   = $"{num}-{client}";
+            if (existing.Contains(code)) continue;
+            db.TimesheetProjects.Add(new TimesheetProject
+            {
+                Code     = code,
+                Client   = string.IsNullOrEmpty(client) ? null : client,
+                Name     = string.IsNullOrWhiteSpace(desc) ? "(no description)" : desc,
+                IsActive = true
+            });
+            added++;
+        }
+        if (added > 0)
+        {
+            await db.SaveChangesAsync();
+            logger.LogInformation("Added {Count} new timesheet projects. Super Admin can edit at /project-admin.", added);
+        }
+    }
+
+    // ---------------------------------------------------------------- employee number
+    /// <summary>
+    /// Assigns sequential EMP-### numbers to any employee that doesn't have one yet.
+    /// Order: by Id (insertion order) so first-imported employees get the lowest numbers.
+    /// Re-runs on every boot but is a no-op once every row has a number.
+    /// </summary>
+    private static async Task BackfillEmployeeNumbersAsync(ApplicationDbContext db, ILogger logger)
+    {
+        var existing = await db.Employees
+            .Where(e => !string.IsNullOrEmpty(e.EmployeeNumber))
+            .Select(e => e.EmployeeNumber)
+            .ToListAsync();
+
+        var maxNum = 0;
+        foreach (var n in existing)
+        {
+            if (n.StartsWith("EMP-", StringComparison.OrdinalIgnoreCase)
+                && int.TryParse(n[4..], out var v) && v > maxNum) maxNum = v;
+        }
+
+        var missing = await db.Employees
+            .Where(e => string.IsNullOrEmpty(e.EmployeeNumber))
+            .OrderBy(e => e.Id)
+            .ToListAsync();
+
+        if (missing.Count == 0) return;
+
+        foreach (var e in missing)
+        {
+            maxNum++;
+            e.EmployeeNumber = $"EMP-{maxNum:D3}";
+        }
+        await db.SaveChangesAsync();
+        logger.LogInformation("Assigned EMP-### numbers to {Count} employees (next free: EMP-{Next:D3}).",
+            missing.Count, maxNum + 1);
+    }
+
+    /// <summary>Picks the next free EMP-### for a brand-new employee. Used by Add/Import.</summary>
+    public static async Task<string> NextEmployeeNumberAsync(ApplicationDbContext db)
+    {
+        var max = await db.Employees
+            .Where(e => e.EmployeeNumber.StartsWith("EMP-"))
+            .Select(e => e.EmployeeNumber)
+            .ToListAsync();
+        var n = 0;
+        foreach (var s in max)
+            if (int.TryParse(s[4..], out var v) && v > n) n = v;
+        return $"EMP-{(n + 1):D3}";
     }
 
     // ---------------------------------------------------------------- helpers

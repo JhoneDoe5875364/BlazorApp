@@ -1,5 +1,5 @@
 @page "/hr-dashboard"
-@attribute [Authorize(Roles = Roles.HR)]
+@attribute [Authorize(Roles = Roles.HRorAdmin)]
 @inject IEmployeeService Employees
 @inject ITimeOffService TimeOff
 @inject ITrainingService Training
@@ -12,12 +12,12 @@
             Icon="bi-people-fill" />
 
 <div class="dash-grid">
-    <DashboardCard Title="Total Employees" Value="@Employees.HeadCount.ToString()" Icon="bi-people-fill" Tone="primary" Trend="@($"{Employees.OnLeaveCount} on leave")" />
-    <DashboardCard Title="Pending Leave Requests" Value="@TimeOff.PendingCount.ToString()" Icon="bi-hourglass-split" Tone="info" Trend="Awaiting approval" />
-    <DashboardCard Title="Visa Expiring" Value="@Documents.VisaExpiringSoon.ToString()" Icon="bi-passport" Tone="warning" Trend="Within 90 days" />
-    <DashboardCard Title="Passport Expiring" Value="@Documents.PassportExpiringSoon.ToString()" Icon="bi-passport-fill" Tone="warning" Trend="Within 180 days" />
-    <DashboardCard Title="Contracts Due" Value="@Documents.ContractsDue.ToString()" Icon="bi-file-earmark-text" Tone="danger" Trend="Renewal needed" />
-    <DashboardCard Title="Training Compliance" Value="@($"{TrainingCompliance}%")" Icon="bi-mortarboard-fill" Tone="purple" Trend="Mandatory complete" />
+    <DashboardCard Title="Total Employees" Value="@Employees.HeadCount.ToString()" Icon="bi-people-fill" Tone="primary" Trend="@($"{Employees.OnLeaveCount} on leave")" Href="/employee-records" />
+    <DashboardCard Title="Pending Leave Requests" Value="@TimeOff.PendingCount.ToString()" Icon="bi-hourglass-split" Tone="info" Trend="Awaiting approval" Href="/approvals?tab=Pending" />
+    <DashboardCard Title="Visa Expiring" Value="@Documents.VisaExpiringSoon.ToString()" Icon="bi-passport" Tone="warning" Trend="Within 90 days" Href="/document-expiry" />
+    <DashboardCard Title="Passport Expiring" Value="@Documents.PassportExpiringSoon.ToString()" Icon="bi-passport-fill" Tone="warning" Trend="Within 180 days" Href="/document-expiry" />
+    <DashboardCard Title="Contracts Due" Value="@Documents.ContractsDue.ToString()" Icon="bi-file-earmark-text" Tone="danger" Trend="Renewal needed" Href="/contracts" />
+    <DashboardCard Title="Training Compliance" Value="@($"{TrainingCompliance}%")" Icon="bi-mortarboard-fill" Tone="purple" Trend="Mandatory complete" Href="/reports?tab=Training Report" />
 </div>
 
 <div class="three-col mb-grid">

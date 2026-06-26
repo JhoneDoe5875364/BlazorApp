@@ -46,4 +46,39 @@ public class FakeTrainingService : ITrainingService
         r.CompletedOn = r.Status == TrainingStatus.Completed ? DateOnly.FromDateTime(DateTime.Today) : null;
         db.SaveChanges();
     }
+
+    public int DistributeToEmployees(
+        string courseName, string category, bool mandatory, bool acknowledgeOnly,
+        DateOnly dueDate, string? documentUrl, string? documentName,
+        IEnumerable<string>? forEmployeeNames = null)
+    {
+        using var db = _factory.CreateDbContext();
+        var targets = forEmployeeNames?.ToList()
+            ?? db.Employees.Where(e => e.Status != "Inactive").Select(e => e.FullName).ToList();
+
+        int added = 0;
+        foreach (var name in targets)
+        {
+            // Skip if this employee already has this course assigned
+            if (db.TrainingRecords.Any(r => r.EmployeeName == name && r.CourseName == courseName))
+                continue;
+
+            db.TrainingRecords.Add(new TrainingRecord
+            {
+                CourseName = courseName,
+                Category = category,
+                EmployeeName = name,
+                Status = TrainingStatus.NotStarted,
+                ProgressPercent = 0,
+                DueDate = dueDate,
+                IsMandatory = mandatory,
+                DocumentUrl = documentUrl,
+                DocumentName = documentName,
+                AcknowledgeOnly = acknowledgeOnly,
+            });
+            added++;
+        }
+        if (added > 0) db.SaveChanges();
+        return added;
+    }
 }

@@ -2,6 +2,8 @@
 @attribute [Authorize]
 @inject CurrentUserService CurrentUser
 @inject ITimesheetService Sheets
+@inject ITimesheetExporter Exporter
+@inject ILogger<Timesheets> Logger
 
 <PageTitle>Timesheets · HCP HR Portal</PageTitle>
 
@@ -36,6 +38,14 @@ else
             Standard day is <strong>@StdDay.ToString("N0") hours = 100%</strong>.
             Split a day across multiple projects by adding rows — the % column updates automatically.
         </p>
+
+        @if (!string.IsNullOrEmpty(_submitToast))
+        {
+            <div class="card-surface" style="margin-top:0.6rem;border-left:4px solid @(_submitError ? "#b91c1c" : "#16a34a");">
+                <span class="bi @(_submitError ? "bi-exclamation-circle-fill" : "bi-check-circle-fill")" style="color:@(_submitError ? "#b91c1c" : "#16a34a");margin-right:0.4rem;"></span>
+                @_submitToast
+            </div>
+        }
 
         @for (int i = 0; i < 5; i++)
         {
@@ -201,11 +211,37 @@ else
         LoadWeek();
     }
 
-    private void Submit()
+    private string? _submitToast;
+    private bool _submitError;
+
+    private async Task Submit()
     {
         if (email is null) return;
         Sheets.Submit(email, _weekStart);
         LoadWeek();
+
+        // Upload submitted week to SharePoint (best-effort — failure does not roll back the submit).
+        try
+        {
+            var me = await CurrentUser.GetEmployeeAsync();
+            if (me is null)
+            {
+                _submitToast = "Submitted. SharePoint upload skipped (no employee profile linked to your login).";
+                _submitError = false;
+                return;
+            }
+            var result = await Exporter.ExportSubmittedWeekAsync(me, _weekStart, _week);
+            _submitToast = result is null
+                ? "Submitted. SharePoint is not configured — Excel was not uploaded."
+                : $"Submitted and uploaded to SharePoint.";
+            _submitError = false;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Timesheet SharePoint upload failed.");
+            _submitToast = $"Submitted, but SharePoint upload failed: {ex.Message}";
+            _submitError = true;
+        }
     }
 
     private static DateOnly Monday(DateOnly d) => d.AddDays(-((int)d.DayOfWeek == 0 ? 6 : (int)d.DayOfWeek - 1));

@@ -30,6 +30,8 @@ public class FakeExpenseService : IExpenseService
         return db.ExpenseClaims.Where(c => c.Status == status).ToList();
     }
 
+    // SQLite stores decimal as TEXT and cannot apply SUM at the SQL level — pull the
+    // Amount column to memory first and aggregate client-side.
     public decimal TotalSubmitted
     {
         get
@@ -37,7 +39,7 @@ public class FakeExpenseService : IExpenseService
             using var db = _factory.CreateDbContext();
             return db.ExpenseClaims
                      .Where(c => c.Status == ExpenseStatus.Submitted || c.Status == ExpenseStatus.Approved)
-                     .Sum(c => (decimal?)c.Amount) ?? 0m;
+                     .Select(c => c.Amount).AsEnumerable().Sum();
         }
     }
 
@@ -47,7 +49,7 @@ public class FakeExpenseService : IExpenseService
         {
             using var db = _factory.CreateDbContext();
             return db.ExpenseClaims.Where(c => c.Status == ExpenseStatus.Reimbursed)
-                     .Sum(c => (decimal?)c.Amount) ?? 0m;
+                     .Select(c => c.Amount).AsEnumerable().Sum();
         }
     }
 

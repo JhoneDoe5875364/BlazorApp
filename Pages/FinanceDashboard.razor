@@ -1,5 +1,5 @@
 @page "/finance-dashboard"
-@attribute [Authorize(Roles = Roles.Finance)]
+@attribute [Authorize(Roles = Roles.FinanceOrAdmin)]
 @inject IExpenseService Expenses
 @inject ICalendarService CalendarSvc
 @inject IInvoiceService InvoiceSvc
@@ -15,12 +15,12 @@
             Icon="bi-cash-coin" />
 
 <div class="dash-grid">
-    <DashboardCard Title="Pending Expenses" Value="@($"${Expenses.TotalSubmitted.ToString("N0")}")" Icon="bi-receipt" Tone="warning" Trend="@($"{Expenses.PendingCount} claims awaiting")" />
-    <DashboardCard Title="Total Reimbursed" Value="@($"${Expenses.TotalReimbursed.ToString("N0")}")" Icon="bi-check-circle-fill" Tone="success" Trend="Paid out" />
-    <DashboardCard Title="Pending Timesheets" Value="@pendingTimesheets.ToString()" Icon="bi-clock-history" Tone="info" Trend="Awaiting approval" />
-    <DashboardCard Title="Salary Cert Requests" Value="@certRequests.ToString()" Icon="bi-file-earmark-text" Tone="primary" Trend="To process" />
-    <DashboardCard Title="Invoices Due" Value="@invoicesDue.ToString()" Icon="bi-file-earmark-ruled-fill" Tone="warning" Trend="This month" />
-    <DashboardCard Title="Payroll Cut-off" Value="@payrollCutoff" Icon="bi-calendar2-week-fill" Tone="danger" Trend="Submit changes" />
+    <DashboardCard Title="Pending Expenses" Value="@($"${Expenses.TotalSubmitted.ToString("N0")}")" Icon="bi-receipt" Tone="warning" Trend="@($"{Expenses.PendingCount} claims awaiting")" Href="/expenses" />
+    <DashboardCard Title="Total Reimbursed" Value="@($"${Expenses.TotalReimbursed.ToString("N0")}")" Icon="bi-check-circle-fill" Tone="success" Trend="Paid out" Href="/expenses" />
+    <DashboardCard Title="Pending Timesheets" Value="@pendingTimesheets.ToString()" Icon="bi-clock-history" Tone="info" Trend="Awaiting approval" Href="/timesheets" />
+    <DashboardCard Title="Salary Cert Requests" Value="@certRequests.ToString()" Icon="bi-file-earmark-text" Tone="primary" Trend="To process" Href="/salary-certificates" />
+    <DashboardCard Title="Invoices Due" Value="@invoicesDue.ToString()" Icon="bi-file-earmark-ruled-fill" Tone="warning" Trend="This month" Href="/invoices" />
+    <DashboardCard Title="Payroll Cut-off" Value="@payrollCutoff" Icon="bi-calendar2-week-fill" Tone="danger" Trend="Submit changes" Href="/calendar" />
 </div>
 
 <div class="three-col mb-grid">
@@ -127,7 +127,12 @@
     protected override async Task OnInitializedAsync()
     {
         me = await CurrentUser.GetEmployeeAsync();
-        dueDates = CalendarSvc.GetItems(CalendarView.FinanceDueDates, null).ToList();
+        // Only show upcoming finance dates — past payroll/invoice deadlines are not actionable.
+        var fdToday = DateOnly.FromDateTime(DateTime.Today);
+        dueDates = CalendarSvc.GetItems(CalendarView.FinanceDueDates, null)
+            .Where(i => i.Date >= fdToday)
+            .Take(8)
+            .ToList();
 
         var today = DateOnly.FromDateTime(DateTime.Today);
         invoicesDue = InvoiceSvc.GetAll()

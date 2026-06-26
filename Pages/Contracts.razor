@@ -1,5 +1,5 @@
 @page "/contracts"
-@attribute [Authorize(Roles = Roles.HR)]
+@attribute [Authorize(Roles = Roles.HRorAdmin)]
 @inject IDocumentService Documents
 
 <PageTitle>Contracts · HCP HR Portal</PageTitle>

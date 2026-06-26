@@ -1,5 +1,5 @@
 @page "/reports"
-@attribute [Authorize(Roles = Roles.Manager + "," + Roles.HR + "," + Roles.Finance)]
+@attribute [Authorize(Roles = Roles.ReportsViewers)]
 @inject IEmployeeService Employees
 @inject ITimeOffService TimeOff
 @inject ITrainingService Training
@@ -99,6 +99,15 @@
     private readonly string[] tabs = { "Employee Overview", "Leave Report", "Training Report", "Document Expiry" };
     private string dept = "";
     private int within = 90;
+
+    /// <summary>Lets KPI cards link here with a pre-selected tab, e.g. /reports?tab=Training Report.</summary>
+    [SupplyParameterFromQuery] public string? Tab { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(Tab) && tabs.Contains(Tab, StringComparer.OrdinalIgnoreCase))
+            tab = tabs.First(t => t.Equals(Tab, StringComparison.OrdinalIgnoreCase));
+    }
 
     private void OnDept(ChangeEventArgs e) => dept = e.Value?.ToString() ?? "";
     private void OnWithin(ChangeEventArgs e) => within = int.TryParse(e.Value?.ToString(), out var v) ? v : 3650;

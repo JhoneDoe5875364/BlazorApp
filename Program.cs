@@ -5,7 +5,6 @@ using HCP.HRPortal.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MySqlConnector;
 
 // Pin ContentRoot to the directory containing the executable, so wwwroot / appsettings.json
 // resolve correctly regardless of the working directory the exe was launched from. Without
@@ -41,55 +40,34 @@ builder.Services.AddAuthentication(options =>
 .AddIdentityCookies();
 
 // --- Database ----------------------------------------------------------------
-// Prefer MySQL, but fall back to an in-memory database so the app still runs (and the
-// per-role temp users can log in) when no MySQL server is available. Force in-memory
-// explicitly with "UseInMemoryDatabase": true in appsettings.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
-var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
+// SQLite (file-based) by default — zero install for the recipient. The .db file
+// is created next to the executable on first boot and survives restarts.
+// Override with appsettings "UseInMemoryDatabase": true for ephemeral testing.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    // Default: file next to the exe so it travels with the publish folder.
+    var dbPath = Path.Combine(builder.Environment.ContentRootPath, "hcp_hrportal.db");
+    connectionString = $"Data Source={dbPath}";
+}
 
 var forceInMemory = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
-var useInMemory = forceInMemory
-    || string.IsNullOrWhiteSpace(connectionString)
-    || !MySqlReachable(connectionString);
-
-if (useInMemory)
+if (forceInMemory)
 {
-    Console.WriteLine(forceInMemory
-        ? "[DB] UseInMemoryDatabase=true — running on an in-memory database (temp users)."
-        : "[DB] MySQL not reachable — falling back to an in-memory database (temp users). Sign in with the demo accounts (password Passw0rd!).");
-
+    Console.WriteLine("[DB] UseInMemoryDatabase=true — running on an in-memory database (data lost on restart).");
     builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
         options.UseInMemoryDatabase("hcp_hrportal"));
 }
 else
 {
+    Console.WriteLine($"[DB] SQLite — {connectionString}");
     builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-        options.UseMySql(connectionString, serverVersion));
+        options.UseSqlite(connectionString));
 }
 
 // A scoped context (bridged from the factory) is what Identity's stores resolve.
 builder.Services.AddScoped<ApplicationDbContext>(sp =>
     sp.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
-
-// Quick reachability probe (server only, no specific database, short timeout).
-static bool MySqlReachable(string connectionString)
-{
-    try
-    {
-        var b = new MySqlConnectionStringBuilder(connectionString)
-        {
-            Database = "",
-            ConnectionTimeout = 3
-        };
-        using var conn = new MySqlConnection(b.ConnectionString);
-        conn.Open();
-        return true;
-    }
-    catch
-    {
-        return false;
-    }
-}
 
 // --- ASP.NET Core Identity ----------------------------------------------------
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
@@ -115,10 +93,17 @@ builder.Services.AddSingleton<IDocumentService, FakeDocumentService>();
 builder.Services.AddSingleton<ICalendarService, FakeCalendarService>();
 builder.Services.AddSingleton<ITrainingService, FakeTrainingService>();
 builder.Services.AddSingleton<IInvoiceService, FakeInvoiceService>();
+
+// --- Microsoft 365 / SharePoint integration -----------------------------------
+// Real credentials come from User Secrets (development) or environment variables /
+// Key Vault (production). appsettings.json should hold empty placeholders only.
+builder.Services.Configure<M365Options>(builder.Configuration.GetSection(M365Options.SectionName));
+builder.Services.AddSingleton<ISharePointFileService, SharePointFileService>();
 builder.Services.AddSingleton<IPerformanceService, FakePerformanceService>();
 builder.Services.AddSingleton<ISalaryCertificateService, FakeSalaryCertificateService>();
 builder.Services.AddSingleton<ITravelService, FakeTravelService>();
 builder.Services.AddSingleton<IAnnouncementService, FakeAnnouncementService>();
+builder.Services.AddSingleton<IPayslipService, FakePayslipService>();
 
 // Resolves the signed-in user's Employee profile (scoped to the circuit).
 builder.Services.AddScoped<CurrentUserService>();
@@ -130,11 +115,15 @@ builder.Services.AddSingleton<INotificationService, NotificationService>();
 builder.Services.AddSingleton<IPolicyService, PolicyService>();
 builder.Services.AddSingleton<IUserPreferencesService, UserPreferencesService>();
 builder.Services.AddSingleton<ITimesheetService, TimesheetService>();
+builder.Services.AddScoped<ITimesheetExporter, TimesheetExporter>();
 
 var app = builder.Build();
 
 // --- Apply migrations + seed roles/users/demo data ----------------------------
 await DbInitializer.InitializeAsync(app.Services);
+
+// --- Optional SharePoint connectivity self-test (set HCP_SP_SELFTEST=1) --------
+await SharePointSelfTest.RunAsync(app.Services);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

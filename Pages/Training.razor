@@ -55,12 +55,27 @@ else
                     <span class="cell-sub">@c.ProgressPercent%</span>
                 </td>
                 <td>
+                    @if (!string.IsNullOrEmpty(c.DocumentUrl))
+                    {
+                        <a href="@c.DocumentUrl" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm me-1" title="@c.DocumentName">
+                            <span class="bi bi-file-earmark"></span> Open
+                        </a>
+                    }
                     @if (me is not null && c.EmployeeName == me.FullName && c.Status != TrainingStatus.Completed)
                     {
-                        <button class="btn btn-outline-secondary btn-sm me-1" @onclick="() => Progress(c, c.ProgressPercent + 25)">+25%</button>
-                        <button class="btn btn-success btn-sm" @onclick="() => Progress(c, 100)">Complete</button>
+                        @if (c.AcknowledgeOnly)
+                        {
+                            <button class="btn btn-success btn-sm" @onclick="() => Progress(c, 100)" title="Mark as read and acknowledged">
+                                <span class="bi bi-check2-square"></span> Acknowledge
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-secondary btn-sm me-1" @onclick="() => Progress(c, c.ProgressPercent + 25)">+25%</button>
+                            <button class="btn btn-success btn-sm" @onclick="() => Progress(c, 100)">Complete</button>
+                        }
                     }
-                    else
+                    else if (string.IsNullOrEmpty(c.DocumentUrl))
                     {
                         <span class="text-muted-sm">—</span>
                     }

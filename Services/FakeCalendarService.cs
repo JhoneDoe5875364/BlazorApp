@@ -17,6 +17,45 @@ public class FakeCalendarService : ICalendarService
         return db.CalendarEvents.OrderBy(e => e.Date).ToList();
     }
 
+    public void Add(CalendarEvent ev)
+    {
+        using var db = _factory.CreateDbContext();
+        ev.Id = 0;
+        db.CalendarEvents.Add(ev);
+        db.SaveChanges();
+    }
+
+    public void Update(CalendarEvent ev)
+    {
+        using var db = _factory.CreateDbContext();
+        var existing = db.CalendarEvents.FirstOrDefault(x => x.Id == ev.Id);
+        if (existing is null) return;
+        existing.Title = ev.Title;
+        existing.Date = ev.Date;
+        existing.Type = ev.Type;
+        existing.Description = ev.Description;
+        existing.Country = ev.Country;
+        db.SaveChanges();
+    }
+
+    public void Delete(int id)
+    {
+        using var db = _factory.CreateDbContext();
+        var ev = db.CalendarEvents.FirstOrDefault(x => x.Id == id);
+        if (ev is null) return;
+        db.CalendarEvents.Remove(ev);
+        db.SaveChanges();
+    }
+
+    public IReadOnlyList<CalendarEvent> GetHolidays(string? country = null, int? year = null)
+    {
+        using var db = _factory.CreateDbContext();
+        var q = db.CalendarEvents.Where(c => c.Type == CalendarEventType.Holiday);
+        if (!string.IsNullOrEmpty(country)) q = q.Where(c => c.Country == country);
+        if (year.HasValue) q = q.Where(c => c.Date.Year == year);
+        return q.OrderBy(c => c.Date).ThenBy(c => c.Country).ToList();
+    }
+
     public IEnumerable<CalendarEvent> GetUpcoming(int count = 5)
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
@@ -40,6 +79,7 @@ public class FakeCalendarService : ICalendarService
     {
         using var db = _factory.CreateDbContext();
         var team = teamNames?.ToHashSet() ?? new HashSet<string>();
+        var myEmail = me?.Email ?? "";
         var items = new List<CalendarItem>();
 
         var events = db.CalendarEvents.ToList();
@@ -52,12 +92,37 @@ public class FakeCalendarService : ICalendarService
             new[] { "payroll", "invoice", "timesheet", "expense" }
                 .Any(k => e.Title.Contains(k, StringComparison.OrdinalIgnoreCase));
 
-        // ---- Company / public events ----
+        // Scope-aware "can this user see this event?" check.
+        // - Company  : everyone
+        // - Team     : creator + members of the same team (we use teamNames + me's email)
+        // - Personal : only creator
+        bool canSee(CalendarEvent e) => e.Scope switch
+        {
+            CalendarEventScope.Company => true,
+            CalendarEventScope.Team    => string.Equals(e.CreatedBy, myEmail, StringComparison.OrdinalIgnoreCase)
+                                          || view == CalendarView.HRMaster
+                                          || (me is not null && team.Count > 0),
+            CalendarEventScope.Personal => string.Equals(e.CreatedBy, myEmail, StringComparison.OrdinalIgnoreCase)
+                                          || view == CalendarView.HRMaster,
+            _ => true,
+        };
+
+        // ---- Holidays / meetings / generic company events ----
+        // Filtered by both scope AND the requested view (My / Team / Company / HR).
         bool includeCompany = view is CalendarView.My or CalendarView.Team or CalendarView.Company or CalendarView.HRMaster;
         if (includeCompany)
         {
             foreach (var e in events.Where(e => e.Type is CalendarEventType.Holiday or CalendarEventType.Meeting))
-                items.Add(new CalendarItem(e.Date, e.Title, e.Type.ToString(), ColorFor(e.Type)));
+            {
+                if (!canSee(e)) continue;
+                // Company view shows ONLY company-scope events (not personal/team).
+                if (view == CalendarView.Company && e.Scope != CalendarEventScope.Company) continue;
+                // Team view shows team-scope + company-scope events (not personal events of others).
+                if (view == CalendarView.Team && e.Scope == CalendarEventScope.Personal
+                    && !string.Equals(e.CreatedBy, myEmail, StringComparison.OrdinalIgnoreCase)) continue;
+                var creatorLabel = string.IsNullOrEmpty(e.CreatedBy) || e.CreatedBy.StartsWith("(") ? "" : $" · by {e.CreatedBy}";
+                items.Add(new CalendarItem(e.Date, e.Title, e.Type + creatorLabel, ColorFor(e.Type)));
+            }
         }
 
         // ---- Leave ----

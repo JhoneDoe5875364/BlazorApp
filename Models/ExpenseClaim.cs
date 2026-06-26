@@ -20,4 +20,9 @@ public class ExpenseClaim
     public ExpenseStatus Status { get; set; } = ExpenseStatus.Submitted;
     public string SubmittedBy { get; set; } = "";
     public string Notes { get; set; } = "";
+
+    // Optional receipt (image or PDF). URL points at SharePoint when configured,
+    // otherwise at wwwroot/uploads/expenses/ on disk.
+    public string? ReceiptUrl { get; set; }
+    public string? ReceiptName { get; set; }
 }

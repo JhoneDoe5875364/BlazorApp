@@ -3,7 +3,6 @@ using System;
 using HCP.HRPortal.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -16,66 +15,62 @@ namespace HCP.HRPortal.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.13")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.12");
 
             modelBuilder.Entity("HCP.HRPortal.Data.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int?>("EmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -95,32 +90,30 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Author")
                         .IsRequired()
                         .HasMaxLength(160)
-                        .HasColumnType("varchar(160)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasMaxLength(4000)
-                        .HasColumnType("varchar(4000)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -133,42 +126,40 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateOnly>("DepartDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Destination")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("EstimatedCost")
                         .HasPrecision(12, 2)
-                        .HasColumnType("decimal(12,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Purpose")
                         .IsRequired()
                         .HasMaxLength(160)
-                        .HasColumnType("varchar(160)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("ReturnDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -183,63 +174,115 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Country")
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("varchar(400)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Scope")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(160)
-                        .HasColumnType("varchar(160)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Country");
+
                     b.HasIndex("Date");
 
+                    b.HasIndex("Scope");
+
                     b.ToTable("CalendarEvents", (string)null);
+                });
+
+            modelBuilder.Entity("HCP.HRPortal.Models.CompanyPolicy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DocumentUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Mandatory")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Updated")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CompanyPolicies", (string)null);
                 });
 
             modelBuilder.Entity("HCP.HRPortal.Models.DocumentRecord", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateOnly>("ExpiryDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("IssueDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Owner")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -252,96 +295,101 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("AnnualLeaveTotal")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("AnnualLeaveUsed")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("AnnualSalary")
                         .HasPrecision(12, 2)
-                        .HasColumnType("decimal(12,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly?>("Birthday")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly?>("ContractEndDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Country")
                         .HasMaxLength(80)
-                        .HasColumnType("varchar(80)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Department")
                         .IsRequired()
                         .HasMaxLength(80)
-                        .HasColumnType("varchar(80)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(160)
-                        .HasColumnType("varchar(160)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EmployeeNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("EmploymentType")
                         .HasMaxLength(40)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("HireDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("JobTitle")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(80)
-                        .HasColumnType("varchar(80)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ManagerName")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PersonalEmail")
                         .HasMaxLength(160)
-                        .HasColumnType("varchar(160)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PhotoUrl")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PreferredName")
                         .HasMaxLength(80)
-                        .HasColumnType("varchar(80)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly?>("ProbationEndDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("EmployeeNumber");
 
                     b.ToTable("Employees", (string)null);
                 });
@@ -350,46 +398,52 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Amount")
                         .HasPrecision(12, 2)
-                        .HasColumnType("decimal(12,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("varchar(400)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReceiptName")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReceiptUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("SubmittedBy")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(160)
-                        .HasColumnType("varchar(160)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -402,39 +456,37 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Amount")
                         .HasPrecision(12, 2)
-                        .HasColumnType("decimal(12,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("DueDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("IssueDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Vendor")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -445,39 +497,92 @@ namespace HCP.HRPortal.Migrations
                     b.ToTable("Invoices", (string)null);
                 });
 
-            modelBuilder.Entity("HCP.HRPortal.Models.PerformanceFeedback", b =>
+            modelBuilder.Entity("HCP.HRPortal.Models.Payslip", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Author")
+                    b.Property<string>("Currency")
                         .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(600)
-                        .HasColumnType("varchar(600)");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Gross")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Net")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PdfUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Period")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("PeriodStart")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("UploadedOn")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("PeriodStart");
+
+                    b.ToTable("Payslips", (string)null);
+                });
+
+            modelBuilder.Entity("HCP.HRPortal.Models.PerformanceFeedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(600)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("EmployeeName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Relation")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -490,35 +595,33 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Cycle")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("ProgressPercent")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -531,37 +634,35 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Band")
                         .IsRequired()
                         .HasMaxLength(24)
-                        .HasColumnType("varchar(24)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("Completed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Cycle")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("DueDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<double>("Rating")
                         .HasPrecision(3, 2)
-                        .HasColumnType("double");
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
@@ -572,39 +673,62 @@ namespace HCP.HRPortal.Migrations
                     b.ToTable("PerformanceReviews", (string)null);
                 });
 
+            modelBuilder.Entity("HCP.HRPortal.Models.PolicyAcknowledgement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly>("AcknowledgedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PolicyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PolicyId", "UserEmail")
+                        .IsUnique();
+
+                    b.ToTable("PolicyAcknowledgements", (string)null);
+                });
+
             modelBuilder.Entity("HCP.HRPortal.Models.SalaryCertificateRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Addressee")
                         .IsRequired()
                         .HasMaxLength(160)
-                        .HasColumnType("varchar(160)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Purpose")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("RequestedOn")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -619,49 +743,47 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("AttachmentName")
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AttachmentUrl")
                         .HasMaxLength(512)
-                        .HasColumnType("varchar(512)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("varchar(400)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("RequestedOn")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -672,45 +794,85 @@ namespace HCP.HRPortal.Migrations
                     b.ToTable("TimeOffRequests", (string)null);
                 });
 
+            modelBuilder.Entity("HCP.HRPortal.Models.TimesheetProject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Client")
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("TimesheetProjects", (string)null);
+                });
+
             modelBuilder.Entity("HCP.HRPortal.Models.TrainingRecord", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<bool>("AcknowledgeOnly")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly?>("CompletedOn")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("CourseName")
                         .IsRequired()
                         .HasMaxLength(160)
-                        .HasColumnType("varchar(160)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DocumentName")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DocumentUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("DueDate")
-                        .HasColumnType("date");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("varchar(120)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsMandatory")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ProgressPercent")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -720,19 +882,19 @@ namespace HCP.HRPortal.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -747,19 +909,17 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -772,19 +932,17 @@ namespace HCP.HRPortal.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -796,17 +954,17 @@ namespace HCP.HRPortal.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -818,10 +976,10 @@ namespace HCP.HRPortal.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -833,16 +991,16 @@ namespace HCP.HRPortal.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 

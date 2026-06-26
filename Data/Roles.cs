@@ -12,12 +12,25 @@ public static class Roles
     public const string Manager = "Manager";
     public const string HR = "HR";
     public const string Finance = "Finance";
+    /// <summary>Super-admin role — granted access to every role-restricted page and
+    /// to the system-only Project Admin (timesheet project catalog). Assigned manually
+    /// by HR on the Employee Records page.</summary>
+    public const string SuperAdmin = "SuperAdmin";
 
-    public static readonly string[] All = { Employee, Manager, HR, Finance };
+    public static readonly string[] All = { Employee, Manager, HR, Finance, SuperAdmin };
+
+    /// <summary>Comma-joined "X,SuperAdmin" — handy for [Authorize(Roles = ...)] so the
+    /// super-admin gets in everywhere without having to list it on every page.</summary>
+    public const string HRorAdmin       = HR + "," + SuperAdmin;
+    public const string FinanceOrAdmin  = Finance + "," + SuperAdmin;
+    public const string ManagerOrAdmin  = Manager + "," + SuperAdmin;
+    public const string ApproverOrAdmin = Manager + "," + HR + "," + SuperAdmin;
+    public const string ReportsViewers  = Manager + "," + HR + "," + Finance + "," + SuperAdmin;
 
     /// <summary>Landing dashboard route for each role.</summary>
     public static string DashboardFor(string role) => role switch
     {
+        SuperAdmin => "/hr-dashboard",
         Manager => "/management-dashboard",
         HR => "/hr-dashboard",
         Finance => "/finance-dashboard",

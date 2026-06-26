@@ -1,5 +1,5 @@
 @page "/document-expiry"
-@attribute [Authorize(Roles = Roles.HR)]
+@attribute [Authorize(Roles = Roles.HRorAdmin)]
 @inject IDocumentService Documents
 
 <PageTitle>Document Expiry · HCP HR Portal</PageTitle>

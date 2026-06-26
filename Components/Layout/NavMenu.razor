@@ -11,6 +11,25 @@
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
 
+        @* ---------------- SUPER ADMIN — full access including project catalog ---------------- *@
+        <AuthorizeView Roles="SuperAdmin">
+            <button class="nav-section-title nav-toggle" @onclick='() => Toggle("admin")' @onclick:stopPropagation>
+                <span>Super Admin</span><span class="bi bi-chevron-down nav-chevron @(IsOpen("admin") ? "" : "collapsed")"></span>
+            </button>
+            @if (IsOpen("admin"))
+            {
+                <div class="nav-item px-3"><NavLink class="nav-link" href="hr-dashboard"><span class="bi bi-shield-fill-check nav-icon"></span><span>HR Dashboard</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="management-dashboard"><span class="bi bi-diagram-3-fill nav-icon"></span><span>Manager Dashboard</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="finance-dashboard"><span class="bi bi-cash-coin nav-icon"></span><span>Finance Dashboard</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="project-admin"><span class="bi bi-kanban-fill nav-icon"></span><span>Project Admin</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="employee-records"><span class="bi bi-person-lines-fill nav-icon"></span><span>Employee Records</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="holiday-admin"><span class="bi bi-calendar2-heart-fill nav-icon"></span><span>Holiday Admin</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="training-admin"><span class="bi bi-mortarboard-fill nav-icon"></span><span>Training Admin</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="payslip-admin"><span class="bi bi-cash-stack nav-icon"></span><span>Payslip Admin</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="announcements"><span class="bi bi-megaphone-fill nav-icon"></span><span>Announcements</span></NavLink></div>
+            }
+        </AuthorizeView>
+
         @* ---------------- ROLE WORKSPACE ---------------- *@
         <AuthorizeView Roles="Employee">
             <button class="nav-section-title nav-toggle" @onclick='() => Toggle("role")' @onclick:stopPropagation>
@@ -43,6 +62,8 @@
                 <div class="nav-item px-3"><NavLink class="nav-link" href="hr-dashboard"><span class="bi bi-people-fill nav-icon"></span><span>Dashboard</span></NavLink></div>
                 <div class="nav-item px-3"><NavLink class="nav-link" href="employee-records"><span class="bi bi-person-lines-fill nav-icon"></span><span>Employee Records</span></NavLink></div>
                 <div class="nav-item px-3"><NavLink class="nav-link" href="employee-import"><span class="bi bi-upload nav-icon"></span><span>Employee Import</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="holiday-admin"><span class="bi bi-calendar2-heart-fill nav-icon"></span><span>Holiday Admin</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="training-admin"><span class="bi bi-mortarboard-fill nav-icon"></span><span>Training Admin</span></NavLink></div>
                 <div class="nav-item px-3"><NavLink class="nav-link" href="approvals"><span class="bi bi-check2-square nav-icon"></span><span>Approvals</span></NavLink></div>
                 <div class="nav-item px-3"><NavLink class="nav-link" href="document-expiry"><span class="bi bi-exclamation-triangle-fill nav-icon"></span><span>Document Expiry</span></NavLink></div>
                 <div class="nav-item px-3"><NavLink class="nav-link" href="contracts"><span class="bi bi-file-earmark-text nav-icon"></span><span>Contracts</span></NavLink></div>
@@ -59,6 +80,7 @@
             {
                 <div class="nav-item px-3"><NavLink class="nav-link" href="finance-dashboard"><span class="bi bi-cash-coin nav-icon"></span><span>Dashboard</span></NavLink></div>
                 <div class="nav-item px-3"><NavLink class="nav-link" href="invoices"><span class="bi bi-file-earmark-ruled-fill nav-icon"></span><span>Invoices</span></NavLink></div>
+                <div class="nav-item px-3"><NavLink class="nav-link" href="payslip-admin"><span class="bi bi-cash-stack nav-icon"></span><span>Payslip Admin</span></NavLink></div>
                 <div class="nav-item px-3"><NavLink class="nav-link" href="reports"><span class="bi bi-bar-chart-fill nav-icon"></span><span>Reports</span></NavLink></div>
             }
         </AuthorizeView>
@@ -80,7 +102,8 @@
                     <div class="nav-item px-3"><NavLink class="nav-link" href="training"><span class="bi bi-mortarboard-fill nav-icon"></span><span>Training</span></NavLink></div>
                     <div class="nav-item px-3"><NavLink class="nav-link" href="performance"><span class="bi bi-graph-up-arrow nav-icon"></span><span>Performance</span></NavLink></div>
                     <div class="nav-item px-3"><NavLink class="nav-link" href="benefits"><span class="bi bi-heart-fill nav-icon"></span><span>Benefits</span></NavLink></div>
-                    <div class="nav-item px-3"><NavLink class="nav-link" href="salary-certificates"><span class="bi bi-cash-stack nav-icon"></span><span>Payslips</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="payslips"><span class="bi bi-cash-stack nav-icon"></span><span>Payslips</span></NavLink></div>
+                    <div class="nav-item px-3"><NavLink class="nav-link" href="salary-certificates"><span class="bi bi-file-earmark-text nav-icon"></span><span>Salary Certificate</span></NavLink></div>
                     <div class="nav-item px-3"><NavLink class="nav-link" href="travel"><span class="bi bi-airplane-engines-fill nav-icon"></span><span>Travel</span></NavLink></div>
                 }
 

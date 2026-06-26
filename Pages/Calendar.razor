@@ -9,7 +9,56 @@
 
 <PageHeader Title="HR Compliance Calendar"
             Subtitle="Role-based views of leave, key dates, and company events"
-            Icon="bi-calendar-event-fill" />
+            Icon="bi-calendar-event-fill">
+    <Actions>
+        <button class="btn btn-primary btn-sm" @onclick="() => showAddForm = !showAddForm">
+            <span class="bi bi-plus-lg me-1"></span>Add Event
+        </button>
+    </Actions>
+</PageHeader>
+
+@if (showAddForm)
+{
+    <div class="form-card mb-grid">
+        <h2 class="section-title">Add calendar event</h2>
+        <div class="two-col" style="align-items:start;">
+            <div>
+                <div class="form-row"><label>Title</label><input class="form-control" @bind="_newEvent.Title" placeholder="e.g. Quarterly Town Hall" /></div>
+                <div class="form-row"><label>Date</label><input type="date" class="form-control" @bind="_newEvent.Date" /></div>
+            </div>
+            <div>
+                <div class="form-row">
+                    <label>Type</label>
+                    <select class="form-select" @bind="_newEvent.Type">
+                        @foreach (var t in Enum.GetValues<CalendarEventType>())
+                        {
+                            <option value="@t">@t</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>Visibility</label>
+                    <select class="form-select" @bind="_newEvent.Scope">
+                        <option value="@CalendarEventScope.Personal">Personal — only me</option>
+                        <option value="@CalendarEventScope.Team">Team — me and my direct reports</option>
+                        <option value="@CalendarEventScope.Company">Company — everyone</option>
+                    </select>
+                </div>
+                <div class="form-row"><label>Description</label><input class="form-control" @bind="_newEvent.Description" placeholder="(optional)" /></div>
+            </div>
+        </div>
+        <div style="margin-top:0.5rem;">
+            <button class="btn btn-primary me-1" @onclick="AddEvent">Save event</button>
+            <button class="btn btn-outline-secondary" @onclick="() => showAddForm = false">Cancel</button>
+            @if (!string.IsNullOrEmpty(_addMessage))
+            {
+                <span class="text-muted-sm" style="margin-left:0.6rem;color:#16a34a;">
+                    <span class="bi bi-check-circle-fill"></span> @_addMessage
+                </span>
+            }
+        </div>
+    </div>
+}
 
 @if (loading)
 {
@@ -149,6 +198,27 @@ else
 
     private List<CalendarItem> upcoming = new();
     private List<CalendarItem> alerts = new();
+
+    private bool showAddForm;
+    private CalendarEvent _newEvent = NewEvent();
+    private string? _addMessage;
+
+    private static CalendarEvent NewEvent() => new()
+    {
+        Date = DateOnly.FromDateTime(DateTime.Today),
+        Type = CalendarEventType.Meeting,
+    };
+
+    private void AddEvent()
+    {
+        if (string.IsNullOrWhiteSpace(_newEvent.Title)) return;
+        // Stamp the creator so the calendar can show "Added by …" and enforce scope.
+        _newEvent.CreatedBy = me?.Email ?? "(unknown)";
+        CalendarSvc.Add(_newEvent);
+        _addMessage = $"Added '{_newEvent.Title}' on {_newEvent.Date:dd MMM yyyy} ({_newEvent.Scope}).";
+        _newEvent = NewEvent();
+        Load();
+    }
 
     protected override async Task OnInitializedAsync()
     {

@@ -5,6 +5,8 @@
 @inject IDocumentService Documents
 @inject ITrainingService Training
 @inject IWebHostEnvironment Env
+@inject ISharePointFileService SharePoint
+@inject ILogger<MyProfile> Logger
 
 <PageTitle>My Profile · HCP HR Portal</PageTitle>
 
@@ -179,20 +181,40 @@ else
 
         var ext = Path.GetExtension(file.Name);
         if (string.IsNullOrWhiteSpace(ext)) ext = ".png";
+        var spFileName = $"avatar-{DateTime.UtcNow.Ticks}{ext}";
 
-        var dir = Path.Combine(Env.WebRootPath, "uploads", "avatars");
-        Directory.CreateDirectory(dir);
-        var fileName = $"emp-{me.Id}-{DateTime.UtcNow.Ticks}{ext}";
-        var fullPath = Path.Combine(dir, fileName);
-
-        await using (var fs = File.Create(fullPath))
+        string? finalUrl = null;
+        if (SharePoint.IsEnabled)
         {
-            await file.OpenReadStream(maxBytes).CopyToAsync(fs);
+            try
+            {
+                using var buf = new MemoryStream();
+                await file.OpenReadStream(maxBytes).CopyToAsync(buf);
+                buf.Position = 0;
+                var spResult = await SharePoint.UploadAsync(me, FileCategory.Profile, spFileName, buf);
+                finalUrl = spResult.WebUrl;
+                Logger.LogInformation("[SharePoint] Profile photo uploaded for {Emp} → {Url}",
+                    me.EmployeeNumber, spResult.WebUrl);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "[SharePoint] Profile upload failed — falling back to disk.");
+            }
         }
 
-        var url = $"uploads/avatars/{fileName}";
-        Employees.SetPhoto(me.Id, url);
-        me.PhotoUrl = url;
+        if (finalUrl is null)
+        {
+            var dir = Path.Combine(Env.WebRootPath, "uploads", "avatars");
+            Directory.CreateDirectory(dir);
+            var fileName = $"emp-{me.Id}-{DateTime.UtcNow.Ticks}{ext}";
+            var fullPath = Path.Combine(dir, fileName);
+            await using (var fs = File.Create(fullPath))
+                await file.OpenReadStream(maxBytes).CopyToAsync(fs);
+            finalUrl = $"uploads/avatars/{fileName}";
+        }
+
+        Employees.SetPhoto(me.Id, finalUrl);
+        me.PhotoUrl = finalUrl;
         photoMsg = "Photo updated.";
     }
 }

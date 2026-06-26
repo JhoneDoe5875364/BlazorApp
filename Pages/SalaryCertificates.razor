@@ -6,8 +6,8 @@
 <PageTitle>Salary Certificates · HCP HR Portal</PageTitle>
 
 <PageHeader Title="Salary Certificates"
-            Subtitle="Payslips &amp; salary certificates"
-            Icon="bi-cash-stack" />
+            Subtitle="Request a formal salary certificate (for banks, visas, embassies)"
+            Icon="bi-file-earmark-text-fill" />
 
 @if (me is null)
 {
@@ -15,29 +15,6 @@
 }
 else
 {
-<div class="two-col">
-    <div class="card-surface">
-        <h2 class="section-title">Recent Payslips</h2>
-        <DataTable Items="_payslips" EmptyMessage="No payslips available.">
-            <HeaderTemplate>
-                <th>Month</th>
-                <th>Gross</th>
-                <th>Net</th>
-                <th></th>
-            </HeaderTemplate>
-            <RowTemplate Context="p">
-                <td>@p.Month</td>
-                <td class="amount">@p.Gross.ToString("N2")</td>
-                <td class="amount">@p.Net.ToString("N2")</td>
-                <td>
-                    <button class="btn btn-outline-secondary btn-sm">
-                        <span class="bi bi-download me-1"></span>Download
-                    </button>
-                </td>
-            </RowTemplate>
-        </DataTable>
-    </div>
-
     <div class="card-surface">
         <h2 class="section-title">Request a Salary Certificate</h2>
         <p>
@@ -76,6 +53,8 @@ else
         </div>
 
         <div class="placeholder-note" style="margin-top: 1rem;">
+            <span class="bi bi-info-circle-fill"></span>
+            For your monthly payslips (different document), see the <a href="payslips"><strong>Payslips</strong></a> page.
             Requests are processed by HR within 3 business days. You will receive an email
             notification when your certificate is ready to download.
         </div>
@@ -99,14 +78,10 @@ else
             </DataTable>
         }
     </div>
-</div>
 }
 
 @code {
-    private record Payslip(string Month, decimal Gross, decimal Net);
-
     private Employee? me;
-    private Payslip[] _payslips = Array.Empty<Payslip>();
     private List<SalaryCertificateRequest> myRequests = new();
 
     private string purpose = "Bank loan";
@@ -117,20 +92,6 @@ else
     {
         me = await CurrentUser.GetEmployeeAsync();
         if (me is null) return;
-
-        var gross = Math.Round(me.AnnualSalary / 12, 2);
-        var net   = Math.Round(gross * 0.78m, 2);
-
-        _payslips = new[]
-        {
-            new Payslip("May 2026", gross, net),
-            new Payslip("Apr 2026", gross, net),
-            new Payslip("Mar 2026", gross, net),
-            new Payslip("Feb 2026", gross, net),
-            new Payslip("Jan 2026", gross, net),
-            new Payslip("Dec 2025", gross, net),
-        };
-
         Reload();
     }
 

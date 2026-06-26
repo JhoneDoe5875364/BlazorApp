@@ -22,6 +22,7 @@ public interface IEmployeeService
     IEnumerable<string> Departments();
     void Add(Employee employee);
     void Update(Employee employee);
+    void Delete(int id);
 }
 
 public interface ITimeOffService
@@ -68,6 +69,16 @@ public interface ITrainingService
     IEnumerable<TrainingRecord> GetForEmployee(string name);
     int MandatoryOutstanding { get; }
     void SetProgress(int id, int percent);
+
+    /// <summary>
+    /// Creates a TrainingRecord for every active employee (or only those in <paramref name="forEmployeeNames"/>)
+    /// pointing at the same document. Used by the HR "Add Training" admin page so that one upload
+    /// fans out to the whole company.
+    /// </summary>
+    int DistributeToEmployees(
+        string courseName, string category, bool mandatory, bool acknowledgeOnly,
+        DateOnly dueDate, string? documentUrl, string? documentName,
+        IEnumerable<string>? forEmployeeNames = null);
 }
 
 public interface ICalendarService
@@ -76,4 +87,8 @@ public interface ICalendarService
     IEnumerable<CalendarEvent> GetUpcoming(int count = 5);
     IEnumerable<CalendarEvent> GetForMonth(int year, int month);
     IReadOnlyList<CalendarItem> GetItems(CalendarView view, Employee? me, IEnumerable<string>? teamNames = null);
+    void Add(CalendarEvent ev);
+    void Update(CalendarEvent ev);
+    void Delete(int id);
+    IReadOnlyList<CalendarEvent> GetHolidays(string? country = null, int? year = null);
 }

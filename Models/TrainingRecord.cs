@@ -18,4 +18,11 @@ public class TrainingRecord
     public DateOnly DueDate { get; set; }
     public DateOnly? CompletedOn { get; set; }
     public bool IsMandatory { get; set; }
+
+    /// <summary>SharePoint URL (or local path) of the training document HR uploaded.</summary>
+    public string? DocumentUrl { get; set; }
+    /// <summary>Filename shown next to the training course in the employee's list.</summary>
+    public string? DocumentName { get; set; }
+    /// <summary>If true: course is "acknowledge only" — employee just clicks Mark Completed after reading.</summary>
+    public bool AcknowledgeOnly { get; set; }
 }

@@ -3,6 +3,9 @@
 @inject CurrentUserService CurrentUser
 @inject IExpenseService ExpenseService
 @inject INotificationService Notifier
+@inject ISharePointFileService SharePoint
+@inject IWebHostEnvironment Env
+@inject ILogger<Expenses> Logger
 
 <PageTitle>Expenses · HCP HR Portal</PageTitle>
 
@@ -42,7 +45,24 @@ else
                 <div class="form-row"><label>Amount</label><InputNumber class="form-control" @bind-Value="_form.Amount" /></div>
                 <div class="form-row"><label>Date</label><InputDate class="form-control" @bind-Value="_form.Date" /></div>
                 <div class="form-row"><label>Notes</label><InputTextArea class="form-control" @bind-Value="_form.Notes" rows="2" /></div>
-                <button class="btn btn-primary" type="submit">Submit claim</button>
+                <div class="form-row">
+                    <label>Receipt <span class="text-muted-sm">(optional — JPG/PNG/PDF, max 5 MB)</span></label>
+                    <InputFile class="form-control" OnChange="OnReceiptSelected" accept=".jpg,.jpeg,.png,.pdf" />
+                    @if (_pickedReceipt is not null)
+                    {
+                        <div class="text-muted-sm" style="margin-top:0.3rem;">
+                            <span class="bi bi-paperclip"></span> @_pickedReceipt.Name (@FormatBytes(_pickedReceipt.Size))
+                            <button type="button" class="btn btn-link btn-sm" style="padding:0;margin-left:0.4rem;" @onclick="() => _pickedReceipt = null">remove</button>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(_receiptError))
+                    {
+                        <div class="text-muted-sm" style="color:#b91c1c;margin-top:0.3rem;">@_receiptError</div>
+                    }
+                </div>
+                <button class="btn btn-primary" type="submit" disabled="@_busy">
+                    @(_busy ? "Submitting…" : "Submit claim")
+                </button>
             </EditForm>
         </div>
     }
@@ -83,6 +103,9 @@ else
 }
 
 @code {
+    private const long MaxReceiptBytes = 5 * 1024 * 1024;
+    private static readonly string[] AllowedReceiptExt = { ".jpg", ".jpeg", ".png", ".pdf" };
+
     private Employee? me;
     private List<ExpenseClaim> myClaims = new();
     private string tab = "My Expenses";
@@ -90,6 +113,9 @@ else
     private bool showForm;
     private decimal submittedAmt, approvedAmt, reimbursedAmt;
     private ExpenseClaim _form = NewForm();
+    private IBrowserFile? _pickedReceipt;
+    private string? _receiptError;
+    private bool _busy;
 
     protected override async Task OnInitializedAsync()
     {
@@ -113,16 +139,90 @@ else
         _ => myClaims
     };
 
-    private void Submit()
+    private async Task Submit()
     {
         if (me is null) return;
-        _form.SubmittedBy = me.FullName;
-        ExpenseService.Add(_form);
-        Notifier.NotifyExpenseSubmitted(me, _form); // notify Finance, not self
-        _form = NewForm();
-        showForm = false;
-        Reload();
+        _busy = true;
+        try
+        {
+            if (_pickedReceipt is not null)
+            {
+                var (url, name) = await SaveReceiptAsync(_pickedReceipt);
+                _form.ReceiptUrl = url;
+                _form.ReceiptName = name;
+            }
+            _form.SubmittedBy = me.FullName;
+            ExpenseService.Add(_form);
+            Notifier.NotifyExpenseSubmitted(me, _form);
+            _form = NewForm();
+            _pickedReceipt = null;
+            _receiptError = null;
+            showForm = false;
+            Reload();
+        }
+        finally
+        {
+            _busy = false;
+        }
     }
+
+    private void OnReceiptSelected(InputFileChangeEventArgs e)
+    {
+        _receiptError = null;
+        var f = e.File;
+        if (f.Size > MaxReceiptBytes)
+        {
+            _receiptError = $"Receipt too large (max {MaxReceiptBytes / (1024 * 1024)} MB).";
+            _pickedReceipt = null; return;
+        }
+        var ext = Path.GetExtension(f.Name).ToLowerInvariant();
+        if (!AllowedReceiptExt.Contains(ext))
+        {
+            _receiptError = $"File type '{ext}' is not allowed.";
+            _pickedReceipt = null; return;
+        }
+        _pickedReceipt = f;
+    }
+
+    private async Task<(string Url, string Name)> SaveReceiptAsync(IBrowserFile file)
+    {
+        var safeName = Path.GetFileName(file.Name);
+
+        if (SharePoint.IsEnabled && me is not null)
+        {
+            try
+            {
+                using var buf = new MemoryStream();
+                await file.OpenReadStream(MaxReceiptBytes).CopyToAsync(buf);
+                buf.Position = 0;
+                var spName = $"{DateTime.UtcNow:yyyyMMdd-HHmmss}_{safeName}";
+                var result = await SharePoint.UploadAsync(me, FileCategory.Receipts, spName, buf);
+                Logger.LogInformation("[SharePoint] Receipt uploaded for {Emp} → {Url}",
+                    me.EmployeeNumber, result.WebUrl);
+                return (result.WebUrl, safeName);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "[SharePoint] Receipt upload failed — falling back to disk.");
+            }
+        }
+
+        var dir = Path.Combine(Env.WebRootPath, "uploads", "expenses");
+        Directory.CreateDirectory(dir);
+        var stored = $"{Guid.NewGuid():N}_{safeName}";
+        var path = Path.Combine(dir, stored);
+        await using (var fs = File.Create(path))
+        await using (var src = file.OpenReadStream(MaxReceiptBytes))
+            await src.CopyToAsync(fs);
+        return ($"uploads/expenses/{stored}", safeName);
+    }
+
+    private static string FormatBytes(long bytes) => bytes switch
+    {
+        >= 1024 * 1024 => $"{bytes / 1024.0 / 1024.0:0.#} MB",
+        >= 1024 => $"{bytes / 1024.0:0.#} KB",
+        _ => $"{bytes} B",
+    };
 
     private static ExpenseClaim NewForm() => new()
     {

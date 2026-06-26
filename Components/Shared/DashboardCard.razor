@@ -1,16 +1,18 @@
-<div class="dash-card">
-    <div class="dash-card-icon @($"tone-{Tone}")">
-        <span class="bi @Icon"></span>
+@* A KPI summary card. Pass Href to make it click-through to a detail page;
+   without Href it stays a static display card (backwards-compatible). *@
+
+@if (!string.IsNullOrEmpty(Href))
+{
+    <a class="dash-card dash-card-clickable" href="@Href" title="@(LinkTitle ?? $"Open {Title}")">
+        @Body
+    </a>
+}
+else
+{
+    <div class="dash-card">
+        @Body
     </div>
-    <div class="dash-card-body">
-        <div class="dash-card-value">@Value</div>
-        <div class="dash-card-title">@Title</div>
-        @if (!string.IsNullOrEmpty(Trend))
-        {
-            <div class="dash-card-trend">@Trend</div>
-        }
-    </div>
-</div>
+}
 
 @code {
     [Parameter, EditorRequired] public string Title { get; set; } = "";
@@ -19,4 +21,26 @@
     /// <summary>Color tone: primary, success, warning, danger, info, purple.</summary>
     [Parameter] public string Tone { get; set; } = "primary";
     [Parameter] public string? Trend { get; set; }
+    /// <summary>If set, the card becomes a clickable link to this URL.</summary>
+    [Parameter] public string? Href { get; set; }
+    /// <summary>Tooltip text shown on hover (defaults to "Open {Title}" when Href is set).</summary>
+    [Parameter] public string? LinkTitle { get; set; }
+
+    private RenderFragment Body => @<text>
+        <div class="dash-card-icon @($"tone-{Tone}")">
+            <span class="bi @Icon"></span>
+        </div>
+        <div class="dash-card-body">
+            <div class="dash-card-value">@Value</div>
+            <div class="dash-card-title">@Title</div>
+            @if (!string.IsNullOrEmpty(Trend))
+            {
+                <div class="dash-card-trend">@Trend</div>
+            }
+        </div>
+        @if (!string.IsNullOrEmpty(Href))
+        {
+            <span class="dash-card-chevron bi bi-chevron-right"></span>
+        }
+    </text>;
 }

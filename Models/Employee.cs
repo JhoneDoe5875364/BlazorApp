@@ -5,6 +5,8 @@ namespace HCP.HRPortal.Models;
 public class Employee
 {
     public int Id { get; set; }
+    /// <summary>Stable HR employee number, e.g. "EMP-001". Used as the SharePoint folder key.</summary>
+    public string EmployeeNumber { get; set; } = "";
     public string FullName { get; set; } = "";
     public string JobTitle { get; set; } = "";
     public string Department { get; set; } = "";

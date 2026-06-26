@@ -57,6 +57,15 @@ public class FakeEmployeeService : IEmployeeService
         db.SaveChanges();
     }
 
+    public void Delete(int id)
+    {
+        using var db = _factory.CreateDbContext();
+        var e = db.Employees.FirstOrDefault(x => x.Id == id);
+        if (e is null) return;
+        db.Employees.Remove(e);
+        db.SaveChanges();
+    }
+
     /// <summary>Persists the uploaded profile photo URL for an employee.</summary>
     public void SetPhoto(int employeeId, string photoUrl)
     {

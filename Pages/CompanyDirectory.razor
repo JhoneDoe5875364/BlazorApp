@@ -41,6 +41,25 @@
                 }
             </div>
             <div class="text-muted-sm"><span class="bi bi-geo-alt" style="margin-right:0.4rem;"></span>@e.Location</div>
+            <div class="text-muted-sm">
+                <span class="bi bi-person-badge" style="margin-right:0.4rem;"></span>Reports to:
+                @{
+                    var managerFull = ResolveManager(e.ManagerName);
+                }
+                @if (managerFull is not null)
+                {
+                    <a href="company-directory?search=@Uri.EscapeDataString(managerFull.FullName)"
+                       title="@($"{managerFull.FullName} · {managerFull.JobTitle}")">@managerFull.FullName</a>
+                }
+                else if (!string.IsNullOrWhiteSpace(e.ManagerName))
+                {
+                    <span>@e.ManagerName</span>
+                }
+                else
+                {
+                    <span class="text-muted-sm">—</span>
+                }
+            </div>
         </div>
     }
     @if (Filtered.Count == 0)
@@ -54,7 +73,47 @@
     private string search = "";
     private string dept = "";
 
-    protected override void OnInitialized() => all = Employees.GetAll().ToList();
+    /// <summary>Deep-link target — e.g. /company-directory?search=Audrey%20DeHaven from a
+    /// "Reports to" link in another card. We adopt the value as the initial filter.</summary>
+    [SupplyParameterFromQuery(Name = "search")] public string? InitialSearch { get; set; }
+
+    protected override void OnInitialized()
+    {
+        all = Employees.GetAll().ToList();
+        if (!string.IsNullOrWhiteSpace(InitialSearch)) search = InitialSearch.Trim();
+    }
+
+    /// <summary>
+    /// XLSX has manager names in mixed forms ("Audrey", "Robert Scott", "Peter").
+    /// Resolve to a real Employee row by:
+    ///   1. exact full-name match, or
+    ///   2. first-name match (case-insensitive),
+    ///   3. last-name match,
+    ///   4. partial contains.
+    /// Returns null if no unique match can be inferred.
+    /// </summary>
+    private Employee? ResolveManager(string? rawName)
+    {
+        if (string.IsNullOrWhiteSpace(rawName)) return null;
+        var raw = rawName.Trim();
+
+        var exact = all.FirstOrDefault(x =>
+            string.Equals(x.FullName.Trim(), raw, StringComparison.OrdinalIgnoreCase));
+        if (exact is not null) return exact;
+
+        var byFirst = all.Where(x => x.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                      .FirstOrDefault()?.Equals(raw, StringComparison.OrdinalIgnoreCase) == true)
+                         .ToList();
+        if (byFirst.Count == 1) return byFirst[0];
+
+        var byLast = all.Where(x => x.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                     .LastOrDefault()?.Equals(raw, StringComparison.OrdinalIgnoreCase) == true)
+                        .ToList();
+        if (byLast.Count == 1) return byLast[0];
+
+        var contains = all.Where(x => x.FullName.Contains(raw, StringComparison.OrdinalIgnoreCase)).ToList();
+        return contains.Count == 1 ? contains[0] : null;
+    }
 
     private List<Employee> Filtered
     {
